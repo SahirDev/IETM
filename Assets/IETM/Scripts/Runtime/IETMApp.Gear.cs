@@ -16,13 +16,15 @@ namespace IETM
         public float cycleEndTime = 6f;
         [Tooltip("Playback speed multiplier for extend / retract.")]
         public float gearAnimationSpeed = 1f;
-        [Tooltip("Keep the actuator piston rod inside its cylinder during the animation (fixes the GLB export).")]
-        public bool fixPistonRod = true;
-        public string pistonCylinderNode = "Gear Actuator";
-        public string pistonRodNode = "Gear Actuator Piston Rod";
-        public string pistonAnchorNode = "Actuator Nut";
+        [Tooltip("Spin the actuator lead screw from the nut travel. Its fast spin cannot be interpolated between the exported keys (it jitters / spins backwards in Unity), so the spin is computed like a real lead screw.")]
+        public bool driveScrewFromNut = true;
+        public string screwBodyNode = "Gear Actuator";
+        public string screwNode = "Gear Actuator Piston Rod";
+        public string screwNutNode = "Actuator Nut";
+        [Tooltip("Lead-screw spin per mm of nut travel (514.3 for Landing_Gear 1.glb).")]
+        public float screwDegreesPerMm = 514.3f;
 
-        IETMPistonFollower piston;
+        IETMScrewDriver screwDriver;
 
         GameObject gearAnimRoot;
         bool gearAnimated;
@@ -64,10 +66,11 @@ namespace IETM
             if (retractedTime <= 0f || retractedTime >= cycleEndTime) retractedTime = cycleEndTime * 0.5f;
             gearAnimation.SampleAnimation(gearAnimRoot, 0f); // always start EXTENDED
             gearT = 0f; gearTarget = 0;
-            if (fixPistonRod)
+            if (driveScrewFromNut)
             {
-                piston = new IETMPistonFollower(gearAnimRoot.transform, pistonCylinderNode, pistonRodNode, pistonAnchorNode);
-                if (!piston.IsValid) piston = null;
+                screwDriver = new IETMScrewDriver(gearAnimRoot.transform, screwBodyNode, screwNode, screwNutNode);
+                if (screwDriver.IsValid) screwDriver.Calibrate(gearAnimation, gearAnimRoot, retractedTime, screwDegreesPerMm);
+                else screwDriver = null;
             }
             Debug.Log($"[IETM] Gear animation: '{clip.name}' ({clip.length:0.##} s), retracted at {retractedTime:0.##} s.");
         }
@@ -98,7 +101,7 @@ namespace IETM
             gearT = Mathf.MoveTowards(gearT, gearTarget, Time.unscaledDeltaTime / dur);
             float t = gearTarget == 1 ? gearT * retractedTime : cycleEndTime - gearT * (cycleEndTime - retractedTime);
             gearAnimation.SampleAnimation(gearAnimRoot, t);
-            piston?.Apply();
+            screwDriver?.Apply();
             if (Mathf.Approximately(gearT, gearTarget))
             {
                 gearMoving = false;

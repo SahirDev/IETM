@@ -71,7 +71,7 @@ Buttons, layout and features are unchanged.
 * While the gear moves, explode and part removal are paused. Afterwards they work from the new pose.
 * The timings are on IETM App ▸ **Gear Animation**: Retracted Time, Cycle End Time and Speed.
 * New IPD item **115 – ROD - PISTON, GEAR ACTUATOR** (`Gear Actuator Piston Rod`).
-* **Piston rod correction:** in the GLB's exported animation the piston rod does not slide into the actuator and tilts off-axis by up to about 17°. The IETM keeps it on the cylinder axis and slides it so its end stays on the Actuator Nut (IETM App ▸ **Fix Piston Rod**). Re-exporting from Blender with the constraint baked in also fixes it.
+* **Lead screw:** the actuator's threaded rod spins about 49 turns over the stroke, up to 180° or more between two exported keys. Unity interpolates those keys the short way round, so the screw jittered and spun backwards. The IETM now spins it from the nut travel (514.3° per mm, matching the Blender animation to within 0.5°). Settings: IETM App ▸ **Drive Screw From Nut** and **Screw Degrees Per Mm**.
 * The gear always **starts extended** and is **turned upright (Y up, wheel down)** when it is not already.
 
 ---
