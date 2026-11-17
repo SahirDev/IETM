@@ -439,6 +439,27 @@ namespace IETM
             }
         }
 
+        /// <summary>Rendered width of a (rich) string with a Text's font settings, in canvas units.</summary>
+        public static float MeasureWidth(Text t, string s)
+        {
+            if (t == null || string.IsNullOrEmpty(s)) return 0f;
+            var settings = t.GetGenerationSettings(Vector2.zero);
+            return t.cachedTextGeneratorForLayout.GetPreferredWidth(s, settings) / Mathf.Max(0.0001f, t.pixelsPerUnit);
+        }
+
+        /// <summary>Trims plain text with "…" so it fits maxWidth.</summary>
+        public static string Ellipsize(Text t, string s, float maxWidth)
+        {
+            if (string.IsNullOrEmpty(s) || MeasureWidth(t, s) <= maxWidth) return s;
+            int lo = 0, hi = s.Length;
+            while (lo < hi)
+            {
+                int mid = (lo + hi + 1) / 2;
+                if (MeasureWidth(t, s.Substring(0, mid).TrimEnd() + "…") <= maxWidth) lo = mid; else hi = mid - 1;
+            }
+            return lo <= 0 ? "…" : s.Substring(0, lo).TrimEnd() + "…";
+        }
+
         /// <summary>
         /// uGUI's Outline draws offset copies of the whole graphic behind it. With a see-through fill those
         /// copies show through as a solid block of the border colour (making same-coloured text unreadable).

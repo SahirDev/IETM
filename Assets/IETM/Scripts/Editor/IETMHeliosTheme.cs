@@ -84,6 +84,8 @@ namespace IETM.EditorTools
             v.iconFolder = Icon("folder");
             v.iconFolderOpen = Icon("folder_open");
             v.iconFile = Icon("file");
+            v.iconEye = Icon("eye");
+            v.iconEyeOff = Icon("eye_off");
             v.theme.Capture();
             IETMUIBuilder.TreeFolder = v.iconFolder; IETMUIBuilder.TreeFolderOpen = v.iconFolderOpen; IETMUIBuilder.TreeFile = v.iconFile;
 
@@ -165,6 +167,29 @@ namespace IETM.EditorTools
                 v.tplTreeRow.Set("icon", ico);
                 EditorUtility.SetDirty(v.tplTreeRow);
             }
+
+            // ---- structure tree template: eye icon, readable number, names shortened with "…"
+            if (v.tplTreeRow != null)
+            {
+                var eye = v.tplTreeRow.Get<IETMButton>("eye");
+                if (eye != null && v.iconEye != null)
+                {
+                    UIKit.AttachIcon(eye, v.iconEye, true, 15f);
+                    eye.labelColor = Theme.Muted; eye.Apply();
+                    EditorUtility.SetDirty(eye);
+                }
+                var num = v.tplTreeRow.Get<Text>("number");
+                if (num != null) { num.color = Theme.Accent2; EditorUtility.SetDirty(num); }
+                var nm = v.tplTreeRow.Get<Text>("name");
+                if (nm != null) { nm.LE(0, 26, 1, -1, 0); EditorUtility.SetDirty(nm); }
+            }
+            if (v.tplTableRow != null)
+            {
+                var item = v.tplTableRow.Get<Text>("item");
+                if (item != null) { item.color = Theme.Accent2; EditorUtility.SetDirty(item); }
+            }
+            if (v.infoPartNumber != null) v.infoPartNumber.color = Theme.Accent2;
+            if (v.dmInfoText != null) v.dmInfoText.color = Theme.Accent2;
 
             EditorUtility.SetDirty(v);
         }

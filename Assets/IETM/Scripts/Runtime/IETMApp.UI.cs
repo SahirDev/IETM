@@ -466,11 +466,22 @@ namespace IETM
                 bool allHidden = leaves.Count > 0 && leaves.All(l => model.hidden.Contains(l));
                 bool sel = selectedItem != null && (tr.item == selectedItem || tr.item.IsDescendantOf(selectedItem));
                 if (tr.bg) tr.bg.color = TreeColor(tr);
-                if (tr.name) tr.name.color = allHidden ? Theme.Dim : (sel ? Theme.Accent : Theme.Text);
-                if (tr.eye && tr.eye.label)
+                if (tr.name) tr.name.color = allHidden ? Theme.Dim : (sel ? Color.white : Theme.Text);
+                if (tr.eye != null)
                 {
-                    tr.eye.label.text = allHidden ? "○" : "●";
-                    tr.eye.label.color = allHidden ? Theme.Dim : Theme.Muted;
+                    var sprite = allHidden ? view.iconEyeOff : view.iconEye;
+                    if (tr.eye.icon != null && sprite != null)
+                    {
+                        tr.eye.icon.sprite = sprite;
+                        tr.eye.icon.color = allHidden ? Theme.Dim : Theme.Muted;
+                        if (tr.eye.label) tr.eye.label.text = "";
+                    }
+                    else if (tr.eye.label)
+                    {
+                        tr.eye.label.text = allHidden ? "○" : "●";
+                        tr.eye.label.color = allHidden ? Theme.Dim : Theme.Muted;
+                    }
+                    if (tr.eye.TryGetComponent<UITooltip>(out var tip)) tip.text = allHidden ? "Show" : "Hide";
                 }
             }
         }
@@ -662,7 +673,7 @@ namespace IETM
                     var it = selectedItem;
                     if (v.infoBadge) v.infoBadge.text = it.CalloutNo;
                     if (v.infoTitle) v.infoTitle.text = IETMUIBuilder.Pretty(it.description);
-                    if (v.infoPartNumber) v.infoPartNumber.text = "P/N  " + it.partNumber;
+                    if (v.infoPartNumber) { v.infoPartNumber.text = "P/N  " + it.partNumber; v.infoPartNumber.color = Theme.Accent2; }
                     int leaves = model.LeavesOf(it).Count;
                     if (v.infoMeta) v.infoMeta.text = $"CAGE {it.cage}   ·   ISN {it.isn}   ·   UPA {it.upa}   ·   SMR {it.smr}" + (it.IsGroup ? $"   ·   {leaves} parts" : "");
                     if (v.infoBody)
@@ -674,27 +685,72 @@ namespace IETM
                 }
             }
 
-            if (v.breadcrumb != null && currentModule != null)
+            if (v.breadcrumb != null && currentModule != null) UpdateBreadcrumb();
+        }
+
+        // ------------------------------------------------------------------ breadcrumb
+
+        /// <summary>
+        /// Module group › info name › part chain. When too long for its box, middle levels collapse
+        /// to "…" first, then the last name is shortened with "…".
+        /// </summary>
+        void UpdateBreadcrumb()
+        {
+            var v = view;
+            var segs = new List<string> { currentModule.group, currentModule.infoName };
+            if (selectedItem != null)
             {
-                string sep = $"  <color={Theme.ToHex(Theme.Dim)}>›</color>  ";
-                string s = currentModule.group + sep + currentModule.infoName;
-                if (selectedItem != null)
+                var chain = new List<IPDItem>();
+                for (var p = selectedItem; p != null; p = p.parent) chain.Insert(0, p);
+                foreach (var c in chain.Skip(chain.Count > 1 ? 1 : 0))
+                    segs.Add(c.CalloutNo + " " + IETMUIBuilder.Pretty(c.description));
+            }
+
+            var bcRT = v.breadcrumb.transform.parent as RectTransform;
+            var trt = v.breadcrumb.rectTransform;
+            float insets = Mathf.Max(0f, trt.offsetMin.x) + Mathf.Max(0f, -trt.offsetMax.x) + 6f;
+            float maxBox = Mathf.Max(220f, v.viewport.rect.width - 320f);
+            float maxText = maxBox - insets;
+
+            string sep = $"  <color={Theme.ToHex(Theme.Dim)}>›</color>  ";
+            string hi = Theme.ToHex(Theme.Text);
+            string Build(List<string> parts, string last)
+            {
+                var sb = new System.Text.StringBuilder();
+                for (int i = 0; i < parts.Count; i++) { if (i > 0) sb.Append(sep); sb.Append(parts[i]); }
+                if (parts.Count > 0) sb.Append(sep);
+                sb.Append($"<color={hi}>{last}</color>");
+                return sb.ToString();
+            }
+
+            string lastSeg = segs[segs.Count - 1];
+            var head = segs.GetRange(0, segs.Count - 1);
+            string result = Build(head, lastSeg);
+            if (UIKit.MeasureWidth(v.breadcrumb, result) > maxText && head.Count > 1)
+            {
+                // keep the first level, collapse from the left of the middle
+                for (int keep = head.Count - 2; keep >= 0; keep--)
                 {
-                    var chain = new List<IPDItem>();
-                    for (var p = selectedItem; p != null; p = p.parent) chain.Insert(0, p);
-                    foreach (var c in chain.Skip(chain.Count > 1 ? 1 : 0))
-                        s += sep + $"<color={Theme.ToHex(Theme.Text)}>{c.CalloutNo} {IETMUIBuilder.Pretty(c.description)}</color>";
+                    var parts = new List<string> { head[0], "…" };
+                    parts.AddRange(head.GetRange(head.Count - keep, keep));
+                    result = Build(parts, lastSeg);
+                    if (UIKit.MeasureWidth(v.breadcrumb, result) <= maxText) { head = parts; break; }
+                    head = parts;
                 }
-                v.breadcrumb.text = s;
-                var bcRT = v.breadcrumb.transform.parent as RectTransform;
-                if (bcRT != null && bcRT != v.overlay)
-                {
-                    // box = text + its left/right insets (the left inset includes the home icon)
-                    var trt = v.breadcrumb.rectTransform;
-                    float insets = Mathf.Max(0f, trt.offsetMin.x) + Mathf.Max(0f, -trt.offsetMax.x) + 6f;
-                    float w = v.breadcrumb.preferredWidth + insets;
-                    bcRT.sizeDelta = new Vector2(Mathf.Clamp(w, 160f, Mathf.Max(200f, v.viewport.rect.width - 320f)), bcRT.sizeDelta.y);
-                }
+            }
+            if (UIKit.MeasureWidth(v.breadcrumb, result) > maxText)
+            {
+                float prefix = UIKit.MeasureWidth(v.breadcrumb, Build(head, ""));
+                lastSeg = UIKit.Ellipsize(v.breadcrumb, lastSeg, Mathf.Max(40f, maxText - prefix));
+                result = Build(head, lastSeg);
+            }
+            v.breadcrumb.text = result;
+            v.breadcrumb.horizontalOverflow = HorizontalWrapMode.Overflow;
+
+            if (bcRT != null && bcRT != v.overlay)
+            {
+                float w = UIKit.MeasureWidth(v.breadcrumb, result) + insets;
+                bcRT.sizeDelta = new Vector2(Mathf.Clamp(w, 160f, maxBox), bcRT.sizeDelta.y);
             }
         }
     }

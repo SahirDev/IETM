@@ -41,6 +41,7 @@ namespace IETM
         public Font font;
         public Sprite logo;
         public Sprite iconFolder, iconFolderOpen, iconFile;
+        public Sprite iconEye, iconEyeOff;
 
         [Header("Layout (px at 1920x1080)")]
         public float topBarHeight = 60f;

@@ -575,8 +575,8 @@ namespace IETM
                 exp.normal = new Color(1, 1, 1, 0); exp.Apply(); exp.name = "Expand";
                 var tico = UIKit.Rect("Icon", row.transform).gameObject.AddComponent<Image>();
                 tico.raycastTarget = false; tico.preserveAspect = true; tico.color = Theme.Muted; tico.LE(14, 14, -1, -1, 14, 14);
-                var num = UIKit.Label(row.transform, "230", 11, Theme.Accent, TextAnchor.MiddleLeft, FontStyle.Bold, "Number"); num.LE(34, 26);
-                var nm = UIKit.Label(row.transform, "Wheel - Nose, Tire", 12, Theme.Text, TextAnchor.MiddleLeft, FontStyle.Normal, "Name"); nm.LE(-1, 26, 1);
+                var num = UIKit.Label(row.transform, "230", 11, Theme.Accent2, TextAnchor.MiddleLeft, FontStyle.Bold, "Number"); num.LE(34, 26);
+                var nm = UIKit.Label(row.transform, "Wheel - Nose, Tire", 12, Theme.Text, TextAnchor.MiddleLeft, FontStyle.Normal, "Name"); nm.LE(0, 26, 1, -1, 0);
                 nm.horizontalOverflow = HorizontalWrapMode.Overflow;
                 var eye = UIKit.Button(row.transform, "●", (UnityEngine.Events.UnityAction)null, BtnStyle.Ghost, 12, 26, 22, "Show / hide");
                 eye.normal = new Color(1, 1, 1, 0); eye.Apply(); eye.name = "Eye";
@@ -730,6 +730,7 @@ namespace IETM
             v.dmcText.text = m.dmc;
             v.dmTitleText.text = m.title;
             v.dmInfoText.text = m.infoName;
+            v.dmInfoText.color = Theme.Accent2;
             v.dmIssueText.text = $"Issue {db.publication.issue}  ·  {db.publication.issueDate}  ·  {db.publication.pmc}";
             v.ipdView.SetActive(m.type == "ipd");
             v.procedureView.SetActive(m.type == "procedure");
@@ -755,7 +756,7 @@ namespace IETM
             r.Get<Image>("tag").color = c.A(0.18f);
             var tt = r.Get<Text>("tagText"); tt.text = tag; tt.color = c;
             var title = r.Get<Text>("title"); title.text = m.title; title.fontStyle = active ? FontStyle.Bold : FontStyle.Normal;
-            var info = r.Get<Text>("info"); info.text = m.infoName; info.color = active ? Theme.Accent : Theme.Muted;
+            var info = r.Get<Text>("info"); info.text = m.infoName; info.color = active ? Theme.Accent2 : Theme.Muted;
             r.name = "DM " + m.id;
         }
 
@@ -772,9 +773,11 @@ namespace IETM
                 ic.sprite = sp;
                 ic.enabled = sp != null;
             }
-            r.Get<Text>("number").text = it.CalloutNo;
+            var num = r.Get<Text>("number");
+            num.text = it.CalloutNo;
+            num.color = Theme.Accent2;
             var nm = r.Get<Text>("name");
-            nm.text = Pretty(it.description);
+            TextEllipsis.Set(nm, Pretty(it.description));
             nm.fontStyle = it.IsGroup ? FontStyle.Bold : FontStyle.Normal;
             r.name = "Node " + it.itemNo;
         }
@@ -783,7 +786,9 @@ namespace IETM
         {
             baseColor = index % 2 == 0 ? Theme.RowAlt : new Color(0, 0, 0, 0);
             r.Get<Image>("bg").color = baseColor;
-            r.Get<Text>("item").text = it.itemNo;
+            var itemText = r.Get<Text>("item");
+            itemText.text = it.itemNo;
+            itemText.color = Theme.Accent2;
             r.Get<Text>("isn").text = it.isn;
             r.Get<Text>("cage").text = it.cage;
             r.Get<Text>("pn").text = it.partNumber;
@@ -853,7 +858,7 @@ namespace IETM
 
         public static void FillSearchResult(UIRefs r, IPDItem it)
         {
-            r.Get<Text>("label").text = $"<color={Theme.ToHex(Theme.Accent)}><b>{it.CalloutNo}</b></color>   <b>{it.partNumber}</b>   <color={Theme.ToHex(Theme.Muted)}>{it.description}</color>";
+            r.Get<Text>("label").text = $"<color={Theme.ToHex(Theme.Accent2)}><b>{it.CalloutNo}</b></color>   <b>{it.partNumber}</b>   <color={Theme.ToHex(Theme.Muted)}>{it.description}</color>";
         }
 
         // ================================================================== editor preview
