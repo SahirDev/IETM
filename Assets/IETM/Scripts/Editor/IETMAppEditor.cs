@@ -33,6 +33,16 @@ namespace IETM.EditorTools
 
                 if (GUILayout.Button("Use Animated GLB Model (Landing_Gear 1.glb)", GUILayout.Height(24))) IETMSceneBuilder.UseAnimatedModel(app);
 
+                using (new EditorGUI.DisabledScope(app.view == null))
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    bool hasShell = Object.FindAnyObjectByType<HeliosShell>() != null;
+                    if (GUILayout.Button(hasShell ? "Rebuild HELIOS Shell" : "Build HELIOS Shell (IETM inside HELIOS)", GUILayout.Height(24))) HeliosShellEditor.BuildShell(app, true);
+                    using (new EditorGUI.DisabledScope(!hasShell))
+                        if (GUILayout.Button("Remove Shell", GUILayout.Height(24), GUILayout.Width(110))) HeliosShellEditor.RemoveShell(app);
+                    EditorGUILayout.EndHorizontal();
+                }
+
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Re-tag Model Parts From Data")) IETMSceneBuilder.RetagParts(app);
                 using (new EditorGUI.DisabledScope(app.dataFile == null))

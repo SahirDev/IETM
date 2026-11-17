@@ -46,6 +46,8 @@ namespace IETM
 
         [Header("Start-up")]
         [Tooltip("Module opened at start (id from the JSON). Default: the title page.")]
+        [Tooltip("Set by the HELIOS shell while one of its pages covers the IETM (no viewer input, no shortcuts).")]
+        public bool inputSuspended;
         public string startModule = "DM-TITLE";
         [Tooltip("Printable IPC (PDF) under Assets/StreamingAssets, opened by the 'PDF' button in the IPD figure card.")]
         public string ipdPdfFile = "IETM/32-20-00_Fig1_IPC.pdf";
@@ -189,6 +191,18 @@ namespace IETM
 
             SyncViewportRect();
             AnimatePanels();
+
+            // HELIOS shell page (aircraft / system / 3D view) covers the IETM: no viewer input
+            if (inputSuspended)
+            {
+                vcam.PointerInViewport = false;
+                vcam.InputBlocked = true;
+                model.SetHover(null);
+                UpdateGearAnimation();
+                model.Tick(Time.unscaledDeltaTime);
+                UpdateToasts();
+                return;
+            }
 
             bool typing = IsTyping();
             Vector2 mouse = InputCompat.MousePosition;

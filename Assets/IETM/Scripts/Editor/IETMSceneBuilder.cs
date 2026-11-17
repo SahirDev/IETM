@@ -124,6 +124,9 @@ namespace IETM.EditorTools
             if (app.highlightShader == null || app.ghostShader == null)
                 Debug.LogWarning("[IETM] IETM shaders not found. Check that IETM/Shaders imported without errors.");
 
+            // ---- HELIOS application shell (top bar, side menu, aircraft / system pages around the IETM)
+            HeliosShellEditor.BuildShell(app, false);
+
             Directory.CreateDirectory(Path.GetDirectoryName(ScenePath));
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddToBuildSettings(ScenePath);
@@ -258,6 +261,7 @@ namespace IETM.EditorTools
             Undo.RecordObject(app, "Rebuild IETM UI");
             app.view = view;
             if (Object.FindAnyObjectByType<EventSystem>() == null) CreateEventSystem();
+            if (Object.FindAnyObjectByType<HeliosShell>() != null) HeliosShellEditor.BuildShell(app, false);
             EditorUtility.SetDirty(app);
             EditorSceneManager.MarkSceneDirty(app.gameObject.scene);
             Selection.activeGameObject = view.gameObject;

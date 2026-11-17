@@ -95,6 +95,27 @@ with item callouts, and the parts list (FIG-ITEM, P/N, indented nomenclature, CA
   radial explode is used. Remove the block to go back to radial explode.
 * Regenerate after changing the JSON or model: `python Tools/ipc_pdf/make.py` (see `Tools/ipc_pdf/README.md`).
 
+## 1f. HELIOS shell (IETM inside the HELIOS app)
+
+The IETM can run inside the HELIOS application layout (same as the HELIOS Figma main screen):
+
+* **Top bar:** HELIOS logo, "F-16 Digital Twin", tail number, Overview / Maintenance / Analytics / Reports, user.
+* **Side menu:** 3D View, **IETM**, Sensors, Asset Integrity, Health, Maintenance, Settings.
+* **Flow:** 3D View (placeholder of the HELIOS 3D view) → **IETM** → *Aircraft page* (F-16C · AF-3287, 15 system
+  cards with filters) → **32 Landing gear** → *System page* (sections 32-10 … 32-60, related links incl. the IPC PDF)
+  → **Open IETM** on 32-20 → the landing gear IETM, with a breadcrumb back up the chain.
+
+Set up: **IETM > HELIOS Shell > Build Shell (IETM inside HELIOS)** (or the button on IETM App). It moves the IETM
+UI into `IETM Canvas/IETM Frame` and pre-builds `IETM Canvas/HELIOS Shell` (all editable in the Inspector), and
+adds the **HeliosShell** controller to IETM App (start page: 3D View). New scenes get the shell automatically.
+**Remove Shell** goes back to the stand-alone IETM.
+
+* Content (titles, systems, sections, filters, related links) is in `Resources/IETM/helios_shell.json`; after
+  editing it run *Build Shell* again. A system card opens a system page when `systemPages` has the same id;
+  a section with `"available": true` gets an **Open IETM** button that opens its `"module"`.
+* Every shell button / card has a **ShellTarget** (action + argument) that you can change in the Inspector.
+* Images: `UI/Shell` (menu icons, system / section icons, gear thumbnail, page background, 3D View placeholder).
+
 ## 2. What you get
 
 | Area | Features |
