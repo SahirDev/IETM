@@ -1,6 +1,7 @@
 // Gear extend / retract using the animation inside a single model (e.g. Landing_Gear 1.glb).
-// The clip runs one full cycle: extended (0 s) -> retracted (retractedTime) -> extended (cycleEndTime).
-// Retract plays 0 -> retractedTime, extend plays retractedTime -> cycleEndTime.
+// The clip runs one full cycle. For Landing_Gear 1.glb ("Extend and Retract"):
+//   0 s retracted -> 3 s extended -> 6 s retracted.
+// So extend plays 0 -> 3 s and retract plays 3 -> 6 s (clipStartsRetracted = true, midTime = 3).
 using UnityEngine;
 
 namespace IETM
@@ -10,9 +11,11 @@ namespace IETM
         [Header("Gear animation (single animated model, e.g. the GLB)")]
         [Tooltip("Extend / retract clip. Leave empty to use the clip found on the model (Animation or Animator).")]
         public AnimationClip gearAnimation;
-        [Tooltip("Time in the clip where the gear is fully retracted.")]
-        public float retractedTime = 3f;
-        [Tooltip("End of the clip (gear extended again).")]
+        [Tooltip("ON: the clip starts RETRACTED (0 s), is extended at Mid Time and retracted again at the end (Landing_Gear 1.glb). OFF: the clip starts extended.")]
+        public bool clipStartsRetracted = true;
+        [Tooltip("Time in the clip of the opposite gear state (3 s for Landing_Gear 1.glb).")]
+        public float midTime = 3f;
+        [Tooltip("End of the clip (back to the starting state).")]
         public float cycleEndTime = 6f;
         [Tooltip("Playback speed multiplier for extend / retract.")]
         public float gearAnimationSpeed = 1f;
@@ -63,16 +66,31 @@ namespace IETM
             gearAnimRoot = root;
             gearAnimated = true;
             if (cycleEndTime <= 0f || cycleEndTime > clip.length + 0.001f) cycleEndTime = clip.length;
-            if (retractedTime <= 0f || retractedTime >= cycleEndTime) retractedTime = cycleEndTime * 0.5f;
-            gearAnimation.SampleAnimation(gearAnimRoot, 0f); // always start EXTENDED
+            if (midTime <= 0f || midTime >= cycleEndTime) midTime = cycleEndTime * 0.5f;
+            gearAnimation.SampleAnimation(gearAnimRoot, ExtendedTime); // always start EXTENDED
             gearT = 0f; gearTarget = 0;
             if (driveScrewFromNut)
             {
                 screwDriver = new IETMScrewDriver(gearAnimRoot.transform, screwBodyNode, screwNode, screwNutNode);
-                if (screwDriver.IsValid) screwDriver.Calibrate(gearAnimation, gearAnimRoot, retractedTime, screwDegreesPerMm);
+                if (screwDriver.IsValid) screwDriver.Calibrate(gearAnimation, gearAnimRoot, Mathf.Min(midTime, cycleEndTime - midTime), screwDegreesPerMm);
                 else screwDriver = null;
+                gearAnimation.SampleAnimation(gearAnimRoot, ExtendedTime);
+                screwDriver?.Apply();
             }
-            Debug.Log($"[IETM] Gear animation: '{clip.name}' ({clip.length:0.##} s), retracted at {retractedTime:0.##} s.");
+            Debug.Log($"[IETM] Gear animation: '{clip.name}' ({clip.length:0.##} s), extended at {ExtendedTime:0.##} s, retracted at {(clipStartsRetracted ? 0f : midTime):0.##} s.");
+        }
+
+        /// <summary>Clip time of the fully extended pose.</summary>
+        float ExtendedTime => clipStartsRetracted ? midTime : 0f;
+
+        /// <summary>Clip time for progress gearT (0 extended .. 1 retracted) moving towards 'target'.</summary>
+        float ClipTime(float t01, int target)
+        {
+            if (clipStartsRetracted)
+                return target == 1 ? midTime + t01 * (cycleEndTime - midTime)   // retract: mid -> end
+                                   : (1f - t01) * midTime;                       // extend : 0 -> mid
+            return target == 1 ? t01 * midTime                                    // retract: 0 -> mid
+                               : cycleEndTime - t01 * (cycleEndTime - midTime);   // extend : mid -> end
         }
 
         void SetGearAnimated(int index)
@@ -97,9 +115,10 @@ namespace IETM
         void UpdateGearAnimation()
         {
             if (!gearMoving || gearAnimation == null || gearAnimRoot == null) return;
-            float dur = Mathf.Max(0.1f, retractedTime) / Mathf.Max(0.01f, gearAnimationSpeed);
+            float dur = Mathf.Max(0.1f, gearTarget == 1 ? (clipStartsRetracted ? cycleEndTime - midTime : midTime)
+                                                         : (clipStartsRetracted ? midTime : cycleEndTime - midTime)) / Mathf.Max(0.01f, gearAnimationSpeed);
             gearT = Mathf.MoveTowards(gearT, gearTarget, Time.unscaledDeltaTime / dur);
-            float t = gearTarget == 1 ? gearT * retractedTime : cycleEndTime - gearT * (cycleEndTime - retractedTime);
+            float t = ClipTime(gearT, gearTarget);
             gearAnimation.SampleAnimation(gearAnimRoot, t);
             screwDriver?.Apply();
             if (Mathf.Approximately(gearT, gearTarget))

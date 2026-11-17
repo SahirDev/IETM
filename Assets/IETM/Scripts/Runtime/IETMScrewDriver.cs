@@ -56,7 +56,7 @@ namespace IETM
 
         /// <summary>
         /// Measures the spin ratio from the clip's first key frames (each step must be &lt; 150 deg).
-        /// Leaves the model sampled at 0 s afterwards.
+        /// The caller re-samples the pose it wants afterwards.
         /// </summary>
         public void Calibrate(AnimationClip clip, GameObject root, float maxTime, float degreesPerMm)
         {
@@ -64,7 +64,7 @@ namespace IETM
             float fr = clip.frameRate > 0f ? clip.frameRate : 24f;
             clip.SampleAnimation(root, 0f);
             Quaternion prev = RelativeRotation();
-            float angle = 0f, slide = 0f;
+            float angle = 0f, slide = 0f, slide0 = NutSlide();
             for (int k = 1; k <= Mathf.CeilToInt(maxTime * fr); k++)
             {
                 clip.SampleAnimation(root, k / fr);
@@ -76,14 +76,13 @@ namespace IETM
                 // step axis is in the screw's rest frame; bring it to body space
                 Vector3 axBody = prev * ax;
                 angle += a * Mathf.Sign(Vector3.Dot(axBody, axisInBody));
-                slide = NutSlide();
+                slide = NutSlide() - slide0;
                 prev = rel;
             }
             float magnitude = Mathf.Abs(degreesPerMm) * 1000f;
             if (Mathf.Abs(slide) > 0.0002f && Mathf.Abs(angle) > 30f)
                 degreesPerMetre = Mathf.Sign(angle / slide) * (magnitude > 0f ? magnitude : Mathf.Abs(angle / slide));
             else degreesPerMetre = Mathf.Sign(degreesPerMetre) * magnitude;
-            clip.SampleAnimation(root, 0f);
             Debug.Log($"[IETM] Screw ratio: {degreesPerMetre / 1000f:0.#} deg per mm of nut travel.");
         }
 

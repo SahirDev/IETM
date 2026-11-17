@@ -62,17 +62,18 @@ Buttons, layout and features are unchanged.
 
 ## 1d. Single animated model (Landing_Gear 1.glb)
 
-`Assets/3DModels/Landing_Gear 1.glb` holds the whole gear with its **Extend and Retract** animation (6 s: extended at 0 s, retracted at 3 s, extended again at 6 s). It replaces the two STEP models.
+`Assets/3DModels/Landing_Gear 1.glb` holds the whole gear with its **Extend and Retract** animation (6 s: **retracted at 0 s, extended at 3 s, retracted again at 6 s**). It replaces the two STEP models.
 
 * The project now includes the **glTFast** package (`com.unity.cloud.gltfast`), so Unity imports the GLB as a model.
 * **Existing scene:** IETM App ▸ **Use Animated GLB Model**, or **IETM ▸ Use Animated GLB Model**. It adds the GLB (upright, colliders, part tags) and switches the old Extended and Collapsed models off without deleting them. UI and settings are not changed.
 * **New scenes:** **Build Landing Gear IETM Scene** uses the GLB automatically when it is in the project.
-* The **Extended / Retracted** buttons, `Space`, and procedure steps with `"gear"` play the animation: retract plays 0→3 s, extend plays 3→6 s.
+* The **Extended / Retracted** buttons, `Space`, and procedure steps with `"gear"` play the animation: extend plays 0→3 s, retract plays 3→6 s. Change this on IETM App ▸ **Clip Starts Retracted** and **Mid Time**.
+* **Orientation:** the GLB is stood upright with a fixed rotation of **X = 90°** on the `Landing_Gear 1` object. Animated models are not auto-rotated at runtime, so the rotation you set in the scene is kept.
 * While the gear moves, explode and part removal are paused. Afterwards they work from the new pose.
-* The timings are on IETM App ▸ **Gear Animation**: Retracted Time, Cycle End Time and Speed.
+* The timings are on IETM App ▸ **Gear Animation**: Clip Starts Retracted, Mid Time, Cycle End Time and Speed.
 * New IPD item **115 – ROD - PISTON, GEAR ACTUATOR** (`Gear Actuator Piston Rod`).
 * **Lead screw:** the actuator's threaded rod spins about 49 turns over the stroke, up to 180° or more between two exported keys. Unity interpolates those keys the short way round, so the screw jittered and spun backwards. The IETM now spins it from the nut travel (514.3° per mm, matching the Blender animation to within 0.5°). Settings: IETM App ▸ **Drive Screw From Nut** and **Screw Degrees Per Mm**.
-* The gear always **starts extended** and is **turned upright (Y up, wheel down)** when it is not already.
+* The gear always **starts extended** (the 3 s pose of the clip).
 
 ---
 

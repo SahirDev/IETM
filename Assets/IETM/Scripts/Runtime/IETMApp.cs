@@ -93,8 +93,9 @@ namespace IETM
             if (gearAnimated) { if (retractedModel != null && retractedModel.scene.IsValid()) retractedModel.SetActive(false); }
             else ret = Spawn(retractedModel);
 
-            // Stand the gear upright (Y up, wheel down) unless it already is.
-            if (ext != null && (!modelPreconfigured || IETMModelSetup.UprightError(ext, alignNodeName, downReferenceNode) > 3f))
+            // Orientation: an animated model keeps the rotation set in the scene (Landing_Gear 1.glb: X = 90).
+            // The two-model setup is stood upright automatically unless the Editor already did it.
+            if (ext != null && !gearAnimated && (!modelPreconfigured || IETMModelSetup.UprightError(ext, alignNodeName, downReferenceNode) > 3f))
                 IETMModelSetup.OrientUpright(ext, alignNodeName, downReferenceNode, extraRotation);
 
             model = new IETMModel(db, highlightShader, ghostShader) { selectColor = Theme.Accent, hoverColor = Theme.Warn };

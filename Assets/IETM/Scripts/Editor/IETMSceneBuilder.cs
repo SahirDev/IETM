@@ -25,6 +25,8 @@ namespace IETM.EditorTools
         const string CollapsedName = "F-16 Front Landing Gear Assembly Collapsed";
         const string DataName = "landing_gear_ietm";
         const string AnimatedModelName = "Landing_Gear 1"; // GLB with the extend / retract animation
+        /// <summary>Rotation that stands Landing_Gear 1.glb upright (Y up).</summary>
+        public static readonly Vector3 AnimatedModelRotation = new Vector3(90f, 0f, 0f);
 
         // ================================================================== menu
 
@@ -80,7 +82,7 @@ namespace IETM.EditorTools
             {
                 glbInstance = (GameObject)PrefabUtility.InstantiatePrefab(glb, scene);
                 glbInstance.transform.SetParent(root.transform, false);
-                IETMModelSetup.OrientUpright(glbInstance, "F-16 Front Landing Gear", "Wheel", Vector3.zero, "Model Pivot");
+                glbInstance.transform.localRotation = Quaternion.Euler(AnimatedModelRotation);
                 PrepareModel(glbInstance, db);
                 extended = null; collapsed = null; // single animated model replaces the two STEP models
             }
@@ -180,8 +182,8 @@ namespace IETM.EditorTools
             var inst = (GameObject)PrefabUtility.InstantiatePrefab(glb, scene);
             Undo.RegisterCreatedObjectUndo(inst, "Use Animated GLB Model");
             inst.transform.SetParent(parent, false);
-            var pivot = IETMModelSetup.OrientUpright(inst, "F-16 Front Landing Gear", "Wheel", Vector3.zero, "Animated Model Pivot");
-            if (pivot != null) Undo.RegisterCreatedObjectUndo(pivot.gameObject, "Use Animated GLB Model");
+            inst.transform.localPosition = Vector3.zero;
+            inst.transform.localRotation = Quaternion.Euler(AnimatedModelRotation); // stands the gear upright (Y up)
             PrepareModel(inst, db);
 
             Undo.RecordObject(app, "Use Animated GLB Model");
