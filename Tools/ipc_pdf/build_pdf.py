@@ -3,7 +3,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import black, white, HexColor
 from reportlab.lib.utils import ImageReader
-sys.path.insert(0,'/home/claude/tools')
+sys.path.insert(0,__import__('os').path.dirname(__import__('os').path.abspath(__file__)))
 D=json.load(open('/home/claude/ietm/Assets/IETM/Resources/IETM/landing_gear_ietm.json'))
 pub=D['publication']; fig=D['figure']; items=D['items']
 FIGS=json.load(open('/home/claude/ipc/figs.json'))
@@ -36,7 +36,7 @@ frame('TITLE PAGE')
 c.setFont('Helvetica-Bold',26); c.drawCentredString(W/2,H-200,'F-16 NOSE LANDING GEAR')
 c.setFont('Helvetica',16); c.drawCentredString(W/2,H-228,'ILLUSTRATED PARTS CATALOG')
 c.setFont('Helvetica',11); c.drawCentredString(W/2,H-256,f'Chapter {CH}  ·  Figure {FIGNO}')
-img=ImageReader(FIGS[0][1]['image']); s=300
+img=ImageReader(FIGS[0][1]['image']); s=330
 c.drawImage(img,(W-s)/2,H-600,s,s)
 c.setFont('Helvetica',9)
 rows=[('Publication code',pub['pmc']),('Issue',f"{pub['issue']}  ({pub['issueDate']})"),('Applicability',pub['applicability']),('Figure ICN',fig['icn'])]
@@ -69,13 +69,14 @@ for i,(name,f) in enumerate(FIGS):
     c.setLineWidth(0.5)
     for L in f['labels']:
         ax,ay=P(L['ax'],L['ay']); lx,ly=P(L['lx'],L['ly'])
-        tx=lx+(10 if L['side']=='L' else -10)
-        c.line(ax,ay,tx,ly); c.circle(ax,ay,1.2,fill=1)
-        c.setFont('Helvetica-Bold',9)
-        if L['side']=='L': c.drawRightString(lx+8,ly-3,L['item'])
-        else: c.drawString(lx-8,ly-3,L['item'])
+        c.setFont('Helvetica-Bold',9); tw=c.stringWidth(L['item'],'Helvetica-Bold',9)
+        # leader stops at the label's edge
+        vx,vy=ax-lx,ay-ly; dl=max(1e-6,(vx*vx+vy*vy)**0.5)
+        ex=lx+vx/dl*(tw/2+2); ey=ly+vy/dl*6
+        c.line(ax,ay,ex,ey); c.circle(ax,ay,1.2,fill=1)
+        c.drawCentredString(lx,ly-3,L['item'])
     c.setFont('Helvetica-Bold',10); c.drawCentredString(W/2,M+52,fig['title'].upper())
-    c.setFont('Helvetica',9); c.drawCentredString(W/2,M+40,f'Figure {FIGNO} (Sheet {i+1} of {NS})')
+    c.setFont('Helvetica',9); c.drawCentredString(W/2,M+40,f'Figure {FIGNO} (Sheet {i+1} of {NS})  -  {name.upper()}')
     c.showPage()
 
 # ---- parts list

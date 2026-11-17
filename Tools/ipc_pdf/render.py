@@ -1,5 +1,5 @@
 import numpy as np, cv2, sys
-sys.path.insert(0,'/home/claude/tools')
+sys.path.insert(0,__import__('os').path.dirname(__import__('os').path.abspath(__file__)))
 def look(yaw, pitch):
     yaw=np.radians(yaw); pitch=np.radians(pitch)
     f=np.array([np.cos(pitch)*np.sin(yaw), -np.sin(pitch), np.cos(pitch)*np.cos(yaw)])  # view dir

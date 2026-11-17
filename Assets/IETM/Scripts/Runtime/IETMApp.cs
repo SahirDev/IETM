@@ -399,8 +399,9 @@ namespace IETM
         void ToggleAutoRotate() { vcam.autoRotate = !vcam.autoRotate; SetOn(view.spinButton, vcam.autoRotate); }
         void ToggleExplode()
         {
-            if (view.explodeSlider) view.explodeSlider.value = view.explodeSlider.value > 0.01f ? 0f : 0.6f;
-            else SetExplode(model.explode > 0.01f ? 0f : 0.6f);
+            float on = model.HasDesignedExplode ? 1f : 0.6f;
+            if (view.explodeSlider) view.explodeSlider.value = view.explodeSlider.value > 0.01f ? 0f : on;
+            else SetExplode(model.explode > 0.01f ? 0f : on);
         }
         void ToggleGear() => SetGear(CurrentGear == 0 ? 1 : 0);
 
@@ -427,6 +428,7 @@ namespace IETM
                 if (view.explodeSlider) view.explodeSlider.SetValueWithoutNotify(0f);
                 return;
             }
+            model.designedExplode = CurrentGear == 0;   // the layout is designed for the extended gear
             model.SetExplode(v);
             if (view.explodeValue != null) view.explodeValue.text = Mathf.RoundToInt(v * 100f) + "%";
         }

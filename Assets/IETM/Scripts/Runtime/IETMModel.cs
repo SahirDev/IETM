@@ -13,6 +13,9 @@ namespace IETM
         public readonly List<Renderer> renderers = new List<Renderer>();
         public readonly List<Material[]> originals = new List<Material[]>();
         public Vector3 explodeDir = Vector3.up;
+        /// <summary>Designed explode travel per node, in the node's parent space (Unity axes). See ExplodeOffset.</summary>
+        public readonly List<Vector3> designLocal = new List<Vector3>();
+        public bool hasDesign;
         public Vector3 baseCenter;
         public bool IsBound => renderers.Count > 0;
 
@@ -37,6 +40,7 @@ namespace IETM
         public readonly Dictionary<Collider, PartBinding> byCollider = new Dictionary<Collider, PartBinding>();
         public Bounds bounds;
         public float radius;
+        public bool hasDesign;
     }
 
     public enum PartVisual { Normal, Hover, Selected, Ghost, Hidden }
@@ -56,6 +60,9 @@ namespace IETM
         /// <summary>True while an animation (gear extend / retract) owns the part transforms.</summary>
         public bool poseLocked;
         public float explode;      // 0..1
+        /// <summary>Use the designed (collision-free) explode offsets from the data when available. Off = radial.</summary>
+        public bool designedExplode = true;
+        public bool HasDesignedExplode => Active != null && Active.hasDesign;
         public readonly Dictionary<IPDItem, float> removeT = new Dictionary<IPDItem, float>();
         public readonly Dictionary<IPDItem, float> removeTarget = new Dictionary<IPDItem, float>();
 
@@ -131,6 +138,9 @@ namespace IETM
                     if (pb.nodes.Contains(t)) continue;
                     pb.nodes.Add(t);
                     pb.baseLocal.Add(t.localPosition);
+                    var eo = FindExplode(t.name);
+                    pb.designLocal.Add(eo != null ? new Vector3(-eo.offset[0], eo.offset[1], eo.offset[2]) : Vector3.zero);
+                    if (eo != null) { pb.hasDesign = true; v.hasDesign = true; }
                     foreach (var r in t.GetComponentsInChildren<Renderer>(true))
                     {
                         if (pb.renderers.Contains(r)) continue;
@@ -325,6 +335,14 @@ namespace IETM
             if (dirty) RefreshVisuals();
         }
 
+        ExplodeOffset FindExplode(string node)
+        {
+            if (db.explode == null) return null;
+            foreach (var e in db.explode)
+                if (e != null && e.node == node && e.offset != null && e.offset.Length >= 3) return e;
+            return null;
+        }
+
         public void SetExplode(float e)
         {
             explode = Mathf.Clamp01(e);
@@ -340,12 +358,22 @@ namespace IETM
                 if (!pb.IsBound) continue;
                 float rt = removeT.TryGetValue(pb.item, out var t) ? t : 0f;
                 float ease = rt * rt * (3f - 2f * rt);
-                Vector3 offset = pb.explodeDir * (explode * r * 0.9f) + pb.explodeDir * (ease * r * 1.4f) + Vector3.up * (ease * r * 0.4f);
+                bool design = designedExplode && Active.hasDesign;
                 for (int i = 0; i < pb.nodes.Count; i++)
                 {
                     var n = pb.nodes[i];
                     if (n == null) continue;
                     var parent = n.parent;
+                    Vector3 offset;
+                    if (design)
+                    {
+                        // designed layout: every part slides along its own assembly axis, nothing collides
+                        Vector3 d = parent ? parent.TransformVector(pb.designLocal[i]) : pb.designLocal[i];
+                        Vector3 dir = d.sqrMagnitude > 1e-12f ? d.normalized : pb.explodeDir;
+                        offset = d * explode + dir * (ease * r * 1.4f) + Vector3.up * (ease * r * 0.4f);
+                    }
+                    else
+                        offset = pb.explodeDir * (explode * r * 0.9f) + pb.explodeDir * (ease * r * 1.4f) + Vector3.up * (ease * r * 0.4f);
                     Vector3 basePos = parent ? parent.TransformPoint(pb.baseLocal[i]) : pb.baseLocal[i];
                     n.position = basePos + offset;
                 }

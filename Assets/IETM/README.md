@@ -86,6 +86,10 @@ with item callouts, and the parts list (FIG-ITEM, P/N, indented nomenclature, CA
 * In the IETM: **PDF** button in the IPD figure card (`IETMCommand.IpdDownloadPdf`). Desktop/Editor copies it to
   your *Downloads* folder and opens it; WebGL opens it in a new browser tab. File name: `IETM App > Ipd Pdf File`.
 * Existing scenes: run **IETM > Apply HELIOS Theme** once to add the button.
+* Exploded view: the Explode slider / **E** uses the designed, collision-free layout in the `"explode"` block of
+  `landing_gear_ietm.json` (every part slides off along its own assembly axis; wheel off the axle, collars off the
+  strut, nut off the screw). 100 % = fully laid out. It applies to the extended gear; when retracted the simple
+  radial explode is used. Remove the block to go back to radial explode.
 * Regenerate after changing the JSON or model: `python Tools/ipc_pdf/make.py` (see `Tools/ipc_pdf/README.md`).
 
 ## 2. What you get

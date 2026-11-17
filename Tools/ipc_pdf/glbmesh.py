@@ -31,5 +31,5 @@ def load(path, key=72):
             I=arr(prim['indices']).astype(np.int64).reshape(-1,3)
             W=P@R.T+T
             tris.append(W[I])
-        parts[n['name']]=np.concatenate(tris)*np.array([1.0,-1.0,-1.0])  # turn upright: mount at top, wheel down
+        parts[n['name']]=np.concatenate(tris)
     return parts

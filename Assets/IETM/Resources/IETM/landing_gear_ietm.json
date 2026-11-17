@@ -104,5 +104,25 @@
         { "title": "Close-up", "text": "Remove the jacks and the safety pins after the test is complete.", "focus": ["001"], "action": "restore", "view": "iso", "gear": "extended" }
       ]
     }
+  ],
+  "explode": [
+    { "node": "Actuator Nut", "offset": [0.02000, -0.07300, 0.00000] },
+    { "node": "Collar", "offset": [0.00000, 0.00000, 0.02000] },
+    { "node": "Fork", "offset": [0.05400, 0.00000, -0.05500] },
+    { "node": "Gear Actuator", "offset": [0.02000, 0.00000, 0.00000] },
+    { "node": "Gear Actuator Piston Rod", "offset": [0.02000, -0.02800, 0.00000] },
+    { "node": "Gear Rotation Link", "offset": [-0.02500, 0.00000, -0.05600] },
+    { "node": "Inner Folding Arm", "offset": [0.00000, -0.01698, 0.02830] },
+    { "node": "Main Actuator Arm", "offset": [0.02000, 0.04800, 0.00000] },
+    { "node": "Main Gear", "offset": [0.00000, 0.00000, 0.13200] },
+    { "node": "Outer Folding Arm", "offset": [0.00000, -0.01698, 0.07730] },
+    { "node": "Pivot for Inner Arm", "offset": [0.05400, 0.00000, 0.00000] },
+    { "node": "Secondary Actuator Arm", "offset": [0.02000, 0.00000, -0.02500] },
+    { "node": "Steering Collar", "offset": [0.00000, 0.00000, 0.04000] },
+    { "node": "Steering Link for servo", "offset": [0.00000, 0.00000, -0.07600] },
+    { "node": "Steering Link Lower", "offset": [0.00000, 0.03600, 0.13200] },
+    { "node": "Steering Link Upper", "offset": [0.00000, 0.02000, 0.04000] },
+    { "node": "Steering Top Head", "offset": [0.00000, 0.00000, -0.05600] },
+    { "node": "Wheel", "offset": [-0.08000, 0.00000, 0.13200] }
   ]
 }

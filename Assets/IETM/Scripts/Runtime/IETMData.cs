@@ -124,6 +124,18 @@ namespace IETM
         public string FullTitle => title + " - " + infoName;
     }
 
+    /// <summary>
+    /// Designed exploded-view travel of one model node (extended pose, 100 % explode).
+    /// 'offset' is in the glTF parent space of the node (metres, glTF axes); it is converted to Unity
+    /// (x mirrored, as glTFast does) and to world space through the node's parent at run time.
+    /// </summary>
+    [Serializable]
+    public class ExplodeOffset
+    {
+        public string node;
+        public float[] offset;
+    }
+
     [Serializable]
     public class IETMDatabase
     {
@@ -131,6 +143,8 @@ namespace IETM
         public FigureInfo figure;
         public List<IPDItem> items = new List<IPDItem>();
         public List<DataModule> modules = new List<DataModule>();
+        [Tooltip("Mechanically laid-out exploded view (collision-free). Empty = simple radial explode.")]
+        public List<ExplodeOffset> explode = new List<ExplodeOffset>();
 
         [NonSerialized] public Dictionary<string, IPDItem> byItemNo = new Dictionary<string, IPDItem>();
 
