@@ -52,7 +52,7 @@ namespace IETM.EditorTools
             camGO.tag = "MainCamera";
             var cam = camGO.GetComponent<Camera>();
             cam.clearFlags = CameraClearFlags.SolidColor;
-            cam.backgroundColor = new Color(0.067f, 0.09f, 0.15f);
+            cam.backgroundColor = IETMHeliosTheme.CameraBackground;
             cam.fieldOfView = 35f;
             cam.nearClipPlane = 0.001f;
             cam.farClipPlane = 100f;
@@ -102,6 +102,7 @@ namespace IETM.EditorTools
             app.highlightShader = Shader.Find("IETM/Highlight");
             app.ghostShader = Shader.Find("IETM/Ghost");
             app.dataFile = dataAsset;
+            app.backgroundColor = IETMHeliosTheme.CameraBackground;
             if (app.highlightShader == null || app.ghostShader == null)
                 Debug.LogWarning("[IETM] IETM shaders not found. Check that IETM/Shaders imported without errors.");
 
@@ -192,6 +193,7 @@ namespace IETM.EditorTools
             WithSprites(() =>
             {
                 view = IETMUIBuilder.Build(db);
+                IETMHeliosTheme.ApplyToView(view);
                 IETMUIBuilder.PopulatePreview(view, db);
             });
             return view;

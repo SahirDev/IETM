@@ -28,6 +28,9 @@ namespace IETM.EditorTools
                 }
                 EditorGUILayout.EndHorizontal();
 
+                using (new EditorGUI.DisabledScope(app.view == null))
+                    if (GUILayout.Button("Apply HELIOS Theme (colours, font, icons, logo)", GUILayout.Height(24))) IETMHeliosTheme.Apply(app);
+
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Re-tag Model Parts From Data")) IETMSceneBuilder.RetagParts(app);
                 using (new EditorGUI.DisabledScope(app.dataFile == null))

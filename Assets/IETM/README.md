@@ -41,6 +41,23 @@ The IETM App Inspector has buttons for **Rebuild UI**, **Refresh Preview Content
 
 ---
 
+## 1c. HELIOS theme (look only)
+
+The UI uses the **HELIOS 3D Application** look from the Figma design:
+* the dark navy and indigo colours
+* the **Inter** font (the closest available match to the design's Lato)
+* the HELIOS icons and logo
+
+Buttons, layout and features are unchanged.
+
+* **Existing scene:** IETM App ▸ **Apply HELIOS Theme**, or **IETM ▸ Apply HELIOS Theme**. It restyles the UI you already have: your layout edits are kept, it can be undone, and it is safe to run again.
+* **New scenes:** **IETM ▸ Build Landing Gear IETM Scene** applies the theme automatically.
+* **Assets:** `UI/Icons` (white icons, tinted in Unity), `UI/Logo/HELIOS_logo.png`, `UI/Fonts/Inter-Regular.otf` (SIL OFL, see `Inter-OFL.txt`).
+* **Lato instead of Inter:** drop the Lato `.ttf` into the project, assign it to **IETM View ▸ Font**, then run **Apply HELIOS Theme** again.
+* **Colours:** **IETM View ▸ Theme**, or the defaults in `Theme.ResetToDefaults()` in `UIKit.cs`.
+
+---
+
 ## 2. What you get
 
 | Area | Features |

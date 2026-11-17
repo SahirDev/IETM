@@ -11,22 +11,44 @@ namespace IETM
 {
     public static class Theme
     {
-        public static Color Bg = Hex("0B1020");
-        public static Color Panel = Hex("121829");
-        public static Color Panel2 = Hex("182036");
-        public static Color Panel3 = Hex("1F2944");
-        public static Color Border = Hex("2A3552");
-        public static Color Text = Hex("E6EAF2");
-        public static Color Muted = Hex("8B95B0");
-        public static Color Dim = Hex("5B6582");
-        public static Color Accent = Hex("22D3EE");
-        public static Color Accent2 = Hex("8B5CF6");
-        public static Color Ok = Hex("34D399");
-        public static Color Warn = Hex("F59E0B");
-        public static Color Danger = Hex("F43F5E");
-        public static Color RowAlt = Hex("141B2E");
-        public static Color RowHover = Hex("1E2A47");
-        public static Color RowSel = new Color(0.13f, 0.83f, 0.93f, 0.18f);
+        // HELIOS 3D Application theme (from the HELIOS Figma design).
+        public static Color Bg, Panel, Panel2, Panel3, Border, Text, Muted, Dim;
+        public static Color Accent, Accent2, Ok, Warn, Danger, RowAlt, RowHover, RowSel;
+
+        static Theme() { ResetToDefaults(); }
+
+        /// <summary>Restores the HELIOS palette.</summary>
+        public static void ResetToDefaults()
+        {
+            Bg = Hex("0A0E27");        // page / status bar
+            Panel = Hex("11132D");     // side panels, top bar
+            Panel2 = Hex("151836");    // cards
+            Panel3 = Hex("1E2347");    // raised controls
+            Border = Hex("2F325E");
+            Text = Hex("E2E8F0");
+            Muted = Hex("94A3B8");
+            Dim = Hex("64748B");
+            Accent = Hex("6366F1");    // HELIOS indigo (selection, active state, primary)
+            Accent2 = Hex("A5B4FC");   // light indigo (secondary accent)
+            Ok = Hex("34D399");
+            Warn = Hex("FBBF24");
+            Danger = Hex("EF4444");
+            RowAlt = Hex("13162F");
+            RowHover = Hex("1E2347");
+            RowSel = new Color(0.388f, 0.4f, 0.945f, 0.22f);
+        }
+
+        /// <summary>The palette of the first IETM version (used to restyle scenes built with it).</summary>
+        public static readonly Color[] LegacyPalette =
+        {
+            Hex("0B1020"), Hex("121829"), Hex("182036"), Hex("1F2944"), Hex("2A3552"), Hex("E6EAF2"), Hex("8B95B0"), Hex("5B6582"),
+            Hex("22D3EE"), Hex("8B5CF6"), Hex("34D399"), Hex("F59E0B"), Hex("F43F5E"), Hex("141B2E"), Hex("1E2A47"),
+        };
+
+        public static Color[] CurrentPalette()
+        {
+            return new[] { Bg, Panel, Panel2, Panel3, Border, Text, Muted, Dim, Accent, Accent2, Ok, Warn, Danger, RowAlt, RowHover };
+        }
 
         public static Color Hex(string h)
         {
@@ -49,11 +71,15 @@ namespace IETM
         public static Func<int, Sprite> RoundedOverride;
         public static Func<Sprite> CircleOverride;
 
+        /// <summary>Font used for new text (set from IETMView.font, e.g. Inter for the HELIOS theme).</summary>
+        public static Font FontOverride;
+
         static Font font;
         public static Font Font
         {
             get
             {
+                if (FontOverride != null) return FontOverride;
                 if (font == null)
                 {
                     try { font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); } catch { }
@@ -248,7 +274,7 @@ namespace IETM
             button.targetGraphic = bg;
             var nav = button.navigation; nav.mode = Navigation.Mode.None; button.navigation = nav;
 
-            var label = Label(bg.transform, text, fontSize, Theme.Text, TextAnchor.MiddleCenter, style == BtnStyle.Accent ? FontStyle.Bold : FontStyle.Normal);
+            var label = Label(bg.transform, text, fontSize, Theme.Text, TextAnchor.MiddleCenter, FontStyle.Normal);
             label.rectTransform.Stretch(8, 0, 8, 0);
             label.horizontalOverflow = HorizontalWrapMode.Overflow;
 
@@ -262,14 +288,59 @@ namespace IETM
                 case BtnStyle.Danger: b.normal = Theme.Danger.A(0.25f); b.hover = Theme.Danger.A(0.45f); b.active = Theme.Danger; break;
                 case BtnStyle.Chip: b.normal = Theme.Panel3; b.hover = Theme.Border; b.active = Theme.Accent; break;
             }
-            b.labelColor = style == BtnStyle.Accent ? Theme.Bg : Theme.Text;
-            b.labelOnColor = Theme.Bg;
+            b.labelColor = style == BtnStyle.Accent ? Color.white : Theme.Text;
+            b.labelOnColor = Color.white;
             b.Apply();
 
             float pw = width > 0 ? width : label.preferredWidth + 26f;
             bg.LE(pw, height, -1, -1, width > 0 ? width : -1, height > 0 ? height : -1);
             if (!string.IsNullOrEmpty(tooltip)) bg.gameObject.AddComponent<UITooltip>().text = tooltip;
             return b;
+        }
+
+        /// <summary>
+        /// Adds (or updates) an icon on a button. iconOnly = the icon replaces the label text;
+        /// otherwise the icon sits left of the label.
+        /// </summary>
+        public static Image AttachIcon(IETMButton b, Sprite sprite, bool iconOnly, float size = 16f)
+        {
+            if (b == null || sprite == null) return null;
+            Image icon = b.icon;
+            if (icon == null)
+            {
+                var t = b.transform.Find("Icon");
+                if (t != null) icon = t.GetComponent<Image>();
+            }
+            if (icon == null)
+            {
+                var rt = Rect("Icon", b.transform);
+                icon = rt.gameObject.AddComponent<Image>();
+                icon.raycastTarget = false;
+            }
+            icon.sprite = sprite;
+            icon.preserveAspect = true;
+            var irt = icon.rectTransform;
+            if (iconOnly || b.label == null || string.IsNullOrEmpty(b.label.text))
+            {
+                irt.Anchor(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(size, size));
+                if (b.label) b.label.text = "";
+            }
+            else
+            {
+                irt.Anchor(new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(10, 0), new Vector2(size, size));
+                var lrt = b.label.rectTransform;
+                lrt.offsetMin = new Vector2(10 + size + 6, lrt.offsetMin.y);
+                b.label.alignment = TextAnchor.MiddleLeft;
+                var le = b.GetComponent<LayoutElement>();
+                if (le != null && le.preferredWidth > 0)
+                {
+                    float need = 10 + size + 6 + b.label.preferredWidth + 12;
+                    if (le.preferredWidth < need) { le.preferredWidth = need; if (le.minWidth > 0) le.minWidth = need; }
+                }
+            }
+            b.icon = icon;
+            b.Apply();
+            return icon;
         }
 
         public static ScrollRect Scroll(Transform parent, out RectTransform content, string name = "Scroll")

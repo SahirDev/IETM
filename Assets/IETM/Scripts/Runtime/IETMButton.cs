@@ -40,14 +40,16 @@ namespace IETM
         public Button button;
         public Image background;
         public Text label;
+        [Tooltip("Optional icon (tinted with the label colour).")]
+        public Image icon;
 
         [Header("Colours")]
-        public Color normal = new Color(0.094f, 0.125f, 0.212f);
-        public Color hover = new Color(0.122f, 0.161f, 0.267f);
+        public Color normal = new Color(0.082f, 0.094f, 0.212f);
+        public Color hover = new Color(0.118f, 0.137f, 0.278f);
         [Tooltip("Colour when the button is toggled ON (e.g. Isolate active).")]
-        public Color active = new Color(0.133f, 0.827f, 0.933f);
-        public Color labelColor = new Color(0.902f, 0.918f, 0.949f);
-        public Color labelOnColor = new Color(0.043f, 0.063f, 0.125f);
+        public Color active = new Color(0.388f, 0.4f, 0.945f);
+        public Color labelColor = new Color(0.886f, 0.910f, 0.941f);
+        public Color labelOnColor = Color.white;
 
         [SerializeField] bool on;
 
@@ -71,6 +73,7 @@ namespace IETM
             cb.fadeDuration = 0.08f;
             button.colors = cb;
             if (label) label.color = on ? labelOnColor : labelColor;
+            if (icon) icon.color = on ? labelOnColor : labelColor;
         }
 
         void OnValidate() { Apply(); }

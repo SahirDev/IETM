@@ -36,6 +36,12 @@ namespace IETM
         [Header("Theme (colours used for dynamic states: selection, hover, rows, callouts)")]
         public ThemeColors theme = new ThemeColors();
 
+        [Header("HELIOS look (set by IETM > Apply HELIOS Theme)")]
+        [Tooltip("Font for all UI text. Drop in Lato (HELIOS design font) here if you have it, then run Apply HELIOS Theme.")]
+        public Font font;
+        public Sprite logo;
+        public Sprite iconFolder, iconFolderOpen, iconFile;
+
         [Header("Layout (px at 1920x1080)")]
         public float topBarHeight = 60f;
         public float statusBarHeight = 30f;

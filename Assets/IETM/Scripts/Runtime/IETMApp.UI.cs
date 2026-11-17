@@ -30,6 +30,8 @@ namespace IETM
         void InitUI()
         {
             var v = view;
+            if (v.font != null) UIKit.FontOverride = v.font;
+            IETMUIBuilder.TreeFolder = v.iconFolder; IETMUIBuilder.TreeFolderOpen = v.iconFolderOpen; IETMUIBuilder.TreeFile = v.iconFile;
 
             // buttons with a command (pre-built or added by you in the Editor)
             foreach (var b in v.root.GetComponentsInChildren<IETMButton>(true))
@@ -608,7 +610,7 @@ namespace IETM
             if (v.procNext)
             {
                 v.procNext.button.interactable = procStep < steps.Length - 1;
-                if (v.procNext.label) v.procNext.label.text = procStep < steps.Length - 1 ? "Next  →" : "Complete";
+                if (v.procNext.label) v.procNext.label.text = procStep < steps.Length - 1 ? (v.procNext.icon != null ? "Next" : "Next  →") : "Complete";
             }
 
             UIKit.Clear(v.procStepList);

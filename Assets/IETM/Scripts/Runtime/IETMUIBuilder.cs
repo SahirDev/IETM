@@ -10,6 +10,9 @@ namespace IETM
 {
     public static class IETMUIBuilder
     {
+        /// <summary>Icons used by structure-tree rows (set from IETMView).</summary>
+        public static Sprite TreeFolder, TreeFolderOpen, TreeFile;
+
         static readonly float[] ColW = { 54, 44, 62, 150, -1, 42, 40 };
         static readonly string[] ColH = { "Item", "ISN", "CAGE", "Part Number", "Description", "UPA", "" };
 
@@ -59,7 +62,7 @@ namespace IETM
 
             var logo = UIKit.Panel(row, Theme.Accent, 9, "Logo");
             logo.LE(40, 40, -1, -1, 40, 40);
-            var lt = UIKit.Label(logo.transform, "IE", 16, Theme.Bg, TextAnchor.MiddleCenter, FontStyle.Bold, "Logo Text");
+            var lt = UIKit.Label(logo.transform, "IE", 16, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold, "Logo Text");
             lt.rectTransform.Stretch();
 
             var titles = UIKit.Rect("Titles", row);
@@ -336,7 +339,7 @@ namespace IETM
             card.Border(Theme.Border);
             var badge = UIKit.Panel(card.transform, Theme.Accent, 8, "Badge", false);
             badge.rectTransform.Anchor(new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1), new Vector2(14, -14), new Vector2(48, 28));
-            v.infoBadge = UIKit.Label(badge.transform, "230", 14, Theme.Bg, TextAnchor.MiddleCenter, FontStyle.Bold, "Badge Text");
+            v.infoBadge = UIKit.Label(badge.transform, "230", 14, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold, "Badge Text");
             v.infoBadge.rectTransform.Stretch();
             v.infoTitle = UIKit.Label(card.transform, "Part name", 15, Theme.Text, TextAnchor.UpperLeft, FontStyle.Bold, "Part Title");
             v.infoTitle.rectTransform.Anchor(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(72, -12), new Vector2(-86, 36));
@@ -537,13 +540,15 @@ namespace IETM
                 var indent = UIKit.Rect("Indent", row.transform); var indentLE = indent.LE(16, 20);
                 var exp = UIKit.Button(row.transform, "▼", (UnityEngine.Events.UnityAction)null, BtnStyle.Ghost, 10, 20, 20);
                 exp.normal = new Color(1, 1, 1, 0); exp.Apply(); exp.name = "Expand";
+                var tico = UIKit.Rect("Icon", row.transform).gameObject.AddComponent<Image>();
+                tico.raycastTarget = false; tico.preserveAspect = true; tico.color = Theme.Muted; tico.LE(14, 14, -1, -1, 14, 14);
                 var num = UIKit.Label(row.transform, "230", 11, Theme.Accent, TextAnchor.MiddleLeft, FontStyle.Bold, "Number"); num.LE(34, 26);
                 var nm = UIKit.Label(row.transform, "Wheel - Nose, Tire", 12, Theme.Text, TextAnchor.MiddleLeft, FontStyle.Normal, "Name"); nm.LE(-1, 26, 1);
                 nm.horizontalOverflow = HorizontalWrapMode.Overflow;
                 var eye = UIKit.Button(row.transform, "●", (UnityEngine.Events.UnityAction)null, BtnStyle.Ghost, 12, 26, 22, "Show / hide");
                 eye.normal = new Color(1, 1, 1, 0); eye.Apply(); eye.name = "Eye";
                 var r = row.gameObject.AddComponent<UIRefs>();
-                r.Set("bg", row).Set("indent", indentLE).Set("expand", exp).Set("number", num).Set("name", nm).Set("eye", eye);
+                r.Set("bg", row).Set("indent", indentLE).Set("expand", exp).Set("icon", tico).Set("number", num).Set("name", nm).Set("eye", eye);
                 v.tplTreeRow = r;
             }
             // IPD table row
@@ -727,6 +732,13 @@ namespace IETM
             var exp = r.Get<IETMButton>("expand");
             exp.label.text = it.IsGroup ? (collapsed ? "►" : "▼") : "";
             exp.button.interactable = it.IsGroup;
+            var ic = r.Get<Image>("icon");
+            if (ic != null)
+            {
+                var sp = it.IsGroup ? (collapsed ? TreeFolder : TreeFolderOpen) : TreeFile;
+                ic.sprite = sp;
+                ic.enabled = sp != null;
+            }
             r.Get<Text>("number").text = it.CalloutNo;
             var nm = r.Get<Text>("name");
             nm.text = Pretty(it.description);
@@ -781,7 +793,7 @@ namespace IETM
             var dn = r.Get<Text>("dotText");
             dn.text = done ? "OK" : (i + 1).ToString();
             dn.fontSize = done ? 9 : 12;
-            dn.color = done || current ? Theme.Bg : Theme.Text;
+            dn.color = done || current ? Color.white : Theme.Text;
             var t = r.Get<Text>("title");
             t.text = s.title;
             t.color = done && !current ? Theme.Muted : Theme.Text;

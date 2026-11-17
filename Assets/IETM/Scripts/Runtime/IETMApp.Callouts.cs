@@ -99,7 +99,7 @@ namespace IETM
                 bool dim = model.selected.Count > 0 && !sel && !hov;
                 Color col = sel ? Theme.Accent : hov ? Theme.Warn : c.balloonColor;
                 c.balloonImg.color = dim ? col.A(col.a * 0.55f) : col;
-                c.text.color = sel || hov ? Theme.Bg : (dim ? Theme.Muted : c.textColor);
+                c.text.color = sel || hov ? Color.white : (dim ? Theme.Muted : c.textColor);
                 c.lineImg.color = sel ? Theme.Accent.A(0.9f) : hov ? Theme.Warn.A(0.9f) : c.lineColor;
                 c.dotImg.color = sel ? Theme.Accent : hov ? Theme.Warn : c.dotColor;
                 float s = sel || hov ? 1.15f : 1f;
