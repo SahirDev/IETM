@@ -82,6 +82,7 @@ namespace IETM
             SetOn(v.calloutsButton, labelsOn);
             SetOn(v.isolateButton, false); SetOn(v.xrayButton, false); SetOn(v.spinButton, false);
             UpdateGearButtons();
+            UpdatePanelHandles();
             ShowLeftTab(0);
             BuildTable();
             RefreshStructureTree();
@@ -135,6 +136,21 @@ namespace IETM
             v.rightPanel.anchoredPosition = new Vector2(rightBaseX + rightW * (1f - rightT), v.rightPanel.anchoredPosition.y);
             v.viewport.offsetMin = new Vector2(vpBaseL - leftW * (1f - leftT), v.viewport.offsetMin.y);
             v.viewport.offsetMax = new Vector2(vpBaseR + rightW * (1f - rightT), v.viewport.offsetMax.y);
+        }
+
+        /// <summary>Points the panel edge arrows: towards the panel when open (collapse), away when closed.</summary>
+        void UpdatePanelHandles()
+        {
+            SetHandle(view.leftHandle, leftOpen ? 0f : 180f, leftOpen ? "Hide publication panel" : "Show publication panel");
+            SetHandle(view.rightHandle, rightOpen ? 180f : 0f, rightOpen ? "Hide data module panel" : "Show data module panel");
+        }
+
+        static void SetHandle(IETMButton h, float angle, string tip)
+        {
+            if (h == null) return;
+            if (h.icon != null) h.icon.rectTransform.localEulerAngles = new Vector3(0, 0, angle);
+            else if (h.label != null) h.label.text = angle == 0f ? "‹" : "›";
+            if (h.TryGetComponent<UITooltip>(out var t)) t.text = tip;
         }
 
         void ShowLeftTab(int i)

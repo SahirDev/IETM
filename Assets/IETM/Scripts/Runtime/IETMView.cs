@@ -61,12 +61,15 @@ namespace IETM
 
         [Header("Left panel")]
         public RectTransform leftPanel;
+        [Tooltip("Arrow tab on the panel edge that collapses / expands the panel.")]
+        public IETMButton leftHandle;
         public IETMButton tabPublication, tabStructure;
         public GameObject publicationScroll, structureScroll;
         public RectTransform publicationContent, structureContent;
 
         [Header("Right panel - header")]
         public RectTransform rightPanel;
+        public IETMButton rightHandle;
         public Text dmcText, dmTitleText, dmInfoText, dmIssueText, applicabilityText;
 
         [Header("Right panel - IPD view")]

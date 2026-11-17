@@ -66,13 +66,13 @@ namespace IETM
             lt.rectTransform.Stretch();
 
             var titles = UIKit.Rect("Titles", row);
-            titles.LE(330, 40);
+            titles.LE(400, 40);
             v.publicationTitle = UIKit.Label(titles, "<b>" + db.publication.title + "</b>", 17, Theme.Text, TextAnchor.MiddleLeft, FontStyle.Normal, "Title");
             v.publicationTitle.rectTransform.Anchor(new Vector2(0, 0.5f), new Vector2(1, 1), new Vector2(0, 1), Vector2.zero, Vector2.zero);
             v.publicationTitle.horizontalOverflow = HorizontalWrapMode.Overflow;
             v.publicationSubtitle = UIKit.Label(titles, db.publication.subtitle + "  ·  " + db.publication.pmc, 11, Theme.Muted, TextAnchor.MiddleLeft, FontStyle.Normal, "Subtitle");
             v.publicationSubtitle.rectTransform.Anchor(new Vector2(0, 0), new Vector2(1, 0.5f), new Vector2(0, 0), Vector2.zero, Vector2.zero);
-            v.publicationSubtitle.horizontalOverflow = HorizontalWrapMode.Overflow;
+            FitSubtitle(v.publicationSubtitle);
 
             UIKit.Divider(row, true);
             UIKit.Button(row, "←", IETMCommand.HistoryBack, BtnStyle.Ghost, 16, 36, 34, "Back");
@@ -86,9 +86,6 @@ namespace IETM
 
             var spacer = UIKit.Rect("Spacer", row); spacer.LE(-1, 10, 1);
 
-            UIKit.Button(row, "◄ Panel", IETMCommand.ToggleLeftPanel, BtnStyle.Ghost, 12, 78, 34, "Show / hide publication panel");
-            UIKit.Button(row, "Panel ►", IETMCommand.ToggleRightPanel, BtnStyle.Ghost, 12, 78, 34, "Show / hide data module panel");
-            UIKit.Divider(row, true);
             v.orderListButton = UIKit.Button(row, "Order list  0", IETMCommand.ToggleOrderList, BtnStyle.Solid, 13, 128, 34, "Parts order list");
             UIKit.Button(row, "?", IETMCommand.ToggleHelp, BtnStyle.Ghost, 16, 36, 34, "Help and shortcuts  ( / )");
         }
@@ -121,6 +118,8 @@ namespace IETM
             v.structureContent.VLayout(1, 4, 6, 4, 8); v.structureContent.FitVertical();
             v.structureScroll = sr2.gameObject;
             v.structureScroll.SetActive(false);
+
+            v.leftHandle = BuildPanelHandle(v.leftPanel, true);
         }
 
         // ------------------------------------------------------------------ right panel
@@ -154,6 +153,8 @@ namespace IETM
             ap.Border(Theme.Warn.A(0.35f));
             v.applicabilityText = UIKit.Label(ap.transform, "<b>Applicability</b>   " + db.publication.applicability, 12, Theme.Warn, TextAnchor.MiddleLeft, FontStyle.Normal, "Applicability Text");
             v.applicabilityText.rectTransform.Stretch(12, 0, 12, 0);
+
+            v.rightHandle = BuildPanelHandle(v.rightPanel, false);
 
             var content = UIKit.Rect("Module Content", p.transform).Stretch(12, 164, 12, 10);
             BuildIpdView(v, content, db);
@@ -324,10 +325,8 @@ namespace IETM
             vp.VLayout(4, 5, 5, 6, 6, TextAnchor.UpperCenter, true, false);
             var vfit = vp.gameObject.AddComponent<ContentSizeFitter>(); vfit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             var vl = UIKit.Label(vp.transform, "VIEW", 10, Theme.Dim, TextAnchor.MiddleCenter, FontStyle.Bold, "Views Label"); vl.LE(-1, 16);
-            UIKit.Button(vp.transform, "Iso", IETMCommand.ViewIso, BtnStyle.Ghost, 12, -1, 30, "Isometric view");
-            UIKit.Button(vp.transform, "Front", IETMCommand.ViewFront, BtnStyle.Ghost, 12, -1, 30, "Front view");
-            UIKit.Button(vp.transform, "Side", IETMCommand.ViewSide, BtnStyle.Ghost, 12, -1, 30, "Side view");
-            UIKit.Button(vp.transform, "Top", IETMCommand.ViewTop, BtnStyle.Ghost, 12, -1, 30, "Top view");
+            foreach (var vb in ViewButtons)
+                UIKit.Button(vp.transform, vb.label, vb.command, BtnStyle.Ghost, 11, -1, 30, vb.tooltip);
             UIKit.Button(vp.transform, "+", IETMCommand.ZoomIn, BtnStyle.Ghost, 16, -1, 30, "Zoom in");
             UIKit.Button(vp.transform, "-", IETMCommand.ZoomOut, BtnStyle.Ghost, 16, -1, 30, "Zoom out");
             UIKit.Button(vp.transform, "Snap", IETMCommand.Snapshot, BtnStyle.Ghost, 11, -1, 30, "Save a screenshot");
@@ -497,6 +496,40 @@ namespace IETM
             v.searchResults.VLayout(2, 6, 6, 6, 6);
             var f = v.searchResults.gameObject.AddComponent<ContentSizeFitter>(); f.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             d.gameObject.SetActive(false);
+        }
+
+        /// <summary>Camera view buttons: command, short label (used until the icon is applied), tooltip, icon name.</summary>
+        public static readonly (IETMCommand command, string label, string tooltip, string icon)[] ViewButtons =
+        {
+            (IETMCommand.ViewIso, "Iso", "Isometric view", "view_iso"),
+            (IETMCommand.ViewTop, "Top", "Top view", "view_top"),
+            (IETMCommand.ViewBottom, "Btm", "Bottom view", "view_bottom"),
+            (IETMCommand.ViewAft, "Aft", "Aft view", "view_aft"),
+            (IETMCommand.ViewFront, "Fwd", "Forward view", "view_forward"),
+            (IETMCommand.ViewSide, "Stbd", "Starboard view", "view_starboard"),
+            (IETMCommand.ViewPort, "Port", "Port view", "view_port"),
+        };
+
+        /// <summary>Arrow tab on the inner edge of a side panel; collapses / expands it and moves with it.</summary>
+        public static IETMButton BuildPanelHandle(RectTransform panel, bool left)
+        {
+            var h = UIKit.Button(panel, left ? "‹" : "›", left ? IETMCommand.ToggleLeftPanel : IETMCommand.ToggleRightPanel,
+                BtnStyle.Solid, 14, 18, 56, left ? "Hide publication panel" : "Hide data module panel");
+            h.name = "Collapse Handle";
+            var le = h.GetComponent<LayoutElement>(); if (le) le.ignoreLayout = true;
+            var rt = (RectTransform)h.transform;
+            if (left) rt.Anchor(new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(0, 0.5f), new Vector2(-1, 0), new Vector2(18, 56));
+            else rt.Anchor(new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(1, 0.5f), new Vector2(1, 0), new Vector2(18, 56));
+            h.background.Border(Theme.Border);
+            return h;
+        }
+
+        /// <summary>Long subtitles are clipped to their box instead of running into the next control.</summary>
+        public static void FitSubtitle(Text t)
+        {
+            if (t == null) return;
+            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            t.verticalOverflow = VerticalWrapMode.Truncate;
         }
 
         // ================================================================== templates

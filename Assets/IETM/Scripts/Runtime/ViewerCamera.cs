@@ -64,10 +64,12 @@ namespace IETM
         {
             switch ((name ?? "").ToLowerInvariant())
             {
-                case "front": SetView(90f, 0f); break;
-                case "side": SetView(0f, 0f); break;
-                case "back": SetView(-90f, 0f); break;
+                case "front": case "forward": SetView(90f, 0f); break;
+                case "side": case "starboard": SetView(0f, 0f); break;
+                case "back": case "aft": SetView(-90f, 0f); break;
+                case "port": SetView(180f, 0f); break;
                 case "top": SetView(90f, 85f); break;
+                case "bottom": SetView(90f, -85f); break;
                 case "iso": SetView(35f, 20f); break;
             }
         }

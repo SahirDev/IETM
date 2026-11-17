@@ -35,6 +35,8 @@ namespace IETM.EditorTools
             { IETMCommand.StepPrevious, ("arrow_left", false) },
             { IETMCommand.StepNext, ("arrow_right", false) },
             { IETMCommand.StepRestart, ("rotate", false) },
+            { IETMCommand.ToggleLeftPanel, ("chevron_left", true) },
+            { IETMCommand.ToggleRightPanel, ("chevron_left", true) },
         };
 
         [MenuItem("IETM/Apply HELIOS Theme", priority = 30)]
@@ -113,6 +115,9 @@ namespace IETM.EditorTools
                 EditorUtility.SetDirty(f);
             }
 
+            // ---- layout updates (edge collapse tabs, camera view buttons, header subtitle)
+            IETMSceneBuilder.WithSprites(() => UpdateLayout(v));
+
             // ---- icons on buttons (by command)
             foreach (var b in v.GetComponentsInChildren<IETMButton>(true))
             {
@@ -120,7 +125,9 @@ namespace IETM.EditorTools
                 var sp = Icon(map.icon);
                 if (sp == null) continue;
                 if (b.label != null && !map.only) b.label.text = StripArrows(b.label.text);
-                UIKit.AttachIcon(b, sp, map.only, 16f);
+                bool handle = b.command == IETMCommand.ToggleLeftPanel || b.command == IETMCommand.ToggleRightPanel;
+                UIKit.AttachIcon(b, sp, map.only, handle ? 12f : 16f);
+                if (b == v.rightHandle && b.icon != null) b.icon.rectTransform.localEulerAngles = new Vector3(0, 0, 180);
                 EditorUtility.SetDirty(b);
             }
 
@@ -157,6 +164,54 @@ namespace IETM.EditorTools
             }
 
             EditorUtility.SetDirty(v);
+        }
+
+        /// <summary>Brings a UI built with an earlier version up to date (idempotent).</summary>
+        static void UpdateLayout(IETMView v)
+        {
+            // panel toggles move from the top bar to the panel edges
+            foreach (var b in v.GetComponentsInChildren<IETMButton>(true))
+            {
+                if (b.command != IETMCommand.ToggleLeftPanel && b.command != IETMCommand.ToggleRightPanel) continue;
+                if (b == v.leftHandle || b == v.rightHandle) continue;
+                if (v.leftPanel != null && b.transform.IsChildOf(v.leftPanel)) continue;
+                if (v.rightPanel != null && b.transform.IsChildOf(v.rightPanel)) continue;
+                b.gameObject.SetActive(false); // old "◄ Panel" / "Panel ►" buttons in the top bar
+            }
+            if (v.leftHandle == null && v.leftPanel != null) v.leftHandle = IETMUIBuilder.BuildPanelHandle(v.leftPanel, true);
+            if (v.rightHandle == null && v.rightPanel != null) v.rightHandle = IETMUIBuilder.BuildPanelHandle(v.rightPanel, false);
+
+            // header subtitle no longer runs into the buttons
+            IETMUIBuilder.FitSubtitle(v.publicationSubtitle);
+            var titles = v.publicationTitle != null ? v.publicationTitle.transform.parent : null;
+            var tle = titles != null ? titles.GetComponent<LayoutElement>() : null;
+            if (tle != null && tle.preferredWidth < 400) tle.preferredWidth = 400;
+
+            // camera views: Isometric, Top, Bottom, Aft, Forward, Starboard, Port (icon + tooltip)
+            Transform panel = null;
+            foreach (var b in v.GetComponentsInChildren<IETMButton>(true))
+                if (b.command == IETMCommand.ViewIso || b.command == IETMCommand.ViewTop) { panel = b.transform.parent; break; }
+            if (panel == null) return;
+            int insertAt = -1;
+            for (int i = 0; i < panel.childCount; i++)
+                if (panel.GetChild(i).GetComponent<IETMButton>() != null) { insertAt = i; break; }
+            if (insertAt < 0) insertAt = panel.childCount;
+            foreach (var vb in IETMUIBuilder.ViewButtons)
+            {
+                IETMButton btn = null;
+                foreach (Transform c in panel)
+                {
+                    var cb = c.GetComponent<IETMButton>();
+                    if (cb != null && cb.command == vb.command) { btn = cb; break; }
+                }
+                if (btn == null) btn = UIKit.Button(panel, vb.label, vb.command, BtnStyle.Ghost, 11, -1, 30, vb.tooltip);
+                if (!btn.TryGetComponent<UITooltip>(out var tip)) tip = btn.gameObject.AddComponent<UITooltip>();
+                tip.text = vb.tooltip;
+                var sp = Icon(vb.icon);
+                if (sp != null) UIKit.AttachIcon(btn, sp, true, 18f);
+                btn.transform.SetSiblingIndex(insertAt++);
+                EditorUtility.SetDirty(btn);
+            }
         }
 
         // ================================================================== helpers

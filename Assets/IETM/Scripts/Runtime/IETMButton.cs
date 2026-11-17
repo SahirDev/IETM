@@ -26,6 +26,8 @@ namespace IETM
         IpdSelectAll = 60, IpdReset = 61, IpdClearFilter = 62, IpdCopyList = 63,
         // procedures
         StepPrevious = 70, StepNext = 71, StepRestart = 72, RestoreParts = 73,
+        // more camera views (ViewFront = Forward, ViewSide = Starboard)
+        ViewBottom = 80, ViewAft = 81, ViewPort = 82,
     }
 
     [RequireComponent(typeof(Button))]

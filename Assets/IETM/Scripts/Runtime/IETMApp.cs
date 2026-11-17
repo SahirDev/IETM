@@ -274,8 +274,8 @@ namespace IETM
                         if (it != null) Select(it, false, true); else Toast("Item not found: " + arg, Theme.Warn);
                     }
                     break;
-                case IETMCommand.ToggleLeftPanel: leftOpen = !leftOpen; break;
-                case IETMCommand.ToggleRightPanel: rightOpen = !rightOpen; break;
+                case IETMCommand.ToggleLeftPanel: leftOpen = !leftOpen; UpdatePanelHandles(); break;
+                case IETMCommand.ToggleRightPanel: rightOpen = !rightOpen; UpdatePanelHandles(); break;
                 case IETMCommand.ToggleOrderList: ToggleCart(); break;
                 case IETMCommand.ToggleHelp: ToggleHelp(); break;
                 case IETMCommand.CloseDialogs: CloseModals(); break;
@@ -296,6 +296,9 @@ namespace IETM
                 case IETMCommand.ViewFront: vcam.SetPreset("front"); break;
                 case IETMCommand.ViewSide: vcam.SetPreset("side"); break;
                 case IETMCommand.ViewTop: vcam.SetPreset("top"); break;
+                case IETMCommand.ViewBottom: vcam.SetPreset("bottom"); break;
+                case IETMCommand.ViewAft: vcam.SetPreset("aft"); break;
+                case IETMCommand.ViewPort: vcam.SetPreset("port"); break;
                 case IETMCommand.ZoomIn: vcam.Zoom(0.8f); break;
                 case IETMCommand.ZoomOut: vcam.Zoom(1.25f); break;
                 case IETMCommand.Snapshot: TakeSnapshot(); break;

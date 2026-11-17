@@ -236,12 +236,13 @@ namespace IETM.EditorTools
         static Sprite circleCache;
 
         /// <summary>Runs 'build' with UIKit using sprite ASSETS (so the UI survives saving the scene).</summary>
-        static void WithSprites(System.Action build)
+        internal static void WithSprites(System.Action build)
         {
+            var prevR = UIKit.RoundedOverride; var prevC = UIKit.CircleOverride; // re-entrant
             UIKit.RoundedOverride = RoundedAsset;
             UIKit.CircleOverride = CircleAsset;
             try { build(); }
-            finally { UIKit.RoundedOverride = null; UIKit.CircleOverride = null; }
+            finally { UIKit.RoundedOverride = prevR; UIKit.CircleOverride = prevC; }
         }
 
         static Sprite RoundedAsset(int radius)

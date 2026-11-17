@@ -52,6 +52,8 @@ Buttons, layout and features are unchanged.
 
 * **Existing scene:** IETM App ▸ **Apply HELIOS Theme**, or **IETM ▸ Apply HELIOS Theme**. It restyles the UI you already have: your layout edits are kept, it can be undone, and it is safe to run again.
 * **New scenes:** **IETM ▸ Build Landing Gear IETM Scene** applies the theme automatically.
+* **Side panels:** each panel has an **arrow tab on its inner edge** to collapse or expand it. The top-bar "Panel" buttons are gone.
+* **Camera views:** the views column has cube icons for Isometric, Top, Bottom, Aft, Forward, Starboard and Port. Hover a button to see the view name.
 * **Assets:** `UI/Icons` (white icons, tinted in Unity), `UI/Logo/HELIOS_logo.png`, `UI/Fonts/Inter-Regular.otf` (SIL OFL, see `Inter-OFL.txt`).
 * **Lato instead of Inter:** drop the Lato `.ttf` into the project, assign it to **IETM View ▸ Font**, then run **Apply HELIOS Theme** again.
 * **Colours:** **IETM View ▸ Theme**, or the defaults in `Theme.ResetToDefaults()` in `UIKit.cs`.
