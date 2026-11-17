@@ -1,5 +1,6 @@
 // IETM runtime UI: connects to the pre-built UI (IETMView), wires buttons by command,
 // and fills lists (trees, parts table, paragraphs, steps, order list) from the row templates.
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -70,6 +71,12 @@ namespace IETM
             leftBaseX = v.leftPanel.anchoredPosition.x; rightBaseX = v.rightPanel.anchoredPosition.x;
             vpBaseL = v.viewport.offsetMin.x; vpBaseR = v.viewport.offsetMax.x;
 
+            // Legacy UI Text caches glyph positions in the shared font texture. When Unity rebuilds that
+            // texture (new sizes / styles requested), text drawn earlier can show blurred, smeared glyphs.
+            // Redraw all IETM text whenever that happens, and once more after start-up.
+            Font.textureRebuilt += OnFontTextureRebuilt;
+            StartCoroutine(RefreshTextsAfterStart());
+
             SetOn(v.calloutsButton, labelsOn);
             SetOn(v.isolateButton, false); SetOn(v.xrayButton, false); SetOn(v.spinButton, false);
             UpdateGearButtons();
@@ -77,6 +84,29 @@ namespace IETM
             BuildTable();
             RefreshStructureTree();
             RefreshCart();
+        }
+
+        void OnDestroy() { Font.textureRebuilt -= OnFontTextureRebuilt; }
+
+        void OnFontTextureRebuilt(Font f) { RefreshAllTexts(f); }
+
+        IEnumerator RefreshTextsAfterStart()
+        {
+            yield return null;
+            RefreshAllTexts(null);
+            yield return new WaitForSecondsRealtime(0.5f);
+            RefreshAllTexts(null);
+        }
+
+        /// <summary>Forces every IETM Text to rebuild its glyphs (f = null: all fonts).</summary>
+        public void RefreshAllTexts(Font f)
+        {
+            if (view == null || view.root == null) return;
+            foreach (var t in view.root.GetComponentsInChildren<Text>(true))
+            {
+                if (f != null && t.font != f) continue;
+                t.SetAllDirty();
+            }
         }
 
         static void SetActive(Component c, bool on) { if (c != null) c.gameObject.SetActive(on); }

@@ -326,6 +326,15 @@ namespace IETM.EditorTools
     {
         static IETMFirstRun()
         {
+            // Keep pre-built UI text sharp in Edit mode too (see IETMApp.RefreshAllTexts).
+            Font.textureRebuilt += f =>
+            {
+                if (Application.isPlaying) return;
+                foreach (var v in Object.FindObjectsByType<IETMView>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                    foreach (var t in v.GetComponentsInChildren<UnityEngine.UI.Text>(true))
+                        if (t.font == f) t.SetAllDirty();
+            };
+
             EditorApplication.delayCall += () =>
             {
                 if (Application.isBatchMode || EditorApplication.isPlayingOrWillChangePlaymode) return;
