@@ -1,0 +1,38 @@
+// Download / open the printable Illustrated Parts Catalog (PDF) kept in StreamingAssets.
+using System;
+using System.IO;
+using UnityEngine;
+
+namespace IETM
+{
+    public partial class IETMApp
+    {
+        public void DownloadIpdPdf()
+        {
+            if (string.IsNullOrEmpty(ipdPdfFile)) { Toast("No PDF configured", Theme.Warn); return; }
+            string src = Path.Combine(Application.streamingAssetsPath, ipdPdfFile);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            Application.OpenURL(src);                 // browser opens/downloads it
+            Toast("Opening IPC PDF…", Theme.Ok);
+#elif UNITY_ANDROID && !UNITY_EDITOR
+            Application.OpenURL(src);
+#else
+            try
+            {
+                if (!File.Exists(src)) { Toast("PDF not found: StreamingAssets/" + ipdPdfFile, Theme.Danger); return; }
+                string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
+                if (!Directory.Exists(dir)) dir = Application.persistentDataPath;
+                string dst = Path.Combine(dir, Path.GetFileName(src));
+                File.Copy(src, dst, true);
+                Application.OpenURL(new Uri(dst).AbsoluteUri);
+                Toast("Saved to " + dst, Theme.Ok);
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("IETM: PDF copy failed, opening in place. " + e.Message);
+                Application.OpenURL(new Uri(src).AbsoluteUri);
+            }
+#endif
+        }
+    }
+}

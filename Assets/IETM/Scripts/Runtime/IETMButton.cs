@@ -23,7 +23,7 @@ namespace IETM
         // order list
         AddSelectionToOrder = 50, OrderClear = 51, OrderCopy = 52,
         // IPD
-        IpdSelectAll = 60, IpdReset = 61, IpdClearFilter = 62, IpdCopyList = 63,
+        IpdSelectAll = 60, IpdReset = 61, IpdClearFilter = 62, IpdCopyList = 63, IpdDownloadPdf = 64,
         // procedures
         StepPrevious = 70, StepNext = 71, StepRestart = 72, RestoreParts = 73,
         // more camera views (ViewFront = Forward, ViewSide = Starboard)

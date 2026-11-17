@@ -31,6 +31,7 @@ namespace IETM.EditorTools
             { IETMCommand.Snapshot, ("image", true) },
             { IETMCommand.IpdReset, ("rotate", false) },
             { IETMCommand.IpdCopyList, ("document", false) },
+            { IETMCommand.IpdDownloadPdf, ("report", false) },
             { IETMCommand.OrderCopy, ("document", false) },
             { IETMCommand.StepPrevious, ("arrow_left", false) },
             { IETMCommand.StepNext, ("arrow_right", false) },
@@ -208,6 +209,22 @@ namespace IETM.EditorTools
             }
             if (v.leftHandle == null && v.leftPanel != null) v.leftHandle = IETMUIBuilder.BuildPanelHandle(v.leftPanel, true);
             if (v.rightHandle == null && v.rightPanel != null) v.rightHandle = IETMUIBuilder.BuildPanelHandle(v.rightPanel, false);
+
+            // IPD figure card: "PDF" download button
+            IETMButton reset = null; bool hasPdf = false;
+            foreach (var b in v.GetComponentsInChildren<IETMButton>(true))
+            {
+                if (b.command == IETMCommand.IpdReset) reset = b;
+                if (b.command == IETMCommand.IpdDownloadPdf) hasPdf = true;
+            }
+            if (reset != null && !hasPdf)
+            {
+                var fb = (RectTransform)reset.transform.parent;
+                IETMUIBuilder.AddPdfButton(fb);
+                if (fb.sizeDelta.x < 250) fb.sizeDelta = new Vector2(250, fb.sizeDelta.y);
+                foreach (var t in new Graphic[] { v.figureTitle, v.figureIcn })
+                    if (t != null && t.rectTransform.sizeDelta.x > -270) t.rectTransform.sizeDelta = new Vector2(-270, t.rectTransform.sizeDelta.y);
+            }
 
             // header subtitle no longer runs into the buttons
             IETMUIBuilder.FitSubtitle(v.publicationSubtitle);

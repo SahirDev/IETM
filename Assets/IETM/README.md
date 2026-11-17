@@ -77,6 +77,17 @@ Buttons, layout and features are unchanged.
 
 ---
 
+## 1e. Printable IPC (PDF download)
+
+`Assets/StreamingAssets/IETM/32-20-00_Fig1_IPC.pdf` is a 7-page Illustrated Parts Catalog in the ATA 2200 / Cortona
+style: title page, Figure 1 Sheets 1-5 (assembly, exploded view, steering, retraction + drag brace, wheel & fork)
+with item callouts, and the parts list (FIG-ITEM, P/N, indented nomenclature, CAGE, SMR, UPA).
+
+* In the IETM: **PDF** button in the IPD figure card (`IETMCommand.IpdDownloadPdf`). Desktop/Editor copies it to
+  your *Downloads* folder and opens it; WebGL opens it in a new browser tab. File name: `IETM App > Ipd Pdf File`.
+* Existing scenes: run **IETM > Apply HELIOS Theme** once to add the button.
+* Regenerate after changing the JSON or model: `python Tools/ipc_pdf/make.py` (see `Tools/ipc_pdf/README.md`).
+
 ## 2. What you get
 
 | Area | Features |

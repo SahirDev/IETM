@@ -47,6 +47,8 @@ namespace IETM
         [Header("Start-up")]
         [Tooltip("Module opened at start (id from the JSON). Default: the title page.")]
         public string startModule = "DM-TITLE";
+        [Tooltip("Printable IPC (PDF) under Assets/StreamingAssets, opened by the 'PDF' button in the IPD figure card.")]
+        public string ipdPdfFile = "IETM/32-20-00_Fig1_IPC.pdf";
         [Tooltip("Show the item-number callouts when the IETM starts (toggle with the Callouts button or L).")]
         public bool calloutsOnAtStart = false;
 
@@ -319,6 +321,7 @@ namespace IETM
                 case IETMCommand.IpdSelectAll: if (db.items.Count > 0) Select(db.items[0], false, true); break;
                 case IETMCommand.IpdReset: ShowAll(); ClearSelection(); HomeView(); break;
                 case IETMCommand.IpdClearFilter: if (view.tableFilter) view.tableFilter.text = ""; ApplyTableFilter(); break;
+                case IETMCommand.IpdDownloadPdf: DownloadIpdPdf(); break;
                 case IETMCommand.IpdCopyList: GUIUtility.systemCopyBuffer = TableAsText(); Toast("Parts list copied (tab-separated)", Theme.Ok); break;
                 case IETMCommand.StepPrevious: StepPrev(); break;
                 case IETMCommand.StepNext: StepNext(); break;
