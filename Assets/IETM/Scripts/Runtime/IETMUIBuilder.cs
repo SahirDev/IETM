@@ -312,7 +312,7 @@ namespace IETM
             UIKit.Button(tb.transform, "Show all", IETMCommand.ShowAll, BtnStyle.Ghost, 12, 70, 34, "Show all hidden parts");
             v.xrayButton = UIKit.Button(tb.transform, "X-Ray", IETMCommand.XRay, BtnStyle.Ghost, 12, 56, 34, "Ghost everything except the selection  (X)");
             v.calloutsButton = UIKit.Button(tb.transform, "Callouts", IETMCommand.Callouts, BtnStyle.Ghost, 12, 70, 34, "Show item number callouts  (L)");
-            v.calloutsButton.On = true;
+            v.calloutsButton.On = false;
             UIKit.Divider(tb.transform, true);
             var el = UIKit.Label(tb.transform, "Explode", 12, Theme.Muted, TextAnchor.MiddleLeft, FontStyle.Normal, "Explode Label"); el.LE(50, 34);
             v.explodeSlider = UIKit.Slider(tb.transform, 0f, 110);

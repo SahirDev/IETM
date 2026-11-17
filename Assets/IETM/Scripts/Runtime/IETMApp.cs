@@ -47,7 +47,8 @@ namespace IETM
         [Header("Start-up")]
         [Tooltip("Module opened at start (id from the JSON). Default: the title page.")]
         public string startModule = "DM-TITLE";
-        public bool showCalloutsAtStart = true;
+        [Tooltip("Show the item-number callouts when the IETM starts (toggle with the Callouts button or L).")]
+        public bool calloutsOnAtStart = false;
 
         // ---- runtime state
         IETMDatabase db;
@@ -81,7 +82,7 @@ namespace IETM
             if (dataFile == null) dataFile = Resources.Load<TextAsset>("IETM/landing_gear_ietm");
             db = IETMDatabase.Load(dataFile);
             if (view != null) view.theme.Apply();
-            labelsOn = showCalloutsAtStart;
+            labelsOn = calloutsOnAtStart;
 
             EnsureEventSystem();
             SetupCameraAndLights();
