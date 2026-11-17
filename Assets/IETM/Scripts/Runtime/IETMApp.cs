@@ -1,5 +1,6 @@
 // IETM application controller (core logic).
-// The UI is built in code by the other IETMApp partial files: Layout, Content, Callouts.
+// The UI is pre-built in the Editor (IETM menu) and referenced through 'view' (IETMView).
+// If no UI was pre-built, it is created at runtime as a fallback.
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,14 +16,20 @@ namespace IETM
     [DefaultExecutionOrder(100)]
     public partial class IETMApp : MonoBehaviour
     {
-        [Header("3D Models (prefab assets or scene instances)")]
+        [Header("UI (pre-built by IETM > Build Landing Gear IETM Scene)")]
+        [Tooltip("The pre-built IETM UI. Leave empty to build the UI at runtime.")]
+        public IETMView view;
+
+        [Header("3D Models (scene instances or prefab assets)")]
         [Tooltip("Main model: landing gear in the EXTENDED position.")]
         public GameObject extendedModel;
-        [Tooltip("Optional: same gear in the RETRACTED/COLLAPSED position. Parts are matched by name.")]
+        [Tooltip("Optional: same gear in the RETRACTED/COLLAPSED position.")]
         public GameObject retractedModel;
-        [Tooltip("Fixed node used to align the retracted model with the extended model.")]
+        [Tooltip("True when the Editor builder already oriented/aligned the models and tagged the parts (IETMPart).")]
+        public bool modelPreconfigured;
+        [Tooltip("Node used to align the retracted model with the extended model (its parent = CAD assembly frame).")]
         public string alignNodeName = "F-16 Front Landing Gear";
-        [Tooltip("Rotate the model so the direction from the align node to this node points down (wheel at the bottom). Leave empty to keep the imported orientation.")]
+        [Tooltip("Auto-orientation: direction align node -> this node points down. Empty = keep imported orientation.")]
         public string downReferenceNode = "Wheel";
         [Tooltip("Extra rotation applied after auto-orientation (degrees).")]
         public Vector3 extraRotation = Vector3.zero;
@@ -36,6 +43,11 @@ namespace IETM
         public Shader ghostShader;
         public Camera viewerCamera;
         public Color backgroundColor = new Color(0.067f, 0.09f, 0.15f);
+
+        [Header("Start-up")]
+        [Tooltip("Module opened at start (id from the JSON, e.g. DM-IPD). Empty = first IPD module.")]
+        public string startModuleId = "DM-IPD";
+        public bool showCalloutsAtStart = true;
 
         // ---- runtime state
         IETMDatabase db;
@@ -54,11 +66,13 @@ namespace IETM
         bool navigatingHistory;
 
         // input
-        IPDItem uiHover; // item hovered in a list (table / tree / callout)
+        IPDItem uiHover;
         Vector2 downPos;
         bool clickCandidate;
         float lastClickTime;
         IPDItem lastClickItem;
+
+        public IETMDatabase Database => db;
 
         // ------------------------------------------------------------------ lifecycle
 
@@ -66,33 +80,25 @@ namespace IETM
         {
             if (dataFile == null) dataFile = Resources.Load<TextAsset>("IETM/landing_gear_ietm");
             db = IETMDatabase.Load(dataFile);
+            if (view != null) view.theme.Apply();
+            labelsOn = showCalloutsAtStart;
 
             EnsureEventSystem();
             SetupCameraAndLights();
 
-            var ext = Spawn(extendedModel, "Extended");
-            var ret = Spawn(retractedModel, "Retracted");
+            var ext = Spawn(extendedModel);
+            var ret = Spawn(retractedModel);
+            if (!modelPreconfigured && ext != null)
+                IETMModelSetup.OrientUpright(ext, alignNodeName, downReferenceNode, extraRotation);
 
-            OrientModel(ext);
-
-            model = new IETMModel(db, highlightShader, ghostShader)
-            {
-                selectColor = Theme.Accent,
-                hoverColor = Theme.Warn
-            };
+            model = new IETMModel(db, highlightShader, ghostShader) { selectColor = Theme.Accent, hoverColor = Theme.Warn };
             ModelVariant v0 = null;
             if (ext != null) v0 = model.AddVariant("Extended", ext);
-            if (ret != null)
-            {
-                if (v0 == null) model.AddVariant("Retracted", ret);
-                else model.AddVariant("Retracted", ret, v0, alignNodeName);
-            }
-            if (model.Active == null)
-            {
-                Debug.LogError("[IETM] No model assigned. Assign the extended landing gear prefab on IETMApp.");
-            }
+            if (ret != null) model.AddVariant("Retracted", ret, v0, alignNodeName, !modelPreconfigured);
+            if (model.Active == null) Debug.LogError("[IETM] No model assigned. Assign the extended landing gear on IETM App.");
 
-            BuildUI();
+            if (view == null) view = IETMUIBuilder.Build(db);
+            InitUI();
 
             if (model.Active != null)
             {
@@ -100,12 +106,13 @@ namespace IETM
                 vcam.Home(true);
             }
 
-            var ipd = db.modules.FirstOrDefault(m => m.type == "ipd") ?? db.modules.FirstOrDefault();
-            if (ipd != null) OpenModule(ipd);
-            Toast("IETM loaded  ·  " + db.items.Count + " IPD items  ·  " + (model.variants.Count) + " gear state(s)", Theme.Accent);
+            var start = db.modules.FirstOrDefault(m => m.id == startModuleId)
+                        ?? db.modules.FirstOrDefault(m => m.type == "ipd") ?? db.modules.FirstOrDefault();
+            if (start != null) OpenModule(start);
+            Toast("IETM loaded  ·  " + db.items.Count + " IPD items  ·  " + model.variants.Count + " gear state(s)", Theme.Accent);
         }
 
-        GameObject Spawn(GameObject src, string label)
+        static GameObject Spawn(GameObject src)
         {
             if (src == null) return null;
             GameObject go = src;
@@ -116,33 +123,6 @@ namespace IETM
             }
             go.SetActive(true);
             return go;
-        }
-
-        /// <summary>Puts the model under a pivot at the origin and stands it upright (wheel down).</summary>
-        void OrientModel(GameObject ext)
-        {
-            if (ext == null) return;
-            var pivot = new GameObject("IETM Model Pivot").transform;
-            var oldParent = ext.transform.parent;
-            pivot.SetParent(oldParent, false);
-            ext.transform.SetParent(pivot, true);
-            // (the retracted model is aligned to the extended one later, in IETMModel.AddVariant)
-
-            Transform top = null, bottom = null;
-            foreach (var t in ext.GetComponentsInChildren<Transform>(true))
-            {
-                if (top == null && t.name == alignNodeName) top = t;
-                if (bottom == null && !string.IsNullOrEmpty(downReferenceNode) && t.name == downReferenceNode) bottom = t;
-            }
-            if (top != null && bottom != null)
-            {
-                Vector3 a = top.position, b = bottom.position;
-                var rb = bottom.GetComponentInChildren<Renderer>();
-                if (rb != null) b = rb.bounds.center;
-                Vector3 dir = b - a;
-                if (dir.sqrMagnitude > 1e-10f) pivot.rotation = Quaternion.FromToRotation(dir.normalized, Vector3.down) * pivot.rotation;
-            }
-            pivot.rotation = Quaternion.Euler(extraRotation) * pivot.rotation;
         }
 
         void EnsureEventSystem()
@@ -170,18 +150,20 @@ namespace IETM
             viewerCamera.fieldOfView = 35f;
             if (!viewerCamera.TryGetComponent(out vcam)) vcam = viewerCamera.gameObject.AddComponent<ViewerCamera>();
 
-            bool hasDir = FindObjectsByType<Light>(FindObjectsSortMode.None).Any(l => l.type == LightType.Directional);
+            bool hasDir = FindObjectsByType<Light>(FindObjectsSortMode.None).Any(l => l.type == LightType.Directional && l.enabled);
             if (!hasDir)
             {
                 var key = new GameObject("IETM Key Light").AddComponent<Light>();
                 key.type = LightType.Directional; key.intensity = 1.2f; key.shadows = LightShadows.Soft;
                 key.transform.rotation = Quaternion.Euler(45f, -35f, 0f);
             }
-            // A soft fill light attached to the camera keeps the model readable from every angle.
-            var fill = new GameObject("IETM Camera Fill").AddComponent<Light>();
-            fill.type = LightType.Directional; fill.intensity = 0.45f; fill.shadows = LightShadows.None;
-            fill.transform.SetParent(viewerCamera.transform, false);
-            fill.transform.localRotation = Quaternion.Euler(10f, 15f, 0f);
+            if (viewerCamera.GetComponentInChildren<Light>() == null)
+            {
+                var fill = new GameObject("IETM Camera Fill").AddComponent<Light>();
+                fill.type = LightType.Directional; fill.intensity = 0.45f; fill.shadows = LightShadows.None;
+                fill.transform.SetParent(viewerCamera.transform, false);
+                fill.transform.localRotation = Quaternion.Euler(10f, 15f, 0f);
+            }
 
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Trilight;
             RenderSettings.ambientSkyColor = new Color(0.55f, 0.6f, 0.7f);
@@ -193,7 +175,7 @@ namespace IETM
 
         void Update()
         {
-            if (model == null) return;
+            if (model == null || view == null) return;
 
             SyncViewportRect();
             AnimatePanels();
@@ -201,18 +183,15 @@ namespace IETM
             bool typing = IsTyping();
             Vector2 mouse = InputCompat.MousePosition;
             bool overUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-            bool inViewport = viewportRT != null && RectTransformUtility.RectangleContainsScreenPoint(viewportRT, mouse, null) && !overUI && !modalOpen;
+            bool inViewport = RectTransformUtility.RectangleContainsScreenPoint(view.viewport, mouse, null) && !overUI && !modalOpen;
             vcam.PointerInViewport = inViewport;
             vcam.InputBlocked = typing;
 
-            // hover
             IPDItem hoverItem = null;
-            if (inViewport && !vcam.IsDragging)
-                hoverItem = model.Pick(viewerCamera.ScreenPointToRay(mouse));
+            if (inViewport && !vcam.IsDragging) hoverItem = model.Pick(viewerCamera.ScreenPointToRay(mouse));
             model.SetHover(inViewport ? hoverItem : uiHover);
             UpdateHoverTip(hoverItem, mouse);
 
-            // click (press + release without dragging)
             if (InputCompat.LeftDown && inViewport) { clickCandidate = true; downPos = mouse; }
             if (clickCandidate && (mouse - downPos).sqrMagnitude > 36f) clickCandidate = false;
             if (InputCompat.LeftUp && clickCandidate)
@@ -223,7 +202,6 @@ namespace IETM
                 lastClickTime = Time.unscaledTime; lastClickItem = hit;
                 if (hit != null)
                 {
-                    // Ctrl/Shift click on a selected leaf: select its parent assembly
                     if (InputCompat.Ctrl && hit.parent != null && hit.parent.parent != null) Select(hit.parent, false, dbl);
                     else Select(hit, false, dbl);
                 }
@@ -239,7 +217,7 @@ namespace IETM
 
         void LateUpdate()
         {
-            if (model == null) return;
+            if (model == null || view == null) return;
             UpdateCallouts();
         }
 
@@ -264,7 +242,7 @@ namespace IETM
             if (InputCompat.KeyDown(IKey.I)) ToggleIsolate();
             if (InputCompat.KeyDown(IKey.X)) ToggleXRay();
             if (InputCompat.KeyDown(IKey.L)) ToggleLabels();
-            if (InputCompat.KeyDown(IKey.E)) { explodeSlider.value = explodeSlider.value > 0.01f ? 0f : 0.6f; }
+            if (InputCompat.KeyDown(IKey.E)) ToggleExplode();
             if (InputCompat.KeyDown(IKey.R)) ToggleAutoRotate();
             if (InputCompat.KeyDown(IKey.Space)) ToggleGear();
             if (InputCompat.KeyDown(IKey.Slash)) ToggleHelp();
@@ -272,6 +250,68 @@ namespace IETM
             {
                 if (InputCompat.KeyDown(IKey.Right)) StepNext();
                 if (InputCompat.KeyDown(IKey.Left)) StepPrev();
+            }
+        }
+
+        // ------------------------------------------------------------------ commands (buttons)
+
+        public void Execute(IETMCommand c, string arg = null)
+        {
+            switch (c)
+            {
+                case IETMCommand.HistoryBack: HistoryGo(-1); break;
+                case IETMCommand.HistoryForward: HistoryGo(1); break;
+                case IETMCommand.OpenTitlePage: { var t = db.modules.FirstOrDefault(); if (t != null) OpenModule(t); } break;
+                case IETMCommand.OpenModule:
+                    {
+                        var m = db.modules.FirstOrDefault(x => x.id == arg);
+                        if (m != null) OpenModule(m); else Toast("Module not found: " + arg, Theme.Warn);
+                    }
+                    break;
+                case IETMCommand.SelectItem:
+                    {
+                        var it = db.Find(arg);
+                        if (it != null) Select(it, false, true); else Toast("Item not found: " + arg, Theme.Warn);
+                    }
+                    break;
+                case IETMCommand.ToggleLeftPanel: leftOpen = !leftOpen; break;
+                case IETMCommand.ToggleRightPanel: rightOpen = !rightOpen; break;
+                case IETMCommand.ToggleOrderList: ToggleCart(); break;
+                case IETMCommand.ToggleHelp: ToggleHelp(); break;
+                case IETMCommand.CloseDialogs: CloseModals(); break;
+                case IETMCommand.TabPublication: ShowLeftTab(0); break;
+                case IETMCommand.TabStructure: ShowLeftTab(1); break;
+                case IETMCommand.GearExtended: SetGear(0); break;
+                case IETMCommand.GearRetracted: SetGear(1); break;
+                case IETMCommand.ToggleGear: ToggleGear(); break;
+                case IETMCommand.HomeView: HomeView(); break;
+                case IETMCommand.FitSelection: FocusSelection(); break;
+                case IETMCommand.Isolate: ToggleIsolate(); break;
+                case IETMCommand.Hide: HideSelected(); break;
+                case IETMCommand.ShowAll: ShowAll(); break;
+                case IETMCommand.XRay: ToggleXRay(); break;
+                case IETMCommand.Callouts: ToggleLabels(); break;
+                case IETMCommand.AutoRotate: ToggleAutoRotate(); break;
+                case IETMCommand.ViewIso: vcam.SetPreset("iso"); break;
+                case IETMCommand.ViewFront: vcam.SetPreset("front"); break;
+                case IETMCommand.ViewSide: vcam.SetPreset("side"); break;
+                case IETMCommand.ViewTop: vcam.SetPreset("top"); break;
+                case IETMCommand.ZoomIn: vcam.Zoom(0.8f); break;
+                case IETMCommand.ZoomOut: vcam.Zoom(1.25f); break;
+                case IETMCommand.Snapshot: TakeSnapshot(); break;
+                case IETMCommand.ClearSelection: ClearSelection(); break;
+                case IETMCommand.ExplodeToggle: ToggleExplode(); break;
+                case IETMCommand.AddSelectionToOrder: AddToCart(selectedItem); break;
+                case IETMCommand.OrderClear: cart.Clear(); RefreshCart(); break;
+                case IETMCommand.OrderCopy: GUIUtility.systemCopyBuffer = CartAsText(); Toast("Order list copied (tab-separated)", Theme.Ok); break;
+                case IETMCommand.IpdSelectAll: if (db.items.Count > 0) Select(db.items[0], false, true); break;
+                case IETMCommand.IpdReset: ShowAll(); ClearSelection(); HomeView(); break;
+                case IETMCommand.IpdClearFilter: if (view.tableFilter) view.tableFilter.text = ""; ApplyTableFilter(); break;
+                case IETMCommand.IpdCopyList: GUIUtility.systemCopyBuffer = TableAsText(); Toast("Parts list copied (tab-separated)", Theme.Ok); break;
+                case IETMCommand.StepPrevious: StepPrev(); break;
+                case IETMCommand.StepNext: StepNext(); break;
+                case IETMCommand.StepRestart: StepGo(0); break;
+                case IETMCommand.RestoreParts: model.RestoreAll(); Toast("All removed parts restored", Theme.Ok); break;
             }
         }
 
@@ -307,7 +347,7 @@ namespace IETM
 
         void HomeView()
         {
-            vcam.autoRotate = false; if (autoRotateBtn != null) autoRotateBtn.On = false;
+            vcam.autoRotate = false; if (view.spinButton) view.spinButton.On = false;
             vcam.SetPreset("iso");
             vcam.Frame(model.VisibleBounds());
         }
@@ -326,38 +366,30 @@ namespace IETM
         void ShowAll()
         {
             model.ShowAll();
-            if (isolateBtn != null) isolateBtn.On = false;
+            SetOn(view.isolateButton, false);
             RefreshStructureTree();
         }
 
         void ToggleIsolate()
         {
-            if (model.isolated != null) { model.Isolate(null); isolateBtn.On = false; return; }
+            if (model.isolated != null) { model.Isolate(null); SetOn(view.isolateButton, false); return; }
             if (selectedItem == null) { Toast("Select a part or assembly to isolate", Theme.Muted); return; }
             model.Isolate(model.LeavesOf(selectedItem));
-            isolateBtn.On = true;
+            SetOn(view.isolateButton, true);
             FocusSelection();
         }
 
-        void ToggleXRay()
+        void ToggleXRay() { model.SetXRay(!model.xray); SetOn(view.xrayButton, model.xray); }
+        void ToggleLabels() { labelsOn = !labelsOn; SetOn(view.calloutsButton, labelsOn); }
+        void ToggleAutoRotate() { vcam.autoRotate = !vcam.autoRotate; SetOn(view.spinButton, vcam.autoRotate); }
+        void ToggleExplode()
         {
-            model.SetXRay(!model.xray);
-            xrayBtn.On = model.xray;
+            if (view.explodeSlider) view.explodeSlider.value = view.explodeSlider.value > 0.01f ? 0f : 0.6f;
+            else SetExplode(model.explode > 0.01f ? 0f : 0.6f);
         }
-
-        void ToggleLabels()
-        {
-            labelsOn = !labelsOn;
-            labelsBtn.On = labelsOn;
-        }
-
-        void ToggleAutoRotate()
-        {
-            vcam.autoRotate = !vcam.autoRotate;
-            autoRotateBtn.On = vcam.autoRotate;
-        }
-
         void ToggleGear() => SetGear(model.ActiveIndex == 0 ? 1 : 0);
+
+        static void SetOn(IETMButton b, bool on) { if (b != null) b.On = on; }
 
         void SetGear(int index)
         {
@@ -375,7 +407,7 @@ namespace IETM
         void SetExplode(float v)
         {
             model.SetExplode(v);
-            if (explodeValue != null) explodeValue.text = Mathf.RoundToInt(v * 100f) + "%";
+            if (view.explodeValue != null) view.explodeValue.text = Mathf.RoundToInt(v * 100f) + "%";
         }
 
         void TakeSnapshot()
@@ -398,7 +430,7 @@ namespace IETM
             {
                 model.RestoreAll();
                 model.Isolate(null);
-                if (isolateBtn != null) isolateBtn.On = false;
+                SetOn(view.isolateButton, false);
             }
             currentModule = m;
             BuildModuleContent();
@@ -414,6 +446,7 @@ namespace IETM
                 var it = db.Find(m.focus[0]);
                 if (it != null) { selectedItem = it; model.SetSelection(model.LeavesOf(it)); RefreshSelectionUI(true); }
             }
+            else RefreshSelectionUI(false);
             PushHistory();
         }
 
@@ -429,10 +462,8 @@ namespace IETM
             if (steps == null || steps.Length == 0) return;
             var step = steps[procStep];
 
-            // gear state first (bounds depend on it)
             if (!string.IsNullOrEmpty(step.gear)) SetGear(step.gear == "retracted" ? 1 : 0);
 
-            // cumulative removal state
             var removed = new HashSet<IPDItem>();
             for (int i = 0; i <= procStep; i++)
             {
@@ -443,18 +474,17 @@ namespace IETM
             }
             foreach (var l in db.Leaves()) model.SetRemoved(l, removed.Contains(l));
 
-            // focus / selection
             var focusLeaves = new List<IPDItem>();
             IPDItem first = null;
             if (step.focus != null)
-                foreach (var f in step.focus) { var it = db.Find(f); if (it == null) continue; first = first ?? it; focusLeaves.AddRange(model.LeavesOf(it)); }
+                foreach (var f in step.focus) { var it = db.Find(f); if (it == null) continue; if (first == null) first = it; focusLeaves.AddRange(model.LeavesOf(it)); }
 
-            selectedItem = step.focus != null && step.focus.Length == 1 ? first : (first != null ? first : null);
+            selectedItem = first;
             model.SetSelection(focusLeaves);
 
-            if (step.action == "isolate") { model.Isolate(focusLeaves); isolateBtn.On = true; }
-            else if (step.action == "remove" && first != null && first.parent != null) { model.Isolate(model.LeavesOf(first.parent)); isolateBtn.On = true; }
-            else { model.Isolate(null); isolateBtn.On = false; }
+            if (step.action == "isolate") { model.Isolate(focusLeaves); SetOn(view.isolateButton, true); }
+            else if (step.action == "remove" && first != null && first.parent != null) { model.Isolate(model.LeavesOf(first.parent)); SetOn(view.isolateButton, true); }
+            else { model.Isolate(null); SetOn(view.isolateButton, false); }
 
             if (!string.IsNullOrEmpty(step.view)) vcam.SetPreset(step.view);
             var frameSet = step.action == "remove" && first != null && first.parent != null ? model.LeavesOf(first.parent) : focusLeaves;
@@ -464,16 +494,16 @@ namespace IETM
             RefreshProcedureUI();
         }
 
-        // ------------------------------------------------------------------ cart (order list)
+        // ------------------------------------------------------------------ order list
 
         void AddToCart(IPDItem item)
         {
-            if (item == null) return;
+            if (item == null) { Toast("Select a part first", Theme.Muted); return; }
             var line = cart.FirstOrDefault(c => c.item == item);
             if (line != null) line.qty++;
             else
             {
-                int q = 1; int.TryParse(item.upa, out q); if (q <= 0) q = 1;
+                int.TryParse(item.upa, out int q); if (q <= 0) q = 1;
                 cart.Add(new CartLine { item = item, qty = q });
             }
             Toast("Added to order list:  " + item.partNumber, Theme.Ok);
@@ -485,6 +515,14 @@ namespace IETM
             var sb = new StringBuilder();
             sb.AppendLine("Item\tPart Number\tCAGE\tDescription\tQty");
             foreach (var c in cart) sb.AppendLine($"{c.item.itemNo}\t{c.item.partNumber}\t{c.item.cage}\t{c.item.description}\t{c.qty}");
+            return sb.ToString();
+        }
+
+        string TableAsText()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Item\tISN\tCAGE\tPart Number\tDescription\tUPA");
+            foreach (var it in db.items) sb.AppendLine($"{it.itemNo}\t{it.isn}\t{it.cage}\t{it.partNumber}\t{it.IndentedDescription}\t{it.upa}");
             return sb.ToString();
         }
 

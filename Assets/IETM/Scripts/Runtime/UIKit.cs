@@ -1,10 +1,10 @@
-// Code-only uGUI toolkit: theme, generated rounded sprites, and widget factories.
-// Everything is generated at runtime so the IETM needs no prefabs, sprites or fonts.
+// Code-only uGUI toolkit: theme, rounded sprites and widget factories.
+// Used by IETMUIBuilder both in the Editor (to pre-build the UI into the scene)
+// and at runtime (fallback when no pre-built UI exists).
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace IETM
@@ -34,11 +34,21 @@ namespace IETM
             return c;
         }
 
+        public static string ToHex(Color c) => "#" + ColorUtility.ToHtmlStringRGB(c);
+
         public static Color A(this Color c, float a) { c.a = a; return c; }
     }
 
+    public enum BtnStyle { Ghost, Solid, Accent, Danger, Chip }
+
     public static class UIKit
     {
+        // ---------------------------------------------------------------- sprites / font
+
+        /// <summary>Editor hook: return persistent sprite assets instead of runtime-generated ones.</summary>
+        public static Func<int, Sprite> RoundedOverride;
+        public static Func<Sprite> CircleOverride;
+
         static Font font;
         public static Font Font
         {
@@ -56,11 +66,24 @@ namespace IETM
         static readonly Dictionary<int, Sprite> rounded = new Dictionary<int, Sprite>();
         static Sprite circle;
 
+        public static int ClampRadius(int r) => Mathf.Clamp(r, 1, 32);
+
         /// <summary>9-sliced rounded rectangle sprite with the given corner radius (px).</summary>
         public static Sprite Rounded(int radius)
         {
-            radius = Mathf.Clamp(radius, 1, 32);
+            radius = ClampRadius(radius);
+            if (RoundedOverride != null) { var o = RoundedOverride(radius); if (o != null) return o; }
             if (rounded.TryGetValue(radius, out var s) && s != null) return s;
+            var tex = RoundedTexture(radius);
+            int b = radius + 1;
+            s = Sprite.Create(tex, new UnityEngine.Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(b, b, b, b));
+            s.name = tex.name;
+            rounded[radius] = s;
+            return s;
+        }
+
+        public static Texture2D RoundedTexture(int radius)
+        {
             int size = radius * 2 + 4;
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, filterMode = FilterMode.Bilinear, name = "IETM_Round" + radius };
             var px = new Color32[size * size];
@@ -75,30 +98,35 @@ namespace IETM
                 }
             tex.SetPixels32(px);
             tex.Apply();
-            int b = radius + 1;
-            s = Sprite.Create(tex, new UnityEngine.Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, new Vector4(b, b, b, b));
-            rounded[radius] = s;
-            return s;
+            return tex;
+        }
+
+        public static Texture2D CircleTexture()
+        {
+            int size = 64;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "IETM_Circle" };
+            var px = new Color32[size * size];
+            float r = size * 0.5f;
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(r, r));
+                    float a = Mathf.Clamp01(r - d);
+                    px[y * size + x] = new Color32(255, 255, 255, (byte)(a * 255));
+                }
+            tex.SetPixels32(px); tex.Apply();
+            return tex;
         }
 
         public static Sprite Circle
         {
             get
             {
+                if (CircleOverride != null) { var o = CircleOverride(); if (o != null) return o; }
                 if (circle != null) return circle;
-                int size = 64;
-                var tex = new Texture2D(size, size, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "IETM_Circle" };
-                var px = new Color32[size * size];
-                float r = size * 0.5f;
-                for (int y = 0; y < size; y++)
-                    for (int x = 0; x < size; x++)
-                    {
-                        float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(r, r));
-                        float a = Mathf.Clamp01(r - d);
-                        px[y * size + x] = new Color32(255, 255, 255, (byte)(a * 255));
-                    }
-                tex.SetPixels32(px); tex.Apply();
-                circle = Sprite.Create(tex, new UnityEngine.Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+                var tex = CircleTexture();
+                circle = Sprite.Create(tex, new UnityEngine.Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                circle.name = tex.name;
                 return circle;
             }
         }
@@ -196,41 +224,36 @@ namespace IETM
             return t;
         }
 
-        public class Btn
+        /// <summary>Button wired to an IETM command (connected automatically at Play).</summary>
+        public static IETMButton Button(Transform parent, string text, IETMCommand command, BtnStyle style = BtnStyle.Ghost, int fontSize = 13, float width = -1, float height = 32, string tooltip = null, string argument = null)
         {
-            public UnityEngine.UI.Button button;
-            public Image bg;
-            public Text label;
-            public Color normal, hover, active;
-            bool on;
-            public bool On
-            {
-                get => on;
-                set { on = value; Apply(); }
-            }
-            public void Apply()
-            {
-                var cb = button.colors;
-                cb.normalColor = on ? active : normal;
-                cb.highlightedColor = on ? Color.Lerp(active, Color.white, 0.12f) : hover;
-                cb.selectedColor = cb.normalColor;
-                cb.pressedColor = Color.Lerp(active, Color.black, 0.15f);
-                cb.colorMultiplier = 1f;
-                cb.fadeDuration = 0.08f;
-                button.colors = cb;
-                if (label) label.color = on ? Theme.Bg : Theme.Text;
-            }
+            var b = MakeButton(parent, text, style, fontSize, width, height, tooltip);
+            b.command = command;
+            b.argument = argument;
+            return b;
         }
 
-        public enum BtnStyle { Ghost, Solid, Accent, Danger, Chip }
-
-        public static Btn Button(Transform parent, string text, UnityAction onClick, BtnStyle style = BtnStyle.Ghost, int fontSize = 13, float width = -1, float height = 32, string tooltip = null)
+        /// <summary>Button with a code listener (runtime-only, e.g. inside generated list rows).</summary>
+        public static IETMButton Button(Transform parent, string text, UnityAction onClick, BtnStyle style = BtnStyle.Ghost, int fontSize = 13, float width = -1, float height = 32, string tooltip = null)
         {
-            var b = new Btn();
-            b.bg = Panel(parent, Color.white, style == BtnStyle.Chip ? 12 : 7, "Btn_" + text);
-            b.button = b.bg.gameObject.AddComponent<UnityEngine.UI.Button>();
-            b.button.targetGraphic = b.bg;
-            var nav = b.button.navigation; nav.mode = Navigation.Mode.None; b.button.navigation = nav;
+            var b = MakeButton(parent, text, style, fontSize, width, height, tooltip);
+            if (onClick != null) b.button.onClick.AddListener(onClick);
+            return b;
+        }
+
+        static IETMButton MakeButton(Transform parent, string text, BtnStyle style, int fontSize, float width, float height, string tooltip)
+        {
+            var bg = Panel(parent, Color.white, style == BtnStyle.Chip ? 12 : 7, "Btn " + text);
+            var button = bg.gameObject.AddComponent<UnityEngine.UI.Button>();
+            button.targetGraphic = bg;
+            var nav = button.navigation; nav.mode = Navigation.Mode.None; button.navigation = nav;
+
+            var label = Label(bg.transform, text, fontSize, Theme.Text, TextAnchor.MiddleCenter, style == BtnStyle.Accent ? FontStyle.Bold : FontStyle.Normal);
+            label.rectTransform.Stretch(8, 0, 8, 0);
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
+
+            var b = bg.gameObject.AddComponent<IETMButton>();
+            b.button = button; b.background = bg; b.label = label;
             switch (style)
             {
                 case BtnStyle.Ghost: b.normal = Theme.Panel2; b.hover = Theme.Panel3; b.active = Theme.Accent; break;
@@ -239,25 +262,23 @@ namespace IETM
                 case BtnStyle.Danger: b.normal = Theme.Danger.A(0.25f); b.hover = Theme.Danger.A(0.45f); b.active = Theme.Danger; break;
                 case BtnStyle.Chip: b.normal = Theme.Panel3; b.hover = Theme.Border; b.active = Theme.Accent; break;
             }
-            b.label = Label(b.bg.transform, text, fontSize, style == BtnStyle.Accent ? Theme.Bg : Theme.Text, TextAnchor.MiddleCenter, style == BtnStyle.Accent ? FontStyle.Bold : FontStyle.Normal);
-            b.label.rectTransform.Stretch(8, 0, 8, 0);
-            b.label.horizontalOverflow = HorizontalWrapMode.Overflow;
+            b.labelColor = style == BtnStyle.Accent ? Theme.Bg : Theme.Text;
+            b.labelOnColor = Theme.Bg;
             b.Apply();
-            if (style == BtnStyle.Accent) b.label.color = Theme.Bg;
-            if (onClick != null) b.button.onClick.AddListener(onClick);
-            float pw = width > 0 ? width : b.label.preferredWidth + 26f;
-            b.bg.LE(pw, height, -1, -1, width > 0 ? width : -1, height > 0 ? height : -1);
-            if (!string.IsNullOrEmpty(tooltip)) b.bg.gameObject.AddComponent<UITooltip>().text = tooltip;
+
+            float pw = width > 0 ? width : label.preferredWidth + 26f;
+            bg.LE(pw, height, -1, -1, width > 0 ? width : -1, height > 0 ? height : -1);
+            if (!string.IsNullOrEmpty(tooltip)) bg.gameObject.AddComponent<UITooltip>().text = tooltip;
             return b;
         }
 
-        public static ScrollRect Scroll(Transform parent, out RectTransform content, string name = "Scroll", bool horizontal = false)
+        public static ScrollRect Scroll(Transform parent, out RectTransform content, string name = "Scroll")
         {
             var root = Rect(name, parent);
             var bg = root.gameObject.AddComponent<Image>();
             bg.color = new Color(0, 0, 0, 0); // catches scroll events
             var sr = root.gameObject.AddComponent<ScrollRect>();
-            sr.horizontal = horizontal; sr.vertical = true;
+            sr.horizontal = false; sr.vertical = true;
             sr.movementType = ScrollRect.MovementType.Clamped;
             sr.scrollSensitivity = 30f;
             sr.inertia = true; sr.decelerationRate = 0.12f;
@@ -271,7 +292,6 @@ namespace IETM
             content.anchoredPosition = Vector2.zero; content.sizeDelta = new Vector2(0, 0);
             sr.content = content;
 
-            // slim scrollbar
             var sbRt = Rect("Scrollbar", root);
             sbRt.anchorMin = new Vector2(1, 0); sbRt.anchorMax = new Vector2(1, 1); sbRt.pivot = new Vector2(1, 0.5f);
             sbRt.sizeDelta = new Vector2(6, 0); sbRt.anchoredPosition = new Vector2(-1, 0);
@@ -287,7 +307,7 @@ namespace IETM
             return sr;
         }
 
-        public static InputField Input(Transform parent, string placeholder, UnityAction<string> onChanged = null, float height = 32)
+        public static InputField Input(Transform parent, string placeholder, float height = 32)
         {
             var bg = Panel(parent, Theme.Bg, 8, "Input");
             bg.Border(Theme.Border);
@@ -302,12 +322,11 @@ namespace IETM
             f.caretColor = Theme.Accent; f.selectionColor = Theme.Accent.A(0.3f);
             f.customCaretColor = true;
             var nav = f.navigation; nav.mode = Navigation.Mode.None; f.navigation = nav;
-            if (onChanged != null) f.onValueChanged.AddListener(onChanged);
             bg.LE(-1, height, 1, -1, -1, height);
             return f;
         }
 
-        public static Slider Slider(Transform parent, float value, UnityAction<float> onChanged, float width = 120)
+        public static Slider Slider(Transform parent, float value, float width = 120)
         {
             var root = Rect("Slider", parent);
             root.LE(width, 24, -1, -1, width, 24);
@@ -327,7 +346,6 @@ namespace IETM
             s.direction = UnityEngine.UI.Slider.Direction.LeftToRight;
             s.minValue = 0; s.maxValue = 1; s.value = value;
             var nav = s.navigation; nav.mode = Navigation.Mode.None; s.navigation = nav;
-            if (onChanged != null) s.onValueChanged.AddListener(onChanged);
             return s;
         }
 
@@ -338,20 +356,30 @@ namespace IETM
             return d;
         }
 
+        /// <summary>Destroys all children (works in edit mode and play mode).</summary>
         public static void Clear(Transform t)
         {
             for (int i = t.childCount - 1; i >= 0; i--)
             {
                 var g = t.GetChild(i).gameObject;
                 g.SetActive(false);
-                UnityEngine.Object.Destroy(g);
+                if (Application.isPlaying) UnityEngine.Object.Destroy(g);
+                else UnityEngine.Object.DestroyImmediate(g);
             }
         }
 
-        /// <summary>Adds hover enter/exit + click callbacks to any graphic.</summary>
         public static PointerHooks Hooks(this Component c)
         {
             return c.TryGetComponent<PointerHooks>(out var h) ? h : c.gameObject.AddComponent<PointerHooks>();
+        }
+
+        /// <summary>Instantiate a template row (inactive in the Templates container) under a parent.</summary>
+        public static UIRefs Spawn(UIRefs template, Transform parent)
+        {
+            var r = UnityEngine.Object.Instantiate(template, parent, false);
+            r.name = template.name.Replace("Template ", "");
+            r.gameObject.SetActive(true);
+            return r;
         }
     }
 }

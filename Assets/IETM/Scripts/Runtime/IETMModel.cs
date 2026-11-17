@@ -96,61 +96,60 @@ namespace IETM
 
         // ------------------------------------------------------------------ binding
 
-        public ModelVariant AddVariant(string name, GameObject root, ModelVariant alignTo = null, string alignNode = null)
+        /// <summary>
+        /// Registers a model variant (gear state). Parts are found through IETMPart components
+        /// (set up in the Editor) or, if the model has none, through the node names in the IPD data.
+        /// </summary>
+        public ModelVariant AddVariant(string name, GameObject root, ModelVariant alignTo = null, string alignNode = null, bool align = true)
         {
             var v = new ModelVariant { name = name, root = root };
             if (root == null) return v;
 
-            // Align this variant with the reference variant using a fixed node (e.g. the strut housing).
-            if (alignTo != null && alignTo.root != null && !string.IsNullOrEmpty(alignNode))
-            {
-                // Align the *parent* frames (the CAD assembly frame): both CAD exports share it,
-                // even though the parts themselves move between the extended and retracted states.
-                var a = FindFirst(alignTo.root.transform, alignNode);
-                var b = FindFirst(root.transform, alignNode);
-                if (a != null && b != null && a.parent != null && b.parent != null) { a = a.parent; b = b.parent; }
-                if (a != null && b != null)
-                {
-                    Quaternion dq = a.rotation * Quaternion.Inverse(b.rotation);
-                    root.transform.rotation = dq * root.transform.rotation;
-                    root.transform.position += a.position - b.position;
-                }
-            }
+            if (align && alignTo != null && alignTo.root != null)
+                IETMModelSetup.AlignToReference(root, alignTo.root, alignNode);
 
+            var partMap = IETMModelSetup.PartMap(root);
             var all = root.GetComponentsInChildren<Transform>(true);
             foreach (var item in db.Leaves())
             {
                 var pb = new PartBinding { item = item };
-                foreach (var nodeName in item.nodes)
+                var nodes = new List<Transform>();
+                if (partMap.Count > 0)
                 {
-                    foreach (var t in all)
+                    if (partMap.TryGetValue(item.itemNo, out var tagged)) nodes.AddRange(tagged);
+                }
+                else
+                {
+                    foreach (var nodeName in item.nodes)
+                        foreach (var t in all) if (t.name == nodeName) nodes.Add(t);
+                }
+
+                foreach (var t in nodes)
+                {
+                    if (pb.nodes.Contains(t)) continue;
+                    pb.nodes.Add(t);
+                    pb.baseLocal.Add(t.localPosition);
+                    foreach (var r in t.GetComponentsInChildren<Renderer>(true))
                     {
-                        if (t.name != nodeName) continue;
-                        if (pb.nodes.Contains(t)) continue;
-                        pb.nodes.Add(t);
-                        pb.baseLocal.Add(t.localPosition);
-                        foreach (var r in t.GetComponentsInChildren<Renderer>(true))
+                        if (pb.renderers.Contains(r)) continue;
+                        pb.renderers.Add(r);
+                        pb.originals.Add(r.sharedMaterials);
+                        var col = r.GetComponent<Collider>();
+                        if (col == null)
                         {
-                            if (pb.renderers.Contains(r)) continue;
-                            pb.renderers.Add(r);
-                            pb.originals.Add(r.sharedMaterials);
-                            var col = r.GetComponent<Collider>();
-                            if (col == null)
+                            var mf = r.GetComponent<MeshFilter>();
+                            if (mf != null && mf.sharedMesh != null && mf.sharedMesh.isReadable)
                             {
-                                var mf = r.GetComponent<MeshFilter>();
-                                if (mf != null && mf.sharedMesh != null && mf.sharedMesh.isReadable)
-                                {
-                                    var mc = r.gameObject.AddComponent<MeshCollider>();
-                                    mc.sharedMesh = mf.sharedMesh;
-                                    col = mc;
-                                }
-                                else col = r.gameObject.AddComponent<BoxCollider>();
+                                var mc = r.gameObject.AddComponent<MeshCollider>();
+                                mc.sharedMesh = mf.sharedMesh;
+                                col = mc;
                             }
-                            v.byCollider[col] = pb;
+                            else col = r.gameObject.AddComponent<BoxCollider>();
                         }
+                        v.byCollider[col] = pb;
                     }
                 }
-                if (!pb.IsBound) Debug.LogWarning($"[IETM] Item {item.itemNo} '{item.description}' not bound in variant '{name}' (nodes: {string.Join(", ", item.nodes)})");
+                if (!pb.IsBound) Debug.LogWarning($"[IETM] Item {item.itemNo} '{item.description}' has no model part in '{name}'.");
                 v.parts[item] = pb;
             }
 
@@ -174,12 +173,6 @@ namespace IETM
             else root.SetActive(false);
             dirty = true;
             return v;
-        }
-
-        static Transform FindFirst(Transform root, string name)
-        {
-            foreach (var t in root.GetComponentsInChildren<Transform>(true)) if (t.name == name) return t;
-            return null;
         }
 
         public void SetVariant(int index)

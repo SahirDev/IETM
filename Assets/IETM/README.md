@@ -6,20 +6,38 @@ Tested target: **Unity 6000.3, URP, Input System**. That is the setup in your pr
 
 ---
 
-## 1. Install (2 minutes)
+## 1. Set up: UI and model pre-built in the Editor
 
-1. Copy the `IETM` folder into your project's `Assets/` folder. You should get `Assets/IETM/Scripts`, `Assets/IETM/Shaders` and `Assets/IETM/Resources`.
-2. Wait for Unity to compile.
-3. In the menu, choose **IETM ▸ Build Landing Gear IETM Scene**.
-   * This creates `Assets/IETM/Scenes/LandingGear_IETM.unity`.
-   * It places both models: *Extended* (main) and *Collapsed* (used as the "Retracted" state).
-   * It adds the camera, the light and the `IETM App` object, with all references set.
-   * It adds the scene to Build Settings.
-4. Press **Play**.
+1. Open the project in Unity 6000.3 and wait for it to compile.
+2. The first time, Unity asks **"Build the Landing Gear IETM scene now?"**. Click **Build scene**. You can also run **IETM ▸ Build Landing Gear IETM Scene** from the menu at any time.
+3. This creates `Assets/IETM/Scenes/LandingGear_IETM.unity` with:
+   * **IETM Canvas**: the complete UI as normal GameObjects (top bar, panels, toolbar, part card, dialogs). It's already filled with the parts list and trees so it looks finished in the **Game view** before you press Play.
+   * **Landing Gear**: both models, already oriented upright and aligned with each other. Each part has an **IETM Part** component showing its IPD item number. Colliders are added for picking.
+   * **IETM Camera**, lights, **EventSystem**, and **IETM App** with all references set.
+4. Press **Play** to run the IETM.
 
-The builder finds the models by name (`F-16 Front Landing Gear Assembly Extended` and `... Collapsed`), wherever they are in the project.
+> If you open a scene where IETM App has no UI assigned, the UI is generated at Play instead, as in the first version.
 
-> Manual setup: create an empty GameObject, add `IETMApp` and drag the Extended prefab into **Extended Model**. The Collapsed prefab in **Retracted Model** is optional. Everything else (camera, lights, UI, EventSystem) is created at runtime.
+---
+
+## 1b. Editing in the Editor (no code)
+
+| I want to… | Do this |
+|---|---|
+| Move, resize or recolour a panel, button or text | Select it under **IETM Canvas** and edit its RectTransform, Image or Text in the Inspector. The Game view shows the result. |
+| Change what a button does | Select the button. In **IETM Button**, pick a **Command** (Isolate, X-Ray, Next step…). For **OpenModule** set **Argument** to a module id (e.g. `DM-WHEEL-RI`); for **SelectItem** set it to an item number (e.g. `230`). |
+| Add a new button | Duplicate an existing button (Ctrl+D), move it, set its Command and Argument. It's wired automatically at Play. |
+| Change a button's colours | **IETM Button**: Normal / Hover / Active (toggled on) / Label colours |
+| Restyle the generated rows (parts table, trees, steps, order list, callouts, toasts) | IETM App Inspector ▸ **Show Row Templates**, then edit the objects named `Template …`. Every row created at Play is a copy. Keep the keys in each template's **UI Refs** list. |
+| Change selection, hover and row colours | Select **IETM Canvas** ▸ **IETM View** ▸ **Theme** |
+| Remap a model part to another IPD item | Select the part node under **Landing Gear** ▸ **IETM Part** ▸ change **Item No** |
+| Edit part numbers, descriptions, modules or procedure steps | Edit `Resources/IETM/landing_gear_ietm.json`, then IETM App ▸ **Refresh Preview Content** (Editor preview only; Play always reads the JSON) |
+| Start in another module | IETM App ▸ **Start Module Id** |
+| Start from a fresh UI | IETM App ▸ **Rebuild UI**. This replaces your UI edits. |
+
+The IETM App Inspector has buttons for **Rebuild UI**, **Refresh Preview Content**, **Select UI**, **Re-tag Model Parts From Data**, **Open Data (JSON)** and **Show Row Templates**. The same actions are also in the **IETM** menu.
+
+**What stays live (Play mode only):** callout positions, hover highlighting, the camera, the explode and removal animations, toasts, search results, and the procedure player. These use the objects and templates you edited.
 
 ---
 
@@ -84,19 +102,26 @@ IETM/
   Shaders/IETM_Highlight.shader           selection / hover (lit + fresnel rim)
   Shaders/IETM_Ghost.shader               X-ray / isolate context (transparent fresnel)
   Scripts/Runtime/
-    IETMApp.cs            controller: selection, viewer commands, procedures, history, order list
-    IETMApp.Layout.cs     UI shell: top bar, panels, viewport overlays, modals, toasts, search
-    IETMApp.Content.cs    publication tree, structure tree, IPD table, description, procedure views
-    IETMApp.Callouts.cs   item-number balloons with leader lines
+    IETMApp.cs            controller: commands, selection, viewer, procedures, history, order list
+    IETMApp.UI.cs         drives the pre-built UI: wiring, lists from templates, dialogs, toasts, search
+    IETMApp.Callouts.cs   item-number balloons with leader lines (from the callout template)
+    IETMUIBuilder.cs      builds the UI hierarchy + row templates (Editor menu, or runtime fallback)
+    IETMView.cs           references to every UI element + theme colours (on IETM Canvas)
+    IETMButton.cs         styled button with an Inspector-selectable Command
+    UIRefs.cs             named references inside a row template
+    IETMPart.cs           marks a model node as an IPD item
+    IETMModelSetup.cs     orient / align / colliders / part tagging helpers
     IETMModel.cs          model binding, highlight/ghost/hide, explode, removal animation, picking, gear states
     IETMData.cs           JSON data model (S1000D / ATA iSpec 2200 style)
     ViewerCamera.cs       orbit / pan / zoom camera with smooth framing
     UIKit.cs              code-only UI toolkit (theme, rounded sprites, widgets)
     PointerHooks.cs, UITooltip.cs, InputCompat.cs
-  Scripts/Editor/IETMSceneBuilder.cs      menu: IETM > Build Landing Gear IETM Scene
+  Scripts/Editor/IETMSceneBuilder.cs      IETM menu: build scene, rebuild UI, refresh preview, re-tag parts
+  Scripts/Editor/IETMAppEditor.cs         IETM App inspector buttons
+  UI/Sprites/                             rounded-corner sprites (generated on first build)
 ```
 
-The whole UI is generated in code: there are no prefabs, sprites or fonts to wire up. To restyle it, change the colours in `Theme` (`UIKit.cs`). Layout sizes are in `IETMApp.Layout.cs` (`TOP`, `LEFT`, `RIGHT`, `STATUS`).
+The default look comes from `Theme` (`UIKit.cs`) and `IETMUIBuilder.cs`. After the scene is built, edit everything in the Inspector instead. Panel sizes are read from the scene, so resizing the left or right panel in the Editor works, including the collapse animation.
 
 ## 5. Notes
 

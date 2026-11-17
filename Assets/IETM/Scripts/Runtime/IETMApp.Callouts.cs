@@ -1,4 +1,5 @@
 // Item-number callouts (IPC balloons with leader lines) drawn over the 3D viewport.
+// Each callout is a clone of the "Template Callout" (restyle it in the Editor).
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,46 +14,43 @@ namespace IETM
             public RectTransform balloon, line, dot;
             public Image balloonImg, lineImg, dotImg;
             public Text text;
+            public Color balloonColor, lineColor, dotColor, textColor;
         }
 
         readonly List<Callout> callouts = new List<Callout>();
+        bool calloutsBuilt;
 
         void EnsureCallouts()
         {
-            if (callouts.Count > 0 || calloutLayer == null) return;
+            if (calloutsBuilt || view.calloutLayer == null || view.tplCallout == null) return;
+            calloutsBuilt = true;
             foreach (var leaf in db.Leaves())
             {
-                var c = new Callout { item = leaf };
-                c.lineImg = UIKit.Panel(calloutLayer, Theme.Text.A(0.5f), 0, "Leader " + leaf.itemNo, false);
-                c.line = c.lineImg.rectTransform;
-                c.line.anchorMin = c.line.anchorMax = Vector2.zero;
-                c.line.pivot = new Vector2(0, 0.5f);
-
-                c.dotImg = UIKit.Panel(calloutLayer, Theme.Text, 0, "Dot", false);
-                c.dotImg.sprite = UIKit.Circle;
-                c.dot = c.dotImg.rectTransform;
-                c.dot.anchorMin = c.dot.anchorMax = Vector2.zero;
-                c.dot.sizeDelta = new Vector2(6, 6);
-
-                c.balloonImg = UIKit.Panel(calloutLayer, Theme.Panel, 0, "Balloon " + leaf.itemNo, true);
-                c.balloonImg.sprite = UIKit.Circle;
-                c.balloon = c.balloonImg.rectTransform;
-                c.balloon.anchorMin = c.balloon.anchorMax = Vector2.zero;
-                c.balloon.sizeDelta = new Vector2(30, 30);
-                var ring = c.balloonImg.gameObject.AddComponent<Outline>();
-                ring.effectColor = Theme.Accent.A(0.8f); ring.effectDistance = new Vector2(1.5f, -1.5f);
-                c.text = UIKit.Label(c.balloon, leaf.CalloutNo, 11, Theme.Text, TextAnchor.MiddleCenter, FontStyle.Bold);
-                c.text.rectTransform.Stretch();
-                c.text.horizontalOverflow = HorizontalWrapMode.Overflow;
-
                 var item = leaf;
-                var h = c.balloonImg.gameObject.AddComponent<PointerHooks>();
+                var r = UIKit.Spawn(view.tplCallout, view.calloutLayer);
+                r.name = "Callout " + leaf.itemNo;
+                ((RectTransform)r.transform).Stretch();
+                var c = new Callout
+                {
+                    item = leaf,
+                    balloonImg = r.Get<Image>("balloon"),
+                    lineImg = r.Get<Image>("line"),
+                    dotImg = r.Get<Image>("dot"),
+                    text = r.Get<Text>("text"),
+                };
+                c.balloon = c.balloonImg.rectTransform; c.line = c.lineImg.rectTransform; c.dot = c.dotImg.rectTransform;
+                c.balloonColor = c.balloonImg.color; c.lineColor = c.lineImg.color; c.dotColor = c.dotImg.color; c.textColor = c.text.color;
+                c.text.text = leaf.CalloutNo;
+
+                var h = c.balloonImg.Hooks();
                 h.onEnter = () => uiHover = item;
                 h.onExit = () => uiHover = null;
                 h.onClick = () => Select(item, false);
                 h.onDoubleClick = () => Select(item, false, true);
-                c.balloonImg.gameObject.AddComponent<UITooltip>().text = item.partNumber + "  ·  " + item.description;
+                if (!c.balloonImg.TryGetComponent<UITooltip>(out var tip)) tip = c.balloonImg.gameObject.AddComponent<UITooltip>();
+                tip.text = item.partNumber + "  ·  " + item.description;
                 callouts.Add(c);
+                SetCalloutActive(c, false);
             }
         }
 
@@ -61,9 +59,9 @@ namespace IETM
             EnsureCallouts();
             if (callouts.Count == 0 || model.Active == null) return;
 
-            var rect = calloutLayer.rect;
+            var rect = view.calloutLayer.rect;
             Vector2 center = rect.size * 0.5f;
-            float scale = canvas != null ? canvas.scaleFactor : 1f;
+            float scale = view.canvas != null ? view.canvas.scaleFactor : 1f;
             var vpScreen = viewerCamera.pixelRect;
 
             foreach (var c in callouts)
@@ -91,33 +89,29 @@ namespace IETM
                 c.dot.anchoredPosition = anchor;
 
                 Vector2 d = pos - anchor;
-                float dist = Mathf.Max(0f, d.magnitude - 15f);
+                float dist = Mathf.Max(0f, d.magnitude - c.balloon.rect.width * 0.5f);
                 c.line.anchoredPosition = anchor;
-                c.line.sizeDelta = new Vector2(dist, 1.5f);
+                c.line.sizeDelta = new Vector2(dist, c.line.sizeDelta.y);
                 c.line.localRotation = Quaternion.Euler(0, 0, Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg);
 
                 bool sel = model.selected.Contains(c.item);
                 bool hov = model.hovered == c.item;
-                Color col = sel ? Theme.Accent : hov ? Theme.Warn : Theme.Panel;
                 bool dim = model.selected.Count > 0 && !sel && !hov;
-                c.balloonImg.color = dim ? col.A(0.55f) : col;
-                c.text.color = sel || hov ? Theme.Bg : (dim ? Theme.Muted : Theme.Text);
-                c.lineImg.color = (sel ? Theme.Accent : hov ? Theme.Warn : Theme.Text).A(sel || hov ? 0.9f : 0.45f);
-                c.dotImg.color = sel ? Theme.Accent : hov ? Theme.Warn : Theme.Text.A(0.8f);
+                Color col = sel ? Theme.Accent : hov ? Theme.Warn : c.balloonColor;
+                c.balloonImg.color = dim ? col.A(col.a * 0.55f) : col;
+                c.text.color = sel || hov ? Theme.Bg : (dim ? Theme.Muted : c.textColor);
+                c.lineImg.color = sel ? Theme.Accent.A(0.9f) : hov ? Theme.Warn.A(0.9f) : c.lineColor;
+                c.dotImg.color = sel ? Theme.Accent : hov ? Theme.Warn : c.dotColor;
                 float s = sel || hov ? 1.15f : 1f;
                 c.balloon.localScale = new Vector3(s, s, 1);
-                if (sel || hov) c.balloon.SetAsLastSibling();
+                if (sel || hov) c.balloon.parent.SetAsLastSibling();
             }
         }
 
         static void SetCalloutActive(Callout c, bool on)
         {
-            if (c.balloon.gameObject.activeSelf != on)
-            {
-                c.balloon.gameObject.SetActive(on);
-                c.line.gameObject.SetActive(on);
-                c.dot.gameObject.SetActive(on);
-            }
+            var go = c.balloon.parent.gameObject;
+            if (go.activeSelf != on) go.SetActive(on);
         }
     }
 }
