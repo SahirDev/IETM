@@ -46,6 +46,7 @@ namespace IETM
             BuildTooltip(v);
             BuildSearchResults(v);
             BuildTemplates(v);
+            UIKit.FlattenBorderedPanels(v.root, Theme.Bg);
             return v;
         }
 
@@ -750,7 +751,7 @@ namespace IETM
                 case "procedure": tag = "PROC"; c = Theme.Accent2; break;
                 default: tag = "DESC"; c = Theme.Ok; break;
             }
-            r.Get<Image>("bg").color = active ? Theme.RowSel : new Color(0, 0, 0, 0);
+            r.Get<Image>("bg").color = active ? UIKit.OpaqueOver(Theme.Accent.A(0.22f), Theme.Panel) : new Color(0, 0, 0, 0);
             var o = r.Get<Outline>("outline"); if (o) o.enabled = active;
             r.Get<Image>("tag").color = c.A(0.18f);
             var tt = r.Get<Text>("tagText"); tt.text = tag; tt.color = c;
@@ -820,7 +821,7 @@ namespace IETM
 
         public static void FillStepRow(UIRefs r, ProcStep s, int i, bool current, bool done)
         {
-            r.Get<Image>("bg").color = current ? Theme.Accent2.A(0.16f) : Theme.Panel2;
+            r.Get<Image>("bg").color = current ? UIKit.OpaqueOver(Theme.Accent.A(0.28f), Theme.Panel) : Theme.Panel2;
             var o = r.Get<Outline>("outline"); if (o) o.enabled = current;
             r.Get<Image>("dot").color = done ? Theme.Ok : current ? Theme.Accent2 : Theme.Border;
             var dn = r.Get<Text>("dotText");

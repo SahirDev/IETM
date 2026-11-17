@@ -115,6 +115,9 @@ namespace IETM.EditorTools
                 EditorUtility.SetDirty(f);
             }
 
+            // ---- bordered see-through panels -> opaque (keeps text in them readable)
+            UIKit.FlattenBorderedPanels(v.root, Theme.Bg);
+
             // ---- layout updates (edge collapse tabs, camera view buttons, header subtitle)
             IETMSceneBuilder.WithSprites(() => UpdateLayout(v));
 

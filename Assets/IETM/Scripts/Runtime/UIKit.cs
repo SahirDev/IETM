@@ -439,6 +439,40 @@ namespace IETM
             }
         }
 
+        /// <summary>
+        /// uGUI's Outline draws offset copies of the whole graphic behind it. With a see-through fill those
+        /// copies show through as a solid block of the border colour (making same-coloured text unreadable).
+        /// This makes every bordered panel opaque by blending its tint over the panel behind it.
+        /// </summary>
+        public static int FlattenBorderedPanels(Transform root, Color fallbackBehind)
+        {
+            int n = 0;
+            foreach (var img in root.GetComponentsInChildren<Image>(true))
+            {
+                if (!img.TryGetComponent<Shadow>(out var sh) || !sh.enabled) continue;
+                var c = img.color;
+                if (c.a >= 0.99f || c.a <= 0.01f) continue;
+                img.color = OpaqueOver(c, BehindColor(img.transform, fallbackBehind));
+                n++;
+            }
+            return n;
+        }
+
+        /// <summary>Colour of the nearest opaque Image behind 't' (parents), or the fallback.</summary>
+        public static Color BehindColor(Transform t, Color fallback)
+        {
+            for (var p = t.parent; p != null; p = p.parent)
+                if (p.TryGetComponent<Image>(out var pi) && pi.enabled && pi.color.a >= 0.99f && pi.GetComponent<UnityEngine.UI.Button>() == null) return pi.color;
+            return fallback;
+        }
+
+        public static Color OpaqueOver(Color tint, Color behind)
+        {
+            var c = Color.Lerp(behind, tint, tint.a);
+            c.a = 1f;
+            return c;
+        }
+
         public static PointerHooks Hooks(this Component c)
         {
             return c.TryGetComponent<PointerHooks>(out var h) ? h : c.gameObject.AddComponent<PointerHooks>();

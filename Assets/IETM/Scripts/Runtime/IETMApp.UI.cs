@@ -688,7 +688,13 @@ namespace IETM
                 v.breadcrumb.text = s;
                 var bcRT = v.breadcrumb.transform.parent as RectTransform;
                 if (bcRT != null && bcRT != v.overlay)
-                    bcRT.sizeDelta = new Vector2(Mathf.Min(v.breadcrumb.preferredWidth + 30, Mathf.Max(200, v.viewport.rect.width - 320)), bcRT.sizeDelta.y);
+                {
+                    // box = text + its left/right insets (the left inset includes the home icon)
+                    var trt = v.breadcrumb.rectTransform;
+                    float insets = Mathf.Max(0f, trt.offsetMin.x) + Mathf.Max(0f, -trt.offsetMax.x) + 6f;
+                    float w = v.breadcrumb.preferredWidth + insets;
+                    bcRT.sizeDelta = new Vector2(Mathf.Clamp(w, 160f, Mathf.Max(200f, v.viewport.rect.width - 320f)), bcRT.sizeDelta.y);
+                }
             }
         }
     }
