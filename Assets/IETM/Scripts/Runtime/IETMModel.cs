@@ -53,6 +53,8 @@ namespace IETM
         public HashSet<IPDItem> isolated; // null = none
         public IPDItem hovered;
         public bool xray;
+        /// <summary>True while an animation (gear extend / retract) owns the part transforms.</summary>
+        public bool poseLocked;
         public float explode;      // 0..1
         public readonly Dictionary<IPDItem, float> removeT = new Dictionary<IPDItem, float>();
         public readonly Dictionary<IPDItem, float> removeTarget = new Dictionary<IPDItem, float>();
@@ -236,6 +238,41 @@ namespace IETM
             foreach (var k in keys) removeTarget[k] = 0f;
         }
 
+        /// <summary>Puts every removed part back instantly (no animation).</summary>
+        public void ClearRemovalsImmediate()
+        {
+            var keys = new List<IPDItem>(removeTarget.Keys);
+            foreach (var k in keys) { removeTarget[k] = 0f; removeT[k] = 0f; }
+            ApplyOffsets();
+            dirty = true;
+        }
+
+        /// <summary>
+        /// Re-reads the parts' current local positions as their base pose (call after an animation
+        /// such as gear extend / retract has moved them), and recomputes bounds and explode directions.
+        /// </summary>
+        public void RecaptureBase()
+        {
+            if (Active == null) return;
+            var v = Active;
+            foreach (var pb in v.parts.Values)
+                for (int i = 0; i < pb.nodes.Count; i++)
+                    if (pb.nodes[i] != null) pb.baseLocal[i] = pb.nodes[i].localPosition;
+            bool has = false;
+            foreach (var r in v.root.GetComponentsInChildren<Renderer>())
+            {
+                if (!has) { v.bounds = r.bounds; has = true; } else v.bounds.Encapsulate(r.bounds);
+            }
+            v.radius = Mathf.Max(0.001f, v.bounds.extents.magnitude);
+            foreach (var pb in v.parts.Values)
+            {
+                if (!pb.IsBound) continue;
+                pb.baseCenter = pb.CurrentBounds().center;
+                var d = pb.baseCenter - v.bounds.center;
+                pb.explodeDir = d.sqrMagnitude < 1e-8f ? Vector3.up : d.normalized;
+            }
+        }
+
         public bool IsRemoved(IPDItem leaf) => removeT.TryGetValue(leaf, out var t) && t > 0.97f;
 
         public bool IsVisible(IPDItem leaf) => !hidden.Contains(leaf) && !IsRemoved(leaf);
@@ -296,7 +333,7 @@ namespace IETM
 
         public void ApplyOffsets()
         {
-            if (Active == null) return;
+            if (Active == null || poseLocked) return;
             float r = Active.radius;
             foreach (var pb in Active.parts.Values)
             {

@@ -31,6 +31,8 @@ namespace IETM.EditorTools
                 using (new EditorGUI.DisabledScope(app.view == null))
                     if (GUILayout.Button("Apply HELIOS Theme (colours, font, icons, logo)", GUILayout.Height(24))) IETMHeliosTheme.Apply(app);
 
+                if (GUILayout.Button("Use Animated GLB Model (Landing_Gear 1.glb)", GUILayout.Height(24))) IETMSceneBuilder.UseAnimatedModel(app);
+
                 EditorGUILayout.BeginHorizontal();
                 if (GUILayout.Button("Re-tag Model Parts From Data")) IETMSceneBuilder.RetagParts(app);
                 using (new EditorGUI.DisabledScope(app.dataFile == null))

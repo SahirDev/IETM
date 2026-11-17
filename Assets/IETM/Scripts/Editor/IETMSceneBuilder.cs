@@ -24,6 +24,7 @@ namespace IETM.EditorTools
         const string ExtendedName = "F-16 Front Landing Gear Assembly Extended";
         const string CollapsedName = "F-16 Front Landing Gear Assembly Collapsed";
         const string DataName = "landing_gear_ietm";
+        const string AnimatedModelName = "Landing_Gear 1"; // GLB with the extend / retract animation
 
         // ================================================================== menu
 
@@ -35,7 +36,7 @@ namespace IETM.EditorTools
             var extended = FindPrefab(ExtendedName);
             var collapsed = FindPrefab(CollapsedName);
             var dataAsset = FindAsset<TextAsset>(DataName);
-            if (extended == null)
+            if (extended == null && FindModelAsset(AnimatedModelName) == null)
             {
                 EditorUtility.DisplayDialog("IETM", $"Could not find the prefab '{ExtendedName}'.\nImport the landing gear model first (Assets/3DModels).", "OK");
                 return;
@@ -73,17 +74,31 @@ namespace IETM.EditorTools
 
             // ---- models (pre-configured: oriented, aligned, colliders, part tags)
             var root = new GameObject("Landing Gear");
-            var ext = (GameObject)PrefabUtility.InstantiatePrefab(extended, scene);
-            ext.transform.SetParent(root.transform, false);
-            var pivot = IETMModelSetup.OrientUpright(ext, "F-16 Front Landing Gear", "Wheel", Vector3.zero, "Model Pivot");
-            GameObject col = null;
+            var glb = FindModelAsset(AnimatedModelName);
+            GameObject glbInstance = null;
+            if (glb != null)
+            {
+                glbInstance = (GameObject)PrefabUtility.InstantiatePrefab(glb, scene);
+                glbInstance.transform.SetParent(root.transform, false);
+                IETMModelSetup.OrientUpright(glbInstance, "F-16 Front Landing Gear", "Wheel", Vector3.zero, "Model Pivot");
+                PrepareModel(glbInstance, db);
+                extended = null; collapsed = null; // single animated model replaces the two STEP models
+            }
+            GameObject ext = glbInstance, col = null;
+            Transform pivot = null;
+            if (glbInstance == null)
+            {
+                ext = (GameObject)PrefabUtility.InstantiatePrefab(extended, scene);
+                ext.transform.SetParent(root.transform, false);
+                pivot = IETMModelSetup.OrientUpright(ext, "F-16 Front Landing Gear", "Wheel", Vector3.zero, "Model Pivot");
+            }
             if (collapsed != null)
             {
                 col = (GameObject)PrefabUtility.InstantiatePrefab(collapsed, scene);
                 col.transform.SetParent(pivot != null ? pivot : root.transform, false);
                 IETMModelSetup.AlignToReference(col, ext, "F-16 Front Landing Gear");
             }
-            PrepareModel(ext, db);
+            if (glbInstance == null) PrepareModel(ext, db);
             if (col != null) { PrepareModel(col, db); col.SetActive(false); }
 
             FrameCamera(cam, ext);
@@ -102,6 +117,7 @@ namespace IETM.EditorTools
             app.highlightShader = Shader.Find("IETM/Highlight");
             app.ghostShader = Shader.Find("IETM/Ghost");
             app.dataFile = dataAsset;
+            if (glb != null) app.gearAnimation = FindClip(glb);
             app.backgroundColor = IETMHeliosTheme.CameraBackground;
             if (app.highlightShader == null || app.ghostShader == null)
                 Debug.LogWarning("[IETM] IETM shaders not found. Check that IETM/Shaders imported without errors.");
@@ -121,6 +137,85 @@ namespace IETM.EditorTools
         {
             if (!File.Exists(ScenePath)) { BuildScene(); return; }
             if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) EditorSceneManager.OpenScene(ScenePath);
+        }
+
+        [MenuItem("IETM/Use Animated GLB Model", priority = 19)]
+        public static void UseGlbMenu()
+        {
+            var app = Object.FindAnyObjectByType<IETMApp>();
+            if (app == null) { EditorUtility.DisplayDialog("IETM", "No 'IETM App' in the open scene.", "OK"); return; }
+            UseAnimatedModel(app);
+        }
+
+        /// <summary>
+        /// Replaces the two STEP models (extended + collapsed) in the open scene with the single animated GLB.
+        /// The old models are only switched off (not deleted). UI and settings are untouched.
+        /// </summary>
+        public static void UseAnimatedModel(IETMApp app)
+        {
+            var glb = FindModelAsset(AnimatedModelName);
+            if (glb == null)
+            {
+                EditorUtility.DisplayDialog("IETM", $"Could not find '{AnimatedModelName}.glb'.\nMake sure the glTFast package is installed (Package Manager) so the GLB is imported as a model.", "OK");
+                return;
+            }
+            var db = IETMDatabase.Load(app.dataFile != null ? app.dataFile : FindAsset<TextAsset>(DataName));
+            var scene = app.gameObject.scene;
+
+            Transform parent = null;
+            foreach (var old in new[] { app.extendedModel, app.retractedModel })
+            {
+                if (old == null || !old.scene.IsValid()) continue;
+                var top = old.transform;
+                while (top.parent != null && top.parent.GetComponent<IETMApp>() == null && top.parent.parent != null) top = top.parent;
+                if (parent == null) parent = top.parent != null ? top.parent : null;
+                Undo.RecordObject(old, "Use Animated GLB Model");
+                var pv = old.transform.parent; // model pivot created by the builder
+                if (pv != null && pv.name == "Model Pivot") { Undo.RecordObject(pv.gameObject, "Use Animated GLB Model"); pv.gameObject.SetActive(false); }
+                else old.SetActive(false);
+            }
+            if (parent == null) { var lg = GameObject.Find("Landing Gear"); if (lg != null) parent = lg.transform; }
+            if (parent == null) parent = new GameObject("Landing Gear").transform;
+
+            var inst = (GameObject)PrefabUtility.InstantiatePrefab(glb, scene);
+            Undo.RegisterCreatedObjectUndo(inst, "Use Animated GLB Model");
+            inst.transform.SetParent(parent, false);
+            var pivot = IETMModelSetup.OrientUpright(inst, "F-16 Front Landing Gear", "Wheel", Vector3.zero, "Animated Model Pivot");
+            if (pivot != null) Undo.RegisterCreatedObjectUndo(pivot.gameObject, "Use Animated GLB Model");
+            PrepareModel(inst, db);
+
+            Undo.RecordObject(app, "Use Animated GLB Model");
+            app.extendedModel = inst;
+            app.retractedModel = null;
+            app.modelPreconfigured = true;
+            app.gearAnimation = FindClip(glb);
+            EditorUtility.SetDirty(app);
+            EditorSceneManager.MarkSceneDirty(scene);
+            Selection.activeGameObject = inst;
+            Debug.Log($"[IETM] Using animated model '{glb.name}' (clip: {(app.gearAnimation != null ? app.gearAnimation.name : "none found")}).");
+            if (app.gearAnimation == null)
+                EditorUtility.DisplayDialog("IETM", "The GLB was added, but no animation clip was found in it.\nCheck the glTFast import settings (Animation: Legacy or Mecanim).", "OK");
+        }
+
+        public static GameObject FindModelAsset(string name)
+        {
+            foreach (var guid in AssetDatabase.FindAssets(name))
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                if (Path.GetFileNameWithoutExtension(path) != name) continue;
+                var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                if (go != null) return go;
+            }
+            return null;
+        }
+
+        public static AnimationClip FindClip(GameObject modelAsset)
+        {
+            if (modelAsset == null) return null;
+            var path = AssetDatabase.GetAssetPath(modelAsset);
+            foreach (var a in AssetDatabase.LoadAllAssetsAtPath(path))
+                if (a is AnimationClip c && !c.name.StartsWith("__preview")) return c;
+            return null;
         }
 
         [MenuItem("IETM/Rebuild UI In Open Scene", priority = 20)]

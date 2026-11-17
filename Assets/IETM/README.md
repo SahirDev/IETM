@@ -60,6 +60,20 @@ Buttons, layout and features are unchanged.
 
 ---
 
+## 1d. Single animated model (Landing_Gear 1.glb)
+
+`Assets/3DModels/Landing_Gear 1.glb` holds the whole gear with its **Extend and Retract** animation (6 s: extended at 0 s, retracted at 3 s, extended again at 6 s). It replaces the two STEP models.
+
+* The project now includes the **glTFast** package (`com.unity.cloud.gltfast`), so Unity imports the GLB as a model.
+* **Existing scene:** IETM App ▸ **Use Animated GLB Model**, or **IETM ▸ Use Animated GLB Model**. It adds the GLB (upright, colliders, part tags) and switches the old Extended and Collapsed models off without deleting them. UI and settings are not changed.
+* **New scenes:** **Build Landing Gear IETM Scene** uses the GLB automatically when it is in the project.
+* The **Extended / Retracted** buttons, `Space`, and procedure steps with `"gear"` play the animation: retract plays 0→3 s, extend plays 3→6 s.
+* While the gear moves, explode and part removal are paused. Afterwards they work from the new pose.
+* The timings are on IETM App ▸ **Gear Animation**: Retracted Time, Cycle End Time and Speed.
+* New IPD item **115 – ROD - PISTON, GEAR ACTUATOR** (`Gear Actuator Piston Rod`).
+
+---
+
 ## 2. What you get
 
 | Area | Features |

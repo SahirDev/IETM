@@ -88,6 +88,7 @@ namespace IETM
 
             var ext = Spawn(extendedModel);
             var ret = Spawn(retractedModel);
+            if (ret == null) SetupGearAnimation(ext); // single model with an extend / retract animation
             if (!modelPreconfigured && ext != null)
                 IETMModelSetup.OrientUpright(ext, alignNodeName, downReferenceNode, extraRotation);
 
@@ -210,6 +211,7 @@ namespace IETM
 
             if (!typing) HandleShortcuts();
 
+            UpdateGearAnimation();
             model.Tick(Time.unscaledDeltaTime);
             UpdateStatus();
             UpdateToasts();
@@ -390,12 +392,13 @@ namespace IETM
             if (view.explodeSlider) view.explodeSlider.value = view.explodeSlider.value > 0.01f ? 0f : 0.6f;
             else SetExplode(model.explode > 0.01f ? 0f : 0.6f);
         }
-        void ToggleGear() => SetGear(model.ActiveIndex == 0 ? 1 : 0);
+        void ToggleGear() => SetGear(CurrentGear == 0 ? 1 : 0);
 
         static void SetOn(IETMButton b, bool on) { if (b != null) b.On = on; }
 
         void SetGear(int index)
         {
+            if (gearAnimated) { SetGearAnimated(index); return; }
             if (index >= model.variants.Count || model.variants[index].root == null)
             {
                 if (index != 0) Toast("Retracted model not assigned", Theme.Warn);
@@ -409,6 +412,11 @@ namespace IETM
 
         void SetExplode(float v)
         {
+            if (gearMoving)
+            {
+                if (view.explodeSlider) view.explodeSlider.SetValueWithoutNotify(0f);
+                return;
+            }
             model.SetExplode(v);
             if (view.explodeValue != null) view.explodeValue.text = Mathf.RoundToInt(v * 100f) + "%";
         }
