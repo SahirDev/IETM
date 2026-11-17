@@ -403,9 +403,10 @@ namespace IETM
                         h.onEnter = () => bg.color = Theme.RowHover;
                         h.onExit = () => bg.color = new Color(0, 0, 0, 0);
                     }
-                    h.onClick = () => OpenModule(mod);
+                    h.onClick = () => OpenModule(mod);   // 'document' modules download their file
+
                     if (!r.TryGetComponent<UITooltip>(out var tip)) tip = r.gameObject.AddComponent<UITooltip>();
-                    tip.text = mod.dmc;
+                    tip.text = mod.type == "document" ? "Download " + mod.file : mod.dmc;
                 }
             }
         }
@@ -579,7 +580,11 @@ namespace IETM
                 var chips = IETMUIBuilder.FillParagraph(r, p, db, view.tplChip);
                 foreach (var kv in chips) { var it = kv.Value; kv.Key.button.onClick.AddListener(() => Select(it, false, true)); }
                 var show = r.Get<IETMButton>("show");
-                if (show) show.button.onClick.AddListener(() => ShowParagraphFocus(p));
+                if (show)
+                {
+                    if (!string.IsNullOrEmpty(p.link)) show.button.onClick.AddListener(() => DownloadFile(p.link));
+                    else show.button.onClick.AddListener(() => ShowParagraphFocus(p));
+                }
                 var bg = r.Get<Image>("bg");
                 var baseC = bg.color;
                 var h = r.Hooks();

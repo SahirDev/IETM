@@ -7,19 +7,22 @@ namespace IETM
 {
     public partial class IETMApp
     {
-        public void DownloadIpdPdf()
+        public void DownloadIpdPdf() => DownloadFile(ipdPdfFile);
+
+        /// <summary>Downloads / opens a file kept under StreamingAssets (path relative to it).</summary>
+        public void DownloadFile(string relativePath)
         {
-            if (string.IsNullOrEmpty(ipdPdfFile)) { Toast("No PDF configured", Theme.Warn); return; }
-            string src = Path.Combine(Application.streamingAssetsPath, ipdPdfFile);
+            if (string.IsNullOrEmpty(relativePath)) { Toast("No file configured", Theme.Warn); return; }
+            string src = Path.Combine(Application.streamingAssetsPath, relativePath);
 #if UNITY_WEBGL && !UNITY_EDITOR
             Application.OpenURL(src);                 // browser opens/downloads it
-            Toast("Opening IPC PDF…", Theme.Ok);
+            Toast("Opening " + Path.GetFileName(src) + "…", Theme.Ok);
 #elif UNITY_ANDROID && !UNITY_EDITOR
             Application.OpenURL(src);
 #else
             try
             {
-                if (!File.Exists(src)) { Toast("PDF not found: StreamingAssets/" + ipdPdfFile, Theme.Danger); return; }
+                if (!File.Exists(src)) { Toast("File not found: StreamingAssets/" + relativePath, Theme.Danger); return; }
                 string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
                 if (!Directory.Exists(dir)) dir = Application.persistentDataPath;
                 string dst = Path.Combine(dir, Path.GetFileName(src));

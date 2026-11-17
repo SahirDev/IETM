@@ -85,6 +85,9 @@ with item callouts, and the parts list (FIG-ITEM, P/N, indented nomenclature, CA
 
 * In the IETM: **PDF** button in the IPD figure card (`IETMCommand.IpdDownloadPdf`). Desktop/Editor copies it to
   your *Downloads* folder and opens it; WebGL opens it in a new browser tab. File name: `IETM App > Ipd Pdf File`.
+* Also in the publication tree: **Printable IPC (PDF)** (a `"type": "document"` module with a `"file"`), and a
+  **Download PDF** card on the title page (a paragraph with `"link"` / `"linkLabel"`). Both are plain JSON entries,
+  so any other file in StreamingAssets can be offered the same way.
 * Existing scenes: run **IETM > Apply HELIOS Theme** once to add the button.
 * Exploded view: the Explode slider / **E** uses the designed, collision-free layout in the `"explode"` block of
   `landing_gear_ietm.json` (every part slides off along its own assembly axis; wheel off the axle, collars off the

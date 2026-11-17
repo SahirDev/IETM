@@ -756,6 +756,7 @@ namespace IETM
             {
                 case "ipd": tag = "IPD"; c = Theme.Accent; break;
                 case "procedure": tag = "PROC"; c = Theme.Accent2; break;
+                case "document": tag = "PDF"; c = Theme.Warn; break;
                 default: tag = "DESC"; c = Theme.Ok; break;
             }
             r.Get<Image>("bg").color = active ? UIKit.OpaqueOver(Theme.Accent.A(0.22f), Theme.Panel) : new Color(0, 0, 0, 0);
@@ -814,8 +815,16 @@ namespace IETM
             r.Get<Text>("text").text = p.text;
             var chips = r.Rect("chips");
             bool hasFocus = p.focus != null && p.focus.Length > 0;
-            chips.gameObject.SetActive(hasFocus);
-            if (!hasFocus || chipTemplate == null) return result;
+            bool hasLink = !string.IsNullOrEmpty(p.link);
+            chips.gameObject.SetActive(hasFocus || hasLink);
+            var show = r.Get<IETMButton>("show");
+            if (show != null && show.label != null)
+            {
+                show.label.text = hasLink ? (string.IsNullOrEmpty(p.linkLabel) ? "Download" : p.linkLabel) : "Show in 3D";
+                var sle = show.GetComponent<LayoutElement>();
+                if (sle) sle.preferredWidth = Mathf.Max(96f, show.label.preferredWidth + 30f);
+            }
+            if (hasLink || !hasFocus || chipTemplate == null) return result;
             foreach (var f in p.focus)
             {
                 var it = db.Find(f);

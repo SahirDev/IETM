@@ -449,6 +449,7 @@ namespace IETM
         public void OpenModule(DataModule m)
         {
             if (m == null) return;
+            if (m.type == "document") { DownloadFile(string.IsNullOrEmpty(m.file) ? ipdPdfFile : m.file); return; }
             if (currentModule != null && currentModule.type == "procedure" && currentModule != m)
             {
                 model.RestoreAll();

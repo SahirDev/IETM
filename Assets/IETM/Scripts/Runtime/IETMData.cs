@@ -89,6 +89,9 @@ namespace IETM
         public string heading;
         public string text;
         public string[] focus;
+        [Tooltip("Optional file under StreamingAssets (e.g. IETM/32-20-00_Fig1_IPC.pdf) opened by the card's button.")]
+        public string link;
+        public string linkLabel;
     }
 
     [Serializable]
@@ -112,8 +115,10 @@ namespace IETM
     {
         public string id;
         public string group;
-        /// <summary>description | ipd | procedure</summary>
+        /// <summary>description | ipd | procedure | document (a file under StreamingAssets, see 'file')</summary>
         public string type;
+        /// <summary>document modules: file under StreamingAssets that is downloaded / opened when clicked.</summary>
+        public string file;
         public string dmc;
         public string title;
         public string infoName;
