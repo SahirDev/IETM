@@ -504,12 +504,11 @@ namespace IETM
         {
             (IETMCommand.ViewIso, "Iso", "Isometric view", "view_iso"),
             (IETMCommand.ViewTop, "Top", "Top view", "view_top"),
-            (IETMCommand.ViewBottom, "Btm", "Bottom view", "view_bottom"),
-            (IETMCommand.ViewAft, "Aft", "Aft view", "view_aft"),
-            (IETMCommand.ViewFront, "Fwd", "Forward view", "view_forward"),
-            (IETMCommand.ViewSide, "Stbd", "Starboard view", "view_starboard"),
-            (IETMCommand.ViewPort, "Port", "Port view", "view_port"),
+            (IETMCommand.ViewSide, "Side", "Side view", "view_starboard"),
         };
+
+        /// <summary>View buttons that are no longer offered (hidden when an older UI is updated).</summary>
+        public static readonly IETMCommand[] RetiredViewCommands = { IETMCommand.ViewFront, IETMCommand.ViewBottom, IETMCommand.ViewAft, IETMCommand.ViewPort };
 
         /// <summary>Arrow tab on the inner edge of a side panel; collapses / expands it and moves with it.</summary>
         public static IETMButton BuildPanelHandle(RectTransform panel, bool left)

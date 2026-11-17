@@ -29,6 +29,20 @@ namespace IETM
             return pivot;
         }
 
+        /// <summary>Angle (deg) between "align node -> bottom node" and world down; 0 = upright.</summary>
+        public static float UprightError(GameObject model, string topNode, string bottomNode)
+        {
+            if (model == null) return 0f;
+            var top = Find(model.transform, topNode);
+            var bottom = Find(model.transform, bottomNode);
+            if (top == null || bottom == null) return 0f;
+            Vector3 b = bottom.position;
+            var rb = bottom.GetComponentInChildren<Renderer>();
+            if (rb != null) b = rb.bounds.center;
+            var dir = b - top.position;
+            return dir.sqrMagnitude < 1e-10f ? 0f : Vector3.Angle(dir, Vector3.down);
+        }
+
         /// <summary>
         /// Aligns 'model' with 'reference' using the CAD assembly frame (the parent of alignNode),
         /// which both CAD exports share even though the parts move between gear states.

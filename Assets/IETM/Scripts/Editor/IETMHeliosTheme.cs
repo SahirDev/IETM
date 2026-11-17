@@ -195,6 +195,11 @@ namespace IETM.EditorTools
             foreach (var b in v.GetComponentsInChildren<IETMButton>(true))
                 if (b.command == IETMCommand.ViewIso || b.command == IETMCommand.ViewTop) { panel = b.transform.parent; break; }
             if (panel == null) return;
+            foreach (Transform c in panel)
+            {
+                var cb = c.GetComponent<IETMButton>();
+                if (cb != null && System.Array.IndexOf(IETMUIBuilder.RetiredViewCommands, cb.command) >= 0) c.gameObject.SetActive(false);
+            }
             int insertAt = -1;
             for (int i = 0; i < panel.childCount; i++)
                 if (panel.GetChild(i).GetComponent<IETMButton>() != null) { insertAt = i; break; }
@@ -208,6 +213,7 @@ namespace IETM.EditorTools
                     if (cb != null && cb.command == vb.command) { btn = cb; break; }
                 }
                 if (btn == null) btn = UIKit.Button(panel, vb.label, vb.command, BtnStyle.Ghost, 11, -1, 30, vb.tooltip);
+                btn.gameObject.SetActive(true);
                 if (!btn.TryGetComponent<UITooltip>(out var tip)) tip = btn.gameObject.AddComponent<UITooltip>();
                 tip.text = vb.tooltip;
                 var sp = Icon(vb.icon);

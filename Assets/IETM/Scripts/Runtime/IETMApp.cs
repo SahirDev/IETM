@@ -45,8 +45,8 @@ namespace IETM
         public Color backgroundColor = new Color(0.067f, 0.09f, 0.15f);
 
         [Header("Start-up")]
-        [Tooltip("Module opened at start (id from the JSON, e.g. DM-IPD). Empty = first IPD module.")]
-        public string startModuleId = "DM-IPD";
+        [Tooltip("Module opened at start (id from the JSON). Default: the title page.")]
+        public string startModule = "DM-TITLE";
         public bool showCalloutsAtStart = true;
 
         // ---- runtime state
@@ -87,9 +87,14 @@ namespace IETM
             SetupCameraAndLights();
 
             var ext = Spawn(extendedModel);
-            var ret = Spawn(retractedModel);
-            if (ret == null) SetupGearAnimation(ext); // single model with an extend / retract animation
-            if (!modelPreconfigured && ext != null)
+            // A model with its own extend / retract animation (the GLB) needs no second model.
+            SetupGearAnimation(ext);
+            GameObject ret = null;
+            if (gearAnimated) { if (retractedModel != null && retractedModel.scene.IsValid()) retractedModel.SetActive(false); }
+            else ret = Spawn(retractedModel);
+
+            // Stand the gear upright (Y up, wheel down) unless it already is.
+            if (ext != null && (!modelPreconfigured || IETMModelSetup.UprightError(ext, alignNodeName, downReferenceNode) > 3f))
                 IETMModelSetup.OrientUpright(ext, alignNodeName, downReferenceNode, extraRotation);
 
             model = new IETMModel(db, highlightShader, ghostShader) { selectColor = Theme.Accent, hoverColor = Theme.Warn };
@@ -107,7 +112,7 @@ namespace IETM
                 vcam.Home(true);
             }
 
-            var start = db.modules.FirstOrDefault(m => m.id == startModuleId)
+            var start = db.modules.FirstOrDefault(m => m.id == startModule)
                         ?? db.modules.FirstOrDefault(m => m.type == "ipd") ?? db.modules.FirstOrDefault();
             if (start != null) OpenModule(start);
             Toast("IETM loaded  ·  " + db.items.Count + " IPD items  ·  " + model.variants.Count + " gear state(s)", Theme.Accent);

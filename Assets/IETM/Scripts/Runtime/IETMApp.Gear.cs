@@ -16,6 +16,13 @@ namespace IETM
         public float cycleEndTime = 6f;
         [Tooltip("Playback speed multiplier for extend / retract.")]
         public float gearAnimationSpeed = 1f;
+        [Tooltip("Keep the actuator piston rod inside its cylinder during the animation (fixes the GLB export).")]
+        public bool fixPistonRod = true;
+        public string pistonCylinderNode = "Gear Actuator";
+        public string pistonRodNode = "Gear Actuator Piston Rod";
+        public string pistonAnchorNode = "Actuator Nut";
+
+        IETMPistonFollower piston;
 
         GameObject gearAnimRoot;
         bool gearAnimated;
@@ -55,8 +62,13 @@ namespace IETM
             gearAnimated = true;
             if (cycleEndTime <= 0f || cycleEndTime > clip.length + 0.001f) cycleEndTime = clip.length;
             if (retractedTime <= 0f || retractedTime >= cycleEndTime) retractedTime = cycleEndTime * 0.5f;
-            gearAnimation.SampleAnimation(gearAnimRoot, 0f); // extended
+            gearAnimation.SampleAnimation(gearAnimRoot, 0f); // always start EXTENDED
             gearT = 0f; gearTarget = 0;
+            if (fixPistonRod)
+            {
+                piston = new IETMPistonFollower(gearAnimRoot.transform, pistonCylinderNode, pistonRodNode, pistonAnchorNode);
+                if (!piston.IsValid) piston = null;
+            }
             Debug.Log($"[IETM] Gear animation: '{clip.name}' ({clip.length:0.##} s), retracted at {retractedTime:0.##} s.");
         }
 
@@ -86,6 +98,7 @@ namespace IETM
             gearT = Mathf.MoveTowards(gearT, gearTarget, Time.unscaledDeltaTime / dur);
             float t = gearTarget == 1 ? gearT * retractedTime : cycleEndTime - gearT * (cycleEndTime - retractedTime);
             gearAnimation.SampleAnimation(gearAnimRoot, t);
+            piston?.Apply();
             if (Mathf.Approximately(gearT, gearTarget))
             {
                 gearMoving = false;

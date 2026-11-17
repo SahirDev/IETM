@@ -53,7 +53,7 @@ Buttons, layout and features are unchanged.
 * **Existing scene:** IETM App ▸ **Apply HELIOS Theme**, or **IETM ▸ Apply HELIOS Theme**. It restyles the UI you already have: your layout edits are kept, it can be undone, and it is safe to run again.
 * **New scenes:** **IETM ▸ Build Landing Gear IETM Scene** applies the theme automatically.
 * **Side panels:** each panel has an **arrow tab on its inner edge** to collapse or expand it. The top-bar "Panel" buttons are gone.
-* **Camera views:** the views column has cube icons for Isometric, Top, Bottom, Aft, Forward, Starboard and Port. Hover a button to see the view name.
+* **Camera views:** **Isometric**, **Top** and **Side**, as cube icons. Hover a button to see the view name.
 * **Assets:** `UI/Icons` (white icons, tinted in Unity), `UI/Logo/HELIOS_logo.png`, `UI/Fonts/Inter-Regular.otf` (SIL OFL, see `Inter-OFL.txt`).
 * **Lato instead of Inter:** drop the Lato `.ttf` into the project, assign it to **IETM View ▸ Font**, then run **Apply HELIOS Theme** again.
 * **Colours:** **IETM View ▸ Theme**, or the defaults in `Theme.ResetToDefaults()` in `UIKit.cs`.
@@ -71,6 +71,8 @@ Buttons, layout and features are unchanged.
 * While the gear moves, explode and part removal are paused. Afterwards they work from the new pose.
 * The timings are on IETM App ▸ **Gear Animation**: Retracted Time, Cycle End Time and Speed.
 * New IPD item **115 – ROD - PISTON, GEAR ACTUATOR** (`Gear Actuator Piston Rod`).
+* **Piston rod correction:** in the GLB's exported animation the piston rod does not slide into the actuator and tilts off-axis by up to about 17°. The IETM keeps it on the cylinder axis and slides it so its end stays on the Actuator Nut (IETM App ▸ **Fix Piston Rod**). Re-exporting from Blender with the constraint baked in also fixes it.
+* The gear always **starts extended** and is **turned upright (Y up, wheel down)** when it is not already.
 
 ---
 
