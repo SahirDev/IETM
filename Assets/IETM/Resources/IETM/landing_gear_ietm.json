@@ -1,0 +1,107 @@
+{
+  "publication": {
+    "title": "F-16 Nose Landing Gear",
+    "subtitle": "Interactive Electronic Technical Manual",
+    "pmc": "PMC-F16NLG-K0F16-00001-00",
+    "issue": "001",
+    "issueDate": "2026-11-17",
+    "applicability": "F-16 NLG scale assembly - Serial 001 002 003",
+    "dataStatus": "SAMPLE DATA - part numbers, CAGE codes and procedures are placeholders for the POC. Replace with OEM data."
+  },
+  "figure": {
+    "title": "Nose Landing Gear",
+    "icn": "ICN-F16NLG-A-322000-0-K0F16-00001-A-01-1",
+    "figureNumber": "Fig. 1"
+  },
+  "items": [
+    { "itemNo": "001", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1000-01", "description": "LANDING GEAR ASSY - NOSE", "indent": 1, "upa": "RF", "smr": "PAOOO", "nodes": [], "info": "Complete nose landing gear assembly. Shown in the extended (down-locked) position." },
+    { "itemNo": "010", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1010-01", "description": "HOUSING - STRUT, NOSE GEAR", "indent": 2, "upa": "1", "smr": "PAOZZ", "nodes": ["F-16 Front Landing Gear"], "info": "Primary structural member. Carries the trunnion that attaches the gear to the airframe.", "remarks": "Inspect trunnion lugs for cracks and corrosion." },
+    { "itemNo": "020", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1020-03", "description": "ARM - SWIVEL, MAIN", "indent": 2, "upa": "1", "smr": "PAOZZ", "nodes": ["Main Swivel Arm"], "info": "Allows the strut to swivel about the trunnion axis during retraction." },
+    { "itemNo": "030", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1030-01", "description": "COLLAR - STRUT", "indent": 2, "upa": "1", "smr": "PAOZZ", "nodes": ["Collar"], "info": "Locates the steering collar on the strut and limits axial play." },
+
+    { "itemNo": "040", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1100-01", "description": "STEERING ASSY", "indent": 2, "upa": "1", "smr": "PAOOO", "nodes": [], "info": "Nose-wheel steering linkage. Transfers servo motion to the wheel fork." },
+    { "itemNo": "050", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1110-02", "description": "COLLAR - STEERING", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Steering Collar"], "info": "Rotating collar driven by the steering links." },
+    { "itemNo": "060", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1120-01", "description": "HEAD - STEERING, TOP", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Steering Top Head"], "info": "Upper steering head. Connects the collar to the swivel arm." },
+    { "itemNo": "070", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1130-01", "description": "LINK - STEERING, UPPER", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Steering Link Upper"], "info": "Upper steering link (torque link).", "remarks": "Check bushings for wear. Max free play 0.2 mm." },
+    { "itemNo": "080", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1140-01", "description": "LINK - STEERING, LOWER", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Steering Link Lower"], "info": "Lower steering link (torque link)." },
+    { "itemNo": "090", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1150-01", "description": "LINK - STEERING SERVO", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Steering Link for servo"], "info": "Input link from the steering servo." },
+
+    { "itemNo": "100", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1200-01", "description": "RETRACTION MECHANISM ASSY", "indent": 2, "upa": "1", "smr": "PAOOO", "nodes": [], "info": "Actuator and linkage that retract and extend the gear." },
+    { "itemNo": "110", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1210-04", "description": "ACTUATOR - GEAR RETRACTION", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Gear Actuator"], "info": "Linear actuator that drives the retraction linkage.", "remarks": "Functional check required after installation." },
+    { "itemNo": "120", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1220-01", "description": "ARM - ACTUATOR, MAIN", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Main Actuator Arm"], "info": "Main actuator output arm." },
+    { "itemNo": "130", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1230-01", "description": "ARM - ACTUATOR, SECONDARY", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Secondary Actuator Arm"], "info": "Secondary arm. Drives the inner folding arm pivot." },
+    { "itemNo": "140", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1240-01", "description": "NUT - ACTUATOR", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Actuator Nut"], "info": "Retaining nut for the actuator rod end." },
+    { "itemNo": "150", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1250-02", "description": "LINK - GEAR ROTATION", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Gear Rotation Link"], "info": "Rotates the strut about the trunnion as the actuator strokes." },
+
+    { "itemNo": "160", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1300-01", "description": "DRAG BRACE ASSY - FOLDING", "indent": 2, "upa": "1", "smr": "PAOOO", "nodes": [], "info": "Folding drag brace. Locks over-centre when the gear is down." },
+    { "itemNo": "170", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1310-01", "description": "ARM - FOLDING, INNER", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Inner Folding Arm"], "info": "Inner half of the folding drag brace." },
+    { "itemNo": "180", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1320-01", "description": "ARM - FOLDING, OUTER", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Outer Folding Arm"], "info": "Outer half of the folding drag brace." },
+    { "itemNo": "190", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1330-01", "description": "PIVOT - INNER ARM", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Pivot for Inner Arm"], "info": "Pivot pin for the inner folding arm." },
+
+    { "itemNo": "200", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1400-01", "description": "WHEEL AND FORK ASSY", "indent": 2, "upa": "1", "smr": "PAOOO", "nodes": [], "info": "Wheel, hub and fork." },
+    { "itemNo": "210", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1410-01", "description": "FORK - WHEEL", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Fork"], "info": "Wheel fork. Carries the axle." },
+    { "itemNo": "220", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1420-02", "description": "HUB - WHEEL", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Main Gear"], "info": "Wheel hub and bearing seat." },
+    { "itemNo": "230", "isn": "00A", "cage": "K0F16", "partNumber": "NLG-32-1430-01", "description": "WHEEL - NOSE, TIRE", "indent": 3, "upa": "1", "smr": "PAOZZ", "nodes": ["Wheel"], "info": "Nose wheel tyre.", "remarks": "Replace if tread depth is below limits or if the sidewall is damaged." }
+  ],
+  "modules": [
+    {
+      "id": "DM-TITLE", "group": "Front matter", "type": "description",
+      "dmc": "DMC-F16NLG-A-00-00-00-00A-001A-D", "title": "Title page", "infoName": "Title page",
+      "paragraphs": [
+        { "heading": "F-16 Nose Landing Gear", "text": "Interactive Electronic Technical Manual (IETM) for the F-16 nose landing gear assembly. The manual combines descriptive data, an interactive Illustrated Parts Data (IPD) module and step-by-step procedures, all linked to the 3D model." },
+        { "heading": "How to use", "text": "Select a data module in the publication tree. Click a part in the 3D view or a row in the parts list to cross-highlight it. Use the viewer toolbar to isolate, hide, x-ray or explode the assembly. Add parts to the order list with the cart button." },
+        { "heading": "Data status", "text": "This is a proof-of-concept publication. Part numbers, CAGE codes and procedures are sample data." }
+      ]
+    },
+    {
+      "id": "DM-DESC", "group": "32-20 Nose landing gear", "type": "description",
+      "dmc": "DMC-F16NLG-A-32-20-00-00A-040A-D", "title": "Nose landing gear", "infoName": "Description and operation",
+      "focus": ["001"],
+      "paragraphs": [
+        { "heading": "General", "text": "The nose landing gear supports the forward fuselage on the ground, steers the aircraft during taxi and retracts forward into the nose gear bay in flight.", "focus": ["001"] },
+        { "heading": "Strut and swivel", "text": "The strut housing (10) carries the trunnion. The main swivel arm (20) and strut collar (30) let the strut rotate during retraction.", "focus": ["010", "020", "030"] },
+        { "heading": "Steering", "text": "The steering assembly (40) transfers servo input through the servo link (90), the upper and lower steering links (70, 80) and the steering top head (60) to the steering collar (50).", "focus": ["040"] },
+        { "heading": "Retraction", "text": "The retraction actuator (110) drives the main and secondary actuator arms (120, 130). The gear rotation link (150) swings the strut forward while the folding drag brace (160) breaks over-centre.", "focus": ["100", "160"] },
+        { "heading": "Wheel", "text": "The wheel (230) runs on the hub (220), which is carried in the fork (210).", "focus": ["200"] }
+      ]
+    },
+    {
+      "id": "DM-IPD", "group": "32-20 Nose landing gear", "type": "ipd",
+      "dmc": "DMC-F16NLG-A-32-20-00-00A-941A-D", "title": "Nose landing gear", "infoName": "Illustrated parts data - IPD"
+    },
+    {
+      "id": "DM-WHEEL-RI", "group": "32-20 Nose landing gear", "type": "procedure",
+      "dmc": "DMC-F16NLG-A-32-40-00-00A-520A-A", "title": "Nose wheel", "infoName": "Removal procedure",
+      "steps": [
+        { "title": "Preliminary requirements", "text": "Make sure the aircraft is on jacks and the nose wheel is clear of the ground. Install the landing gear ground safety pins.", "warning": "WARNING: Do not remove the wheel unless the aircraft is safely supported on jacks. The aircraft can fall and cause injury.", "focus": ["001"], "action": "highlight", "view": "iso", "gear": "extended" },
+        { "title": "Identify the wheel and fork assembly", "text": "Find the wheel and fork assembly (200). Examine the area around the fork for loose or missing parts.", "focus": ["200"], "action": "isolate", "view": "side" },
+        { "title": "Remove the wheel", "text": "Release the axle retaining hardware. Pull the wheel (230) out of the fork (210). Put the wheel on a clean, padded surface.", "focus": ["230"], "action": "remove", "view": "side" },
+        { "title": "Remove the hub", "text": "Remove the hub (220) from the fork. Do not damage the bearing seats.", "caution": "CAUTION: Keep the bearings clean. Contamination can cause early bearing failure.", "focus": ["220"], "action": "remove", "view": "side" },
+        { "title": "Examine the fork", "text": "Examine the fork (210) for cracks, corrosion and damage to the axle bores.", "focus": ["210"], "action": "highlight", "view": "iso" },
+        { "title": "Close-up", "text": "Removal is complete. To install the wheel, do these steps in reverse order: select Restore to put the parts back.", "focus": ["210"], "action": "restore", "view": "iso" }
+      ]
+    },
+    {
+      "id": "DM-STEER-INSP", "group": "32-50 Steering", "type": "procedure",
+      "dmc": "DMC-F16NLG-A-32-50-00-00A-310A-A", "title": "Steering linkage", "infoName": "Visual examination",
+      "steps": [
+        { "title": "Access", "text": "Make sure that the hydraulic and electrical power is off and that the steering servo is not powered.", "focus": ["040"], "action": "highlight", "view": "iso", "gear": "extended" },
+        { "title": "Servo link", "text": "Examine the servo link (90) for bending, and the rod ends for free play.", "focus": ["090"], "action": "isolate", "view": "front" },
+        { "title": "Upper and lower steering links", "text": "Examine the upper (70) and lower (80) steering links. Measure the bushing free play.", "caution": "CAUTION: The maximum permitted free play is 0.2 mm. Replace the links if the free play is more than this.", "focus": ["070", "080"], "action": "isolate", "view": "side" },
+        { "title": "Steering collar and head", "text": "Turn the steering collar (50) by hand through its full travel. It must move smoothly and not bind. Examine the steering top head (60).", "focus": ["050", "060"], "action": "highlight", "view": "iso" },
+        { "title": "Close-up", "text": "Record the results in the maintenance log.", "focus": ["040"], "action": "restore", "view": "iso" }
+      ]
+    },
+    {
+      "id": "DM-RETRACT-CHK", "group": "32-30 Extension and retraction", "type": "procedure",
+      "dmc": "DMC-F16NLG-A-32-30-00-00A-340A-A", "title": "Retraction mechanism", "infoName": "Functional test",
+      "steps": [
+        { "title": "Preparation", "text": "Put the aircraft on jacks. Make sure that the nose gear bay is clear of people and equipment.", "warning": "WARNING: Keep clear of the gear bay during retraction. The moving parts can cause serious injury.", "focus": ["100"], "action": "highlight", "view": "iso", "gear": "extended" },
+        { "title": "Down-lock check", "text": "Make sure that the folding drag brace (160) is over-centre and the actuator (110) is fully extended.", "focus": ["160", "110"], "action": "isolate", "view": "side", "gear": "extended" },
+        { "title": "Retract the gear", "text": "Operate the retraction actuator. The gear rotation link (150) swings the strut forward into the bay. Watch for interference.", "focus": ["110", "150"], "action": "highlight", "view": "side", "gear": "retracted" },
+        { "title": "Extend the gear", "text": "Extend the gear. Make sure that the drag brace locks over-centre and that the indicator shows down and locked.", "focus": ["160"], "action": "highlight", "view": "iso", "gear": "extended" },
+        { "title": "Close-up", "text": "Remove the jacks and the safety pins after the test is complete.", "focus": ["001"], "action": "restore", "view": "iso", "gear": "extended" }
+      ]
+    }
+  ]
+}

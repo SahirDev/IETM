@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 383914d3a27c7384aba3981b475a4658, type: 3}
+  m_Name: F-16 Front Landing Gear Assembly Collapsed
+  m_EditorClassIdentifier: Unity.Pixyz.Plugin4Unity.Editor::UnityEditor.PixyzPlugin4Unity.CADImporterScriptableObject
+  <FilePath>k__BackingField: ..\..\..\..\Users\SahirIqbalShaikh\Downloads\f-16-front-landing-gear-for-rc-model-1.snapshot.2\F-16
+    Front Landing Gear Assembly Collapsed.x_b
+  m_Prefab: {fileID: 4105151155676781615, guid: 99cd64f11b528734a9948eaf807d95ab, type: 3}
+  m_Scene: {fileID: 0}
+  <ImportMode>k__BackingField: 0
+  <ImportAllFilesInFolder>k__BackingField: 0
+  <PreferAlternativeImporters>k__BackingField: 0
+  <Scale>k__BackingField: 0.001
+  <Orientation>k__BackingField: 0
+  <IsLeftHanded>k__BackingField: 0
+  <IsZUp>k__BackingField: 0
+  <AvoidNegativeScale>k__BackingField: 1
+  <PreserveHierarchy>k__BackingField: 1
+  <RuleSet>k__BackingField: {fileID: 11400000, guid: c99f636d54faa5345b623f2def2d9f05, type: 2}
+  <ImportMetadata>k__BackingField: 1
+  <ImportPatchBoundaries>k__BackingField: 0
+  <ImportLines>k__BackingField: 0
+  <ImportPoints>k__BackingField: 0
+  <ImportNestedPrefabs>k__BackingField: 0
+  <ImportAnimations>k__BackingField: 1
+  <ImportVariants>k__BackingField: 0
+  <ImportPMI>k__BackingField: 0
+  <StitchPatches>k__BackingField: 0
+  <Use16BitsBuffers>k__BackingField: 0
+  <ReorientFaces>k__BackingField: 0
+  <RepairInstances>k__BackingField: 1
+  <MeshQuality>k__BackingField: 0
+  <CreateLightmapUVs>k__BackingField: 0
+  <LightmapResolution>k__BackingField: 1024
+  <LightmapPadding>k__BackingField: 4
+  <CreateUVs>k__BackingField: 0
+  <UVSize>k__BackingField: 1
+  <CustomMaxSag>k__BackingField: 0.1
+  <CustomSagRatio>k__BackingField: 0.0001
+  <CustomSurfacicTolerance>k__BackingField: 3
+  <CustomLineicTolerance>k__BackingField: -1
+  <CustomNormalTolerance>k__BackingField: 15
+  <LODGenerator>k__BackingField:
+    <Rules>k__BackingField: []
+    <BakingOffset>k__BackingField: 0
+    <BakingUpSampling>k__BackingField: 2
+    <AutoComputeThresholds>k__BackingField: 0
+    <FilterTransparentObjects>k__BackingField: 1
+  references:
+    version: 2
+    RefIds: []
