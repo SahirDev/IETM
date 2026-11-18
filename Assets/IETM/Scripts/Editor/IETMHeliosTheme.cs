@@ -29,7 +29,7 @@ namespace IETM.EditorTools
             { IETMCommand.FitSelection, ("zoom", false) },
             { IETMCommand.AutoRotate, ("rotate", false) },
             { IETMCommand.Snapshot, ("image", true) },
-            { IETMCommand.XRay, ("xray", true) },
+            { IETMCommand.XRay, ("transparent", true) },
             { IETMCommand.Callouts, ("callouts", true) },
             { IETMCommand.IpdReset, ("rotate", false) },
             { IETMCommand.IpdCopyList, ("document", false) },
@@ -41,6 +41,9 @@ namespace IETM.EditorTools
             { IETMCommand.ToggleLeftPanel, ("chevron_left", true) },
             { IETMCommand.ToggleRightPanel, ("chevron_left", true) },
         };
+
+        /// <summary>Full-colour icons from the HELIOS design (not tinted with the button label colour).</summary>
+        static readonly HashSet<string> ColourIcons = new HashSet<string> { "transparent", "iso_frame", "top_view", "side_view" };
 
         [MenuItem("IETM/Apply HELIOS Theme", priority = 30)]
         public static void ApplyMenu()
@@ -135,6 +138,7 @@ namespace IETM.EditorTools
                 if (b.label != null && !map.only) b.label.text = StripArrows(b.label.text);
                 bool handle = b.command == IETMCommand.ToggleLeftPanel || b.command == IETMCommand.ToggleRightPanel;
                 UIKit.AttachIcon(b, sp, map.only, handle ? 12f : 16f);
+                b.tintIcon = !ColourIcons.Contains(map.icon); b.Apply();
                 if (b == v.rightHandle && b.icon != null) b.icon.rectTransform.localEulerAngles = new Vector3(0, 0, 180);
                 EditorUtility.SetDirty(b);
             }
@@ -273,7 +277,7 @@ namespace IETM.EditorTools
                 if (!btn.TryGetComponent<UITooltip>(out var tip)) tip = btn.gameObject.AddComponent<UITooltip>();
                 tip.text = vb.tooltip;
                 var sp = Icon(vb.icon);
-                if (sp != null) UIKit.AttachIcon(btn, sp, true, 18f);
+                if (sp != null) { UIKit.AttachIcon(btn, sp, true, 20f); btn.tintIcon = !ColourIcons.Contains(vb.icon); btn.Apply(); }
                 btn.transform.SetSiblingIndex(insertAt++);
                 EditorUtility.SetDirty(btn);
             }

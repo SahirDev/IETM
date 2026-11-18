@@ -44,6 +44,8 @@ namespace IETM
         public Text label;
         [Tooltip("Optional icon (tinted with the label colour).")]
         public Image icon;
+        [Tooltip("Off for full-colour icons (kept as drawn instead of tinted with the label colour).")]
+        public bool tintIcon = true;
 
         [Header("Colours")]
         public Color normal = new Color(0.082f, 0.094f, 0.212f);
@@ -75,7 +77,7 @@ namespace IETM
             cb.fadeDuration = 0.08f;
             button.colors = cb;
             if (label) label.color = on ? labelOnColor : labelColor;
-            if (icon) icon.color = on ? labelOnColor : labelColor;
+            if (icon) icon.color = !tintIcon ? Color.white : (on ? labelOnColor : labelColor);
         }
 
         void OnValidate() { Apply(); }

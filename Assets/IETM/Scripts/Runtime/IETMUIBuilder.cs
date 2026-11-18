@@ -529,9 +529,9 @@ namespace IETM
         /// <summary>Camera view buttons: command, short label (used until the icon is applied), tooltip, icon name.</summary>
         public static readonly (IETMCommand command, string label, string tooltip, string icon)[] ViewButtons =
         {
-            (IETMCommand.ViewIso, "Iso", "Isometric view", "view_iso"),
-            (IETMCommand.ViewTop, "Top", "Top view", "view_top"),
-            (IETMCommand.ViewSide, "Side", "Side view", "view_starboard"),
+            (IETMCommand.ViewIso, "Iso", "Isometric view", "iso_frame"),
+            (IETMCommand.ViewTop, "Top", "Top view", "top_view"),
+            (IETMCommand.ViewSide, "Side", "Side view", "side_view"),
         };
 
         /// <summary>View buttons that are no longer offered (hidden when an older UI is updated).</summary>
