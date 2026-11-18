@@ -35,7 +35,7 @@
     { "id": "ground", "label": "Ground handling" }
   ],
   "systems": [
-    { "id": "32", "code": "32", "title": "Landing gear", "subtitle": "Main & nose gear, wheels, brakes, steering", "group": "airframe", "icon": "thumb_nose_gear", "available": true, "meta": "6 sections · 1 available" },
+    { "id": "32", "code": "32", "title": "Landing gear", "subtitle": "Main & nose gear, wheels, brakes, steering", "group": "airframe", "icon": "thumb_landing_gear", "available": true, "meta": "6 sections · 1 available" },
     { "id": "71", "code": "71–80", "title": "Engine", "subtitle": "F110-GE-129 / F100-PW-229 power plant", "group": "powerplant", "icon": "thumb_engine" },
     { "id": "57", "code": "57", "title": "Wings", "subtitle": "Wing structure, leading-edge flaps, flaperons", "group": "structures", "icon": "thumb_wings" },
     { "id": "cockpit", "code": "31 · 35 · 52", "title": "Cockpit", "subtitle": "Displays, oxygen, canopy", "group": "cockpit", "icon": "thumb_cockpit" },
