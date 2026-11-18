@@ -305,18 +305,6 @@
       "info": "Pivot pin for the inner folding arm."
     },
     {
-      "itemNo": "200",
-      "isn": "00A",
-      "cage": "K0F16",
-      "partNumber": "NLG-32-1400-01",
-      "description": "WHEEL AND FORK ASSY",
-      "indent": 2,
-      "upa": "1",
-      "smr": "PAOOO",
-      "nodes": [],
-      "info": "Wheel, hub and fork."
-    },
-    {
       "itemNo": "210",
       "isn": "00A",
       "cage": "K0F16",
@@ -329,6 +317,18 @@
         "Fork"
       ],
       "info": "Wheel fork. Carries the axle."
+    },
+    {
+      "itemNo": "200",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1400-01",
+      "description": "WHEEL AND FORK ASSY",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOOO",
+      "nodes": [],
+      "info": "Wheel, hub and fork."
     },
     {
       "itemNo": "220",
@@ -425,7 +425,7 @@
         },
         {
           "heading": "Retraction",
-          "text": "The retraction actuator (110) drives the main and secondary actuator arms (120, 130). The gear rotation link (150) swings the strut forward while the folding drag brace (160) breaks over-centre.",
+          "text": "The retraction actuator (110) drives the main and secondary actuator arms (120, 130). The gear rotation link (150) swings the strut forward while the folding drag brace (160) - inner and outer arms, pivot and fork (210) - breaks over-centre.",
           "focus": [
             "100",
             "160"
@@ -433,7 +433,7 @@
         },
         {
           "heading": "Wheel",
-          "text": "The wheel (230) runs on the hub (220), which is carried in the fork (210).",
+          "text": "The wheel (230) runs on the hub (220).",
           "focus": [
             "200"
           ]
@@ -511,11 +511,12 @@
         },
         {
           "title": "5. The drag brace folds",
-          "text": "At the same time the folding drag brace - inner arm (170), outer arm (180) and pivot (190) - unlocks and folds, so the strut can swing up. When the gear extends the brace opens again and locks over-centre to hold the gear down.",
+          "text": "At the same time the folding drag brace - inner arm (170), outer arm (180), pivot (190) and fork (210) - unlocks and folds, so the strut can swing up. When the gear extends the brace opens again and locks over-centre to hold the gear down.",
           "focus": [
             "170",
             "180",
-            "190"
+            "190",
+            "210"
           ],
           "action": "operate",
           "animate": "cycle"
