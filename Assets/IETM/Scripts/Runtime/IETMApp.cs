@@ -45,9 +45,9 @@ namespace IETM
         public Color backgroundColor = new Color(0.067f, 0.09f, 0.15f);
 
         [Header("Start-up")]
-        [Tooltip("Module opened at start (id from the JSON). Default: the title page.")]
         [Tooltip("Set by the HELIOS shell while one of its pages covers the IETM (no viewer input, no shortcuts).")]
         public bool inputSuspended;
+        [Tooltip("Module opened at start (id from the JSON). Default: the title page.")]
         public string startModule = "DM-TITLE";
         [Tooltip("Printable IPC (PDF) under Assets/StreamingAssets, opened by the 'PDF' button in the IPD figure card.")]
         public string ipdPdfFile = "IETM/32-20-00_Fig1_IPC.pdf";
