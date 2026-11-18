@@ -248,6 +248,7 @@ namespace IETM
 
         void LateUpdate()
         {
+            if (fontRefreshPending) { fontRefreshPending = false; RefreshAllTexts(null); }
             if (model == null || view == null) return;
             UpdateCallouts();
         }

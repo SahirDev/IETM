@@ -94,7 +94,22 @@ namespace IETM
 
         void OnDestroy() { Font.textureRebuilt -= OnFontTextureRebuilt; }
 
-        void OnFontTextureRebuilt(Font f) { RefreshAllTexts(f); }
+        /// <summary>Operation, disassembly and assembly data modules (steps that animate parts).</summary>
+        bool InAnimatedProcedure
+        {
+            get
+            {
+                if (currentModule == null || currentModule.type != "procedure" || currentModule.steps == null) return false;
+                foreach (var s in currentModule.steps)
+                    if (s.action == "operate" || s.action == "detach" || s.action == "install" || !string.IsNullOrEmpty(s.animate)) return true;
+                return false;
+            }
+        }
+
+        // Font atlas rebuilt: refresh the texts on the next frame (not inside Unity's graphic rebuild loop)
+        bool fontRefreshPending;
+        void OnFontTextureRebuilt(Font f) { fontRefreshPending = true; }
+
 
         IEnumerator RefreshTextsAfterStart()
         {
@@ -674,7 +689,8 @@ namespace IETM
             var v = view;
             if (v.infoCard != null)
             {
-                bool show = selectedItem != null;
+                // no part info card in animated procedures (operation / disassembly / assembly): keep the 3D view clear
+                bool show = selectedItem != null && !InAnimatedProcedure;
                 v.infoCard.gameObject.SetActive(show);
                 if (show)
                 {

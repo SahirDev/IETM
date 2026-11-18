@@ -669,18 +669,18 @@
           "action": "detach"
         },
         {
-          "title": "15. Remove the steering top head",
-          "text": "Lift the steering top head out of the swivel arm.\n\nPart details:\n• Item 60 · Head - Steering, Top · P/N NLG-32-1120-01 - Steering top head: receives the servo input at the top of the strut.",
+          "title": "15. Remove the main swivel arm",
+          "text": "Remove the trunnion bolts and lower the main swivel arm out of the housing.\n\nPart details:\n• Item 20 · Arm - Swivel, Main · P/N NLG-32-1020-03 - Main swivel arm (trunnion): carries the strut in the housing and pivots during retraction.",
           "focus": [
-            "060"
+            "020"
           ],
           "action": "detach"
         },
         {
-          "title": "16. Remove the main swivel arm",
-          "text": "Remove the trunnion bolts and lower the main swivel arm out of the housing.\n\nPart details:\n• Item 20 · Arm - Swivel, Main · P/N NLG-32-1020-03 - Main swivel arm (trunnion): carries the strut in the housing and pivots during retraction.",
+          "title": "16. Remove the steering top head",
+          "text": "Lift the steering top head out of the swivel arm.\n\nPart details:\n• Item 60 · Head - Steering, Top · P/N NLG-32-1120-01 - Steering top head: receives the servo input at the top of the strut.",
           "focus": [
-            "020"
+            "060"
           ],
           "action": "detach"
         },
@@ -735,18 +735,18 @@
           "view": "iso"
         },
         {
-          "title": "1. Install the main swivel arm",
-          "text": "Put the main swivel arm back in position and install its pins and fasteners.\n\nPart details:\n• Item 20 · Arm - Swivel, Main · P/N NLG-32-1020-03 - Main swivel arm (trunnion): carries the strut in the housing and pivots during retraction.",
+          "title": "1. Install the steering top head",
+          "text": "Put the steering top head back in position and install its pins and fasteners.\n\nPart details:\n• Item 60 · Head - Steering, Top · P/N NLG-32-1120-01 - Steering top head: receives the servo input at the top of the strut.",
           "focus": [
-            "020"
+            "060"
           ],
           "action": "install"
         },
         {
-          "title": "2. Install the steering top head",
-          "text": "Put the steering top head back in position and install its pins and fasteners.\n\nPart details:\n• Item 60 · Head - Steering, Top · P/N NLG-32-1120-01 - Steering top head: receives the servo input at the top of the strut.",
+          "title": "2. Install the main swivel arm",
+          "text": "Put the main swivel arm back in position and install its pins and fasteners.\n\nPart details:\n• Item 20 · Arm - Swivel, Main · P/N NLG-32-1020-03 - Main swivel arm (trunnion): carries the strut in the housing and pivots during retraction.",
           "focus": [
-            "060"
+            "020"
           ],
           "action": "install"
         },
@@ -948,45 +948,311 @@
     }
   ],
   "explode": [
-    { "node": "Actuator Nut", "offset": [0.0844, 0, 0] },
-    { "node": "Collar", "offset": [-0.0001, 0.0137, 0.0664] },
-    { "node": "Fork", "offset": [0.01026, 0.02966, -0.11867] },
-    { "node": "Gear Actuator", "offset": [0.0345, 0, 0] },
-    { "node": "Gear Actuator Piston Rod", "offset": [0.0429, -0.05745, -0.02111] },
-    { "node": "Gear Rotation Link", "offset": [0.00044, 0.12414, 0.00054] },
-    { "node": "Inner Folding Arm", "offset": [0, -0.0658, 0.0616] },
-    { "node": "Main Actuator Arm", "offset": [0.0687, 0, 0] },
-    { "node": "Main Gear", "offset": [-0.0005, 0.0396, 0.1894] },
-    { "node": "Main Swivel Arm", "offset": [0, 0.0099, 0.0481] },
-    { "node": "Outer Folding Arm", "offset": [0, -0.04188, 0.06384] },
-    { "node": "Pivot for Inner Arm", "offset": [-0.0499, 0.01196, -0.05731] },
-    { "node": "Secondary Actuator Arm", "offset": [0.0587, -0.02924, -1e-05] },
-    { "node": "Steering Collar", "offset": [-0.0003, 0.0212, 0.1014] },
-    { "node": "Steering Link Lower", "offset": [0.0012, 0.0664, 0.0171] },
-    { "node": "Steering Link Upper", "offset": [0.0013, 0.0589, -0.0123] },
-    { "node": "Steering Link for servo", "offset": [0, 0.0631, 0.0241] },
-    { "node": "Steering Top Head", "offset": [-0.0001, 0.0046, 0.0218] },
-    { "node": "Wheel", "offset": [-0.14238, 0.00225, 0.00065] }
+    {
+      "node": "Actuator Nut",
+      "offset": [
+        0.0844,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Collar",
+      "offset": [
+        -0.0001,
+        0.0137,
+        0.0664
+      ]
+    },
+    {
+      "node": "Fork",
+      "offset": [
+        0.01026,
+        0.02966,
+        -0.11867
+      ]
+    },
+    {
+      "node": "Gear Actuator",
+      "offset": [
+        0.0345,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Gear Actuator Piston Rod",
+      "offset": [
+        0.0429,
+        -0.05745,
+        -0.02111
+      ]
+    },
+    {
+      "node": "Gear Rotation Link",
+      "offset": [
+        0.00044,
+        0.12414,
+        0.00054
+      ]
+    },
+    {
+      "node": "Inner Folding Arm",
+      "offset": [
+        0,
+        -0.0658,
+        0.0616
+      ]
+    },
+    {
+      "node": "Main Actuator Arm",
+      "offset": [
+        0.0687,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Main Gear",
+      "offset": [
+        -0.0005,
+        0.0396,
+        0.1894
+      ]
+    },
+    {
+      "node": "Main Swivel Arm",
+      "offset": [
+        0,
+        0.0099,
+        0.0481
+      ]
+    },
+    {
+      "node": "Outer Folding Arm",
+      "offset": [
+        0,
+        -0.04188,
+        0.06384
+      ]
+    },
+    {
+      "node": "Pivot for Inner Arm",
+      "offset": [
+        -0.0499,
+        0.01196,
+        -0.05731
+      ]
+    },
+    {
+      "node": "Secondary Actuator Arm",
+      "offset": [
+        0.0587,
+        -0.02924,
+        -1e-05
+      ]
+    },
+    {
+      "node": "Steering Collar",
+      "offset": [
+        -0.0003,
+        0.0212,
+        0.1014
+      ]
+    },
+    {
+      "node": "Steering Link Lower",
+      "offset": [
+        0.0012,
+        0.0664,
+        0.0171
+      ]
+    },
+    {
+      "node": "Steering Link Upper",
+      "offset": [
+        0.0013,
+        0.0589,
+        -0.0123
+      ]
+    },
+    {
+      "node": "Steering Link for servo",
+      "offset": [
+        0,
+        0.0631,
+        0.0241
+      ]
+    },
+    {
+      "node": "Steering Top Head",
+      "offset": [
+        -0.0001,
+        0.0046,
+        0.0218
+      ]
+    },
+    {
+      "node": "Wheel",
+      "offset": [
+        -0.14238,
+        0.00225,
+        0.00065
+      ]
+    }
   ],
   "removal": [
-    { "node": "Actuator Nut", "offset": [0.0844, 0, 0] },
-    { "node": "Collar", "offset": [-0.0001, 0.0137, 0.0664] },
-    { "node": "Fork", "offset": [0.01026, 0.02966, -0.11867] },
-    { "node": "Gear Actuator", "offset": [0.0345, 0, 0] },
-    { "node": "Gear Actuator Piston Rod", "offset": [0.0429, -0.05745, -0.02111] },
-    { "node": "Gear Rotation Link", "offset": [0.00044, 0.12414, 0.00054] },
-    { "node": "Inner Folding Arm", "offset": [0, -0.0658, 0.0616] },
-    { "node": "Main Actuator Arm", "offset": [0.0687, 0, 0] },
-    { "node": "Main Gear", "offset": [-0.0005, 0.0396, 0.1894] },
-    { "node": "Main Swivel Arm", "offset": [0, 0.0099, 0.0481] },
-    { "node": "Outer Folding Arm", "offset": [0, -0.04188, 0.06384] },
-    { "node": "Pivot for Inner Arm", "offset": [-0.0499, 0.01196, -0.05731] },
-    { "node": "Secondary Actuator Arm", "offset": [0.0587, -0.02924, -0.00001] },
-    { "node": "Steering Collar", "offset": [-0.0003, 0.0212, 0.1014] },
-    { "node": "Steering Link Lower", "offset": [0.0012, 0.0664, 0.0171] },
-    { "node": "Steering Link Upper", "offset": [0.0013, 0.0589, -0.0123] },
-    { "node": "Steering Link for servo", "offset": [0, 0.0631, 0.0241] },
-    { "node": "Steering Top Head", "offset": [-0.0001, 0.0046, 0.0218] },
-    { "node": "Wheel", "offset": [-0.14238, 0.00225, 0.00065] }
+    {
+      "node": "Actuator Nut",
+      "offset": [
+        0.0844,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Collar",
+      "offset": [
+        -0.0001,
+        0.0137,
+        0.0664
+      ]
+    },
+    {
+      "node": "Fork",
+      "offset": [
+        0.01026,
+        0.02966,
+        -0.11867
+      ]
+    },
+    {
+      "node": "Gear Actuator",
+      "offset": [
+        0.0345,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Gear Actuator Piston Rod",
+      "offset": [
+        0.0429,
+        -0.05745,
+        -0.02111
+      ]
+    },
+    {
+      "node": "Gear Rotation Link",
+      "offset": [
+        0.00044,
+        0.12414,
+        0.00054
+      ]
+    },
+    {
+      "node": "Inner Folding Arm",
+      "offset": [
+        0,
+        -0.0658,
+        0.0616
+      ]
+    },
+    {
+      "node": "Main Actuator Arm",
+      "offset": [
+        0.0687,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Main Gear",
+      "offset": [
+        -0.0005,
+        0.0396,
+        0.1894
+      ]
+    },
+    {
+      "node": "Main Swivel Arm",
+      "offset": [
+        0,
+        0.0099,
+        0.0481
+      ]
+    },
+    {
+      "node": "Outer Folding Arm",
+      "offset": [
+        0,
+        -0.04188,
+        0.06384
+      ]
+    },
+    {
+      "node": "Pivot for Inner Arm",
+      "offset": [
+        -0.0499,
+        0.01196,
+        -0.05731
+      ]
+    },
+    {
+      "node": "Secondary Actuator Arm",
+      "offset": [
+        0.0587,
+        -0.02924,
+        -1e-05
+      ]
+    },
+    {
+      "node": "Steering Collar",
+      "offset": [
+        -0.0003,
+        0.0212,
+        0.1014
+      ]
+    },
+    {
+      "node": "Steering Link Lower",
+      "offset": [
+        0.0012,
+        0.0664,
+        0.0171
+      ]
+    },
+    {
+      "node": "Steering Link Upper",
+      "offset": [
+        0.0013,
+        0.0589,
+        -0.0123
+      ]
+    },
+    {
+      "node": "Steering Link for servo",
+      "offset": [
+        0,
+        0.0631,
+        0.0241
+      ]
+    },
+    {
+      "node": "Steering Top Head",
+      "offset": [
+        -0.0001,
+        0.0046,
+        0.0218
+      ]
+    },
+    {
+      "node": "Wheel",
+      "offset": [
+        -0.14238,
+        0.00225,
+        0.00065
+      ]
+    }
   ]
 }

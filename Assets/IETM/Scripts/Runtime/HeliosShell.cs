@@ -54,10 +54,14 @@ namespace IETM
 
         void OnDestroy() { Font.textureRebuilt -= OnFontRebuilt; }
 
-        void OnFontRebuilt(Font f)
+        bool fontRefreshPending;
+        void OnFontRebuilt(Font f) { fontRefreshPending = true; }   // refreshed next frame, outside the rebuild loop
+
+        void LateUpdate()
         {
-            if (shell == null) return;
-            foreach (var t in shell.shellRoot.GetComponentsInChildren<Text>(true)) if (t.font == f) t.SetAllDirty();
+            if (!fontRefreshPending || shell == null) return;
+            fontRefreshPending = false;
+            foreach (var t in shell.shellRoot.GetComponentsInChildren<Text>(true)) t.SetAllDirty();
         }
 
         void Wire()
