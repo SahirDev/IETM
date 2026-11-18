@@ -458,6 +458,36 @@ namespace IETM
             return best ?? bestGhost;
         }
 
+        /// <summary>
+        /// Bounds that cover the parts both assembled and at their laid-out (removed) position, and the average
+        /// removal direction in world space. Used to aim the camera at a part while it is removed / installed.
+        /// </summary>
+        public bool TryGetRemovalPath(IEnumerable<IPDItem> leaves, out Bounds path, out Vector3 direction)
+        {
+            path = new Bounds(); direction = Vector3.zero;
+            bool has = false;
+            if (Active == null) return false;
+            foreach (var l in leaves)
+            {
+                if (!Active.parts.TryGetValue(l, out var pb) || !pb.IsBound) continue;
+                var bb = pb.CurrentBounds();
+                Vector3 rem = Vector3.zero;
+                if (pb.hasRemoval && pb.nodes.Count > 0 && pb.nodes[0] != null)
+                {
+                    var parent = pb.nodes[0].parent;
+                    rem = parent ? parent.TransformVector(pb.removalLocal[0]) : pb.removalLocal[0];
+                }
+                float rt = removeT.TryGetValue(l, out var t) ? t : 0f;
+                float ease = rt * rt * (3f - 2f * rt);
+                var rest = new Bounds(bb.center - rem * ease, bb.size);
+                var away = new Bounds(rest.center + rem, bb.size);
+                if (!has) { path = rest; has = true; } else path.Encapsulate(rest);
+                path.Encapsulate(away);
+                direction += rem;
+            }
+            return has;
+        }
+
         public bool TryGetBounds(IEnumerable<IPDItem> leaves, out Bounds b)
         {
             b = new Bounds();

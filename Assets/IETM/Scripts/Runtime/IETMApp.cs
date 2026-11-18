@@ -539,10 +539,18 @@ namespace IETM
             else { model.Isolate(null); SetOn(view.isolateButton, false); }
 
             if (!string.IsNullOrEmpty(step.view)) vcam.SetPreset(step.view);
-            if (step.action == "operate" || layout)
+            if (layout && (step.action == "detach" || step.action == "install") && focusLeaves.Count > 0 && focusLeaves.Count <= 4
+                && model.TryGetRemovalPath(focusLeaves, out var path, out var motion))
             {
-                // keep the whole assembly (and the laid-out parts) in view; frame once when the procedure starts
-                if (procStep == 0) FocusItems(db.Leaves().ToList(), layout ? 1.9f : 1.15f);
+                // follow the part being removed / installed: look across its path and frame start + end
+                vcam.autoRotate = false; if (view.spinButton) view.spinButton.On = false;
+                vcam.LookAcross(motion);
+                vcam.Frame(path, false, 1.35f);
+            }
+            else if (step.action == "operate" || layout)
+            {
+                // keep the whole assembly (and the laid-out parts) in view
+                if (procStep == 0 || layout) FocusItems(db.Leaves().ToList(), layout ? 1.9f : 1.15f);
             }
             else
             {

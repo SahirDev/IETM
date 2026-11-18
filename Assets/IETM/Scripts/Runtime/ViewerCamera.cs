@@ -60,6 +60,21 @@ namespace IETM
             tPitch = Mathf.Clamp(pitchDeg, minPitch, maxPitch);
         }
 
+        /// <summary>Turns the view so the given motion direction runs across the screen (keeps the current side, slight elevation).</summary>
+        public void LookAcross(Vector3 motion, float minPitchDeg = 12f, float maxPitchDeg = 40f)
+        {
+            if (motion.sqrMagnitude < 1e-12f) return;
+            var dn = motion.normalized;
+            var f = Quaternion.Euler(tPitch, tYaw, 0f) * Vector3.forward;
+            var c = f - dn * Vector3.Dot(f, dn);
+            if (c.sqrMagnitude < 1e-6f) c = Vector3.Cross(dn, Vector3.up);
+            if (c.sqrMagnitude < 1e-6f) c = Vector3.forward;
+            c.Normalize();
+            float pitchDeg = Mathf.Clamp(Mathf.Asin(Mathf.Clamp(-c.y, -1f, 1f)) * Mathf.Rad2Deg, minPitchDeg, maxPitchDeg);
+            float yawDeg = Mathf.Atan2(c.x, c.z) * Mathf.Rad2Deg;
+            SetView(yawDeg, pitchDeg);
+        }
+
         public void SetPreset(string name)
         {
             switch ((name ?? "").ToLowerInvariant())
