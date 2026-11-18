@@ -102,8 +102,14 @@ namespace IETM
         public string warning;
         public string caution;
         public string[] focus;
-        /// <summary>highlight | isolate | remove | restore</summary>
+        /// <summary>
+        /// highlight | isolate | remove | restore |
+        /// operate (isolate the focus parts in their own colours, the rest ghosted) |
+        /// detach (remove the focus parts and lay them out, still visible) | install (put detached parts back)
+        /// </summary>
         public string action;
+        /// <summary>cycle = play gear retraction / extension in a loop while the step is shown | retract | extend | (empty)</summary>
+        public string animate;
         /// <summary>iso | front | side | top | (empty = keep)</summary>
         public string view;
         /// <summary>extended | retracted | (empty = keep)</summary>
@@ -150,6 +156,8 @@ namespace IETM
         public List<DataModule> modules = new List<DataModule>();
         [Tooltip("Mechanically laid-out exploded view (collision-free). Empty = simple radial explode.")]
         public List<ExplodeOffset> explode = new List<ExplodeOffset>();
+        [Tooltip("Where each part is laid out when a procedure removes it (disassembly order, collision-free).")]
+        public List<ExplodeOffset> removal = new List<ExplodeOffset>();
 
         [NonSerialized] public Dictionary<string, IPDItem> byItemNo = new Dictionary<string, IPDItem>();
 

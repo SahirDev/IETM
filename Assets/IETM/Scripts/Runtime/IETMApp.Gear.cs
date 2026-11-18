@@ -30,6 +30,12 @@ namespace IETM
         IETMScrewDriver screwDriver;
 
         GameObject gearAnimRoot;
+        [Tooltip("Speed factor of the looping gear animation in the Operation data module.")]
+        public float operationLoopSpeed = 0.55f;
+        [Tooltip("Pause (s) at each end of the looping gear animation.")]
+        public float operationLoopPause = 1.0f;
+        bool gearLoop;
+        float gearLoopWait;
         bool gearAnimated;
         float gearT;          // 0 = extended, 1 = retracted
         int gearTarget;       // 0 = extended, 1 = retracted
@@ -93,7 +99,7 @@ namespace IETM
                                : cycleEndTime - t01 * (cycleEndTime - midTime);   // extend : mid -> end
         }
 
-        void SetGearAnimated(int index)
+        void SetGearAnimated(int index, bool quiet = false)
         {
             index = Mathf.Clamp(index, 0, 1);
             if (index == gearTarget && !gearMoving) { UpdateGearButtons(); return; }
@@ -109,14 +115,20 @@ namespace IETM
             model.poseLocked = true;
             gearMoving = true;
             UpdateGearButtons();
-            Toast(index == 1 ? "Retracting gear…" : "Extending gear…", Theme.Accent2);
+            if (!quiet) Toast(index == 1 ? "Retracting gear…" : "Extending gear…", Theme.Accent2);
         }
 
         void UpdateGearAnimation()
         {
+            if (gearLoop && !gearMoving && gearAnimated)
+            {
+                gearLoopWait -= Time.unscaledDeltaTime;
+                if (gearLoopWait <= 0f) SetGearAnimated(1 - gearTarget, true);
+            }
             if (!gearMoving || gearAnimation == null || gearAnimRoot == null) return;
+            float speed = gearAnimationSpeed * (gearLoop ? operationLoopSpeed : 1f);
             float dur = Mathf.Max(0.1f, gearTarget == 1 ? (clipStartsRetracted ? cycleEndTime - midTime : midTime)
-                                                         : (clipStartsRetracted ? midTime : cycleEndTime - midTime)) / Mathf.Max(0.01f, gearAnimationSpeed);
+                                                         : (clipStartsRetracted ? midTime : cycleEndTime - midTime)) / Mathf.Max(0.01f, speed);
             gearT = Mathf.MoveTowards(gearT, gearTarget, Time.unscaledDeltaTime / dur);
             float t = ClipTime(gearT, gearTarget);
             gearAnimation.SampleAnimation(gearAnimRoot, t);
@@ -127,7 +139,8 @@ namespace IETM
                 model.poseLocked = false;
                 model.RecaptureBase();
                 model.ApplyOffsets();
-                Toast("Gear " + (gearTarget == 1 ? "RETRACTED (up)" : "EXTENDED (down and locked)"), Theme.Accent2);
+                if (gearLoop) gearLoopWait = operationLoopPause;
+                else Toast("Gear " + (gearTarget == 1 ? "RETRACTED (up)" : "EXTENDED (down and locked)"), Theme.Accent2);
             }
         }
     }

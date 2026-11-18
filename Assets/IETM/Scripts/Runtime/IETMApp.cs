@@ -468,7 +468,9 @@ namespace IETM
             {
                 model.RestoreAll();
                 model.Isolate(null);
+                model.showRemoved = false;
                 SetOn(view.isolateButton, false);
+                if (gearLoop) { gearLoop = false; SetGear(0); }
             }
             currentModule = m;
             BuildModuleContent();
@@ -502,15 +504,27 @@ namespace IETM
 
             if (!string.IsNullOrEmpty(step.gear)) SetGear(step.gear == "retracted" ? 1 : 0);
 
+            bool layout = false;
+            foreach (var s in steps) if (s.action == "detach" || s.action == "install") layout = true;
+            model.showRemoved = layout;
+            model.designedExplode = CurrentGear == 0;
+
             var removed = new HashSet<IPDItem>();
             for (int i = 0; i <= procStep; i++)
             {
                 var s = steps[i];
                 if (s.action == "restore") removed.Clear();
-                else if (s.action == "remove" && s.focus != null)
+                else if ((s.action == "remove" || s.action == "detach") && s.focus != null)
                     foreach (var f in s.focus) { var it = db.Find(f); if (it != null) foreach (var l in model.LeavesOf(it)) removed.Add(l); }
+                else if (s.action == "install" && s.focus != null)
+                    foreach (var f in s.focus) { var it = db.Find(f); if (it != null) foreach (var l in model.LeavesOf(it)) removed.Remove(l); }
             }
             foreach (var l in db.Leaves()) model.SetRemoved(l, removed.Contains(l));
+
+            // operation: loop the gear animation while the step is shown
+            gearLoop = step.animate == "cycle";
+            if (step.animate == "retract") SetGear(1);
+            else if (step.animate == "extend") SetGear(0);
 
             var focusLeaves = new List<IPDItem>();
             IPDItem first = null;
@@ -518,15 +532,23 @@ namespace IETM
                 foreach (var f in step.focus) { var it = db.Find(f); if (it == null) continue; if (first == null) first = it; focusLeaves.AddRange(model.LeavesOf(it)); }
 
             selectedItem = first;
-            model.SetSelection(focusLeaves);
+            model.SetSelection(step.action == "operate" ? new List<IPDItem>() : focusLeaves);
 
-            if (step.action == "isolate") { model.Isolate(focusLeaves); SetOn(view.isolateButton, true); }
+            if (step.action == "isolate" || step.action == "operate") { model.Isolate(step.action == "operate" && first != null && first.parent == null ? null : focusLeaves); SetOn(view.isolateButton, step.action == "isolate"); }
             else if (step.action == "remove" && first != null && first.parent != null) { model.Isolate(model.LeavesOf(first.parent)); SetOn(view.isolateButton, true); }
             else { model.Isolate(null); SetOn(view.isolateButton, false); }
 
             if (!string.IsNullOrEmpty(step.view)) vcam.SetPreset(step.view);
-            var frameSet = step.action == "remove" && first != null && first.parent != null ? model.LeavesOf(first.parent) : focusLeaves;
-            if (frameSet.Count > 0) FocusItems(frameSet, frameSet.Count > 6 ? 1.15f : 1.5f);
+            if (step.action == "operate" || layout)
+            {
+                // keep the whole assembly (and the laid-out parts) in view; frame once when the procedure starts
+                if (procStep == 0) FocusItems(db.Leaves().ToList(), layout ? 1.9f : 1.15f);
+            }
+            else
+            {
+                var frameSet = step.action == "remove" && first != null && first.parent != null ? model.LeavesOf(first.parent) : focusLeaves;
+                if (frameSet.Count > 0) FocusItems(frameSet, frameSet.Count > 6 ? 1.15f : 1.5f);
+            }
 
             RefreshSelectionUI(true);
             RefreshProcedureUI();

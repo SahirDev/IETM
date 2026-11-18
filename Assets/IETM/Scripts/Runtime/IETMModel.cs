@@ -16,6 +16,9 @@ namespace IETM
         /// <summary>Designed explode travel per node, in the node's parent space (Unity axes). See ExplodeOffset.</summary>
         public readonly List<Vector3> designLocal = new List<Vector3>();
         public bool hasDesign;
+        /// <summary>Designed travel when a procedure removes the part (see IETMDatabase.removal).</summary>
+        public readonly List<Vector3> removalLocal = new List<Vector3>();
+        public bool hasRemoval;
         public Vector3 baseCenter;
         public bool IsBound => renderers.Count > 0;
 
@@ -141,6 +144,9 @@ namespace IETM
                     var eo = FindExplode(t.name);
                     pb.designLocal.Add(eo != null ? new Vector3(-eo.offset[0], eo.offset[1], eo.offset[2]) : Vector3.zero);
                     if (eo != null) { pb.hasDesign = true; v.hasDesign = true; }
+                    var ro = FindOffset(db.removal, t.name);
+                    pb.removalLocal.Add(ro != null ? new Vector3(-ro.offset[0], ro.offset[1], ro.offset[2]) : Vector3.zero);
+                    if (ro != null) pb.hasRemoval = true;
                     foreach (var r in t.GetComponentsInChildren<Renderer>(true))
                     {
                         if (pb.renderers.Contains(r)) continue;
@@ -285,7 +291,10 @@ namespace IETM
 
         public bool IsRemoved(IPDItem leaf) => removeT.TryGetValue(leaf, out var t) && t > 0.97f;
 
-        public bool IsVisible(IPDItem leaf) => !hidden.Contains(leaf) && !IsRemoved(leaf);
+        /// <summary>Removed parts stay visible, laid out next to the assembly (disassembly / assembly procedures).</summary>
+        public bool showRemoved;
+
+        public bool IsVisible(IPDItem leaf) => !hidden.Contains(leaf) && (showRemoved || !IsRemoved(leaf));
 
         public bool IsGhosted(IPDItem leaf)
         {
@@ -335,10 +344,12 @@ namespace IETM
             if (dirty) RefreshVisuals();
         }
 
-        ExplodeOffset FindExplode(string node)
+        ExplodeOffset FindExplode(string node) => FindOffset(db.explode, node);
+
+        static ExplodeOffset FindOffset(List<ExplodeOffset> list, string node)
         {
-            if (db.explode == null) return null;
-            foreach (var e in db.explode)
+            if (list == null) return null;
+            foreach (var e in list)
                 if (e != null && e.node == node && e.offset != null && e.offset.Length >= 3) return e;
             return null;
         }
@@ -365,7 +376,15 @@ namespace IETM
                     if (n == null) continue;
                     var parent = n.parent;
                     Vector3 offset;
-                    if (design)
+                    if (designedExplode && pb.hasRemoval && ease > 0f)
+                    {
+                        // laid-out removal position (collision-free disassembly layout) + any explode
+                        Vector3 rem = parent ? parent.TransformVector(pb.removalLocal[i]) : pb.removalLocal[i];
+                        Vector3 ex = design ? (parent ? parent.TransformVector(pb.designLocal[i]) : pb.designLocal[i]) * explode
+                                            : pb.explodeDir * (explode * r * 0.9f);
+                        offset = rem * ease + ex;
+                    }
+                    else if (design)
                     {
                         // designed layout: every part slides along its own assembly axis, nothing collides
                         Vector3 d = parent ? parent.TransformVector(pb.designLocal[i]) : pb.designLocal[i];

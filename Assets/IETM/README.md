@@ -95,6 +95,19 @@ with item callouts, and the parts list (FIG-ITEM, P/N, indented nomenclature, CA
   radial explode is used. Remove the block to go back to radial explode.
 * Regenerate after changing the JSON or model: `python Tools/ipc_pdf/make.py` (see `Tools/ipc_pdf/README.md`).
 
+## 1g. Publication structure, operation animation, disassembly / assembly
+
+* **Front matter** - Title page.
+* **Description and operation** - *Description*: click a heading to isolate that subassembly (own colours, rest
+  ghosted). *Operation*: the retraction sequence, step by step (lead screw turns -> actuator moves -> actuator arms
+  rotate the main swivel arm -> steering turns the wheel to fit the bay -> drag brace folds); the gear animation
+  loops while a step is shown and the parts doing the work stay in colour (`"action": "operate", "animate": "cycle"`).
+* **Maintenance** - *Disassembly* (16 steps, Next / Previous): each step removes a part and lays it out next to the
+  assembly; every intermediate state is collision-free (`"removal"` block in the JSON, solved in disassembly order).
+  Each step shows the part's item, P/N and function. *Assembly*: the same parts in reverse (`"install"`).
+  Plus the wheel removal, steering inspection and retraction test procedures.
+* **Illustrated parts data** - IPD and the printable IPC (PDF).
+
 ## 1f. HELIOS shell (IETM inside the HELIOS app)
 
 The IETM can run inside the HELIOS application layout (same as the HELIOS Figma main screen):
