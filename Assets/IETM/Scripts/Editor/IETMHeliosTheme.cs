@@ -29,6 +29,8 @@ namespace IETM.EditorTools
             { IETMCommand.FitSelection, ("zoom", false) },
             { IETMCommand.AutoRotate, ("rotate", false) },
             { IETMCommand.Snapshot, ("image", true) },
+            { IETMCommand.XRay, ("xray", true) },
+            { IETMCommand.Callouts, ("callouts", true) },
             { IETMCommand.IpdReset, ("rotate", false) },
             { IETMCommand.IpdCopyList, ("document", false) },
             { IETMCommand.IpdDownloadPdf, ("report", false) },
@@ -198,6 +200,18 @@ namespace IETM.EditorTools
         /// <summary>Brings a UI built with an earlier version up to date (idempotent).</summary>
         static void UpdateLayout(IETMView v)
         {
+            // viewer toolbar: X-Ray + Callouts move to the VIEW bar; the toolbar shrinks to fit the viewport
+            if (v.isolateButton != null)
+            {
+                var tb = v.isolateButton.transform.parent;
+                if (tb != null && tb.GetComponent<UIFitWidth>() == null) tb.gameObject.AddComponent<UIFitWidth>();
+            }
+            Transform viewBar = null;
+            foreach (var b in v.GetComponentsInChildren<IETMButton>(true))
+                if (b.command == IETMCommand.ViewIso || b.command == IETMCommand.ViewTop || b.command == IETMCommand.Snapshot) { viewBar = b.transform.parent; break; }
+            if (viewBar != null && (v.xrayButton == null || v.xrayButton.transform.parent != viewBar))
+                IETMUIBuilder.AddDisplayToggles(v, viewBar);
+
             // panel toggles move from the top bar to the panel edges
             foreach (var b in v.GetComponentsInChildren<IETMButton>(true))
             {

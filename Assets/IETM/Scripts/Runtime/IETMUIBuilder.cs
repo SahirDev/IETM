@@ -171,6 +171,27 @@ namespace IETM
             return UIKit.Button(figureButtons, "PDF", IETMCommand.IpdDownloadPdf, BtnStyle.Accent, 12, 72, 30, "Download the Illustrated Parts Catalog (PDF)");
         }
 
+        /// <summary>X-Ray and Callouts toggles in the VIEW bar (top right of the viewer).</summary>
+        public static void AddDisplayToggles(IETMView v, Transform viewBar)
+        {
+            var d = UIKit.Divider(viewBar); d.name = "Display Divider";
+            if (v.xrayButton == null)
+                v.xrayButton = UIKit.Button(viewBar, "X-Ray", IETMCommand.XRay, BtnStyle.Ghost, 10, -1, 30, "X-Ray: ghost everything except the selection  (X)");
+            if (v.calloutsButton == null)
+            {
+                v.calloutsButton = UIKit.Button(viewBar, "Callouts", IETMCommand.Callouts, BtnStyle.Ghost, 10, -1, 30, "Callouts: show item numbers  (L)");
+                v.calloutsButton.On = false;
+            }
+            foreach (var b in new[] { v.xrayButton, v.calloutsButton })
+            {
+                b.transform.SetParent(viewBar, false);
+                b.transform.SetAsLastSibling();
+                b.LE(-1, 30);
+                var tip = b.GetComponent<UITooltip>();
+                if (tip != null) tip.text = b == v.xrayButton ? "X-Ray: ghost everything except the selection  (X)" : "Callouts: show item numbers  (L)";
+            }
+        }
+
         static void BuildIpdView(IETMView v, RectTransform parent, IETMDatabase db)
         {
             var view = UIKit.Rect("IPD View", parent).Stretch();
@@ -311,15 +332,13 @@ namespace IETM
             tb.Border(Theme.Border);
             tb.HLayout(6, 10, 10, 9, 9, TextAnchor.MiddleCenter, false, false);
             var fit = tb.gameObject.AddComponent<ContentSizeFitter>(); fit.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            tb.gameObject.AddComponent<UIFitWidth>();
             UIKit.Button(tb.transform, "⌂", IETMCommand.HomeView, BtnStyle.Ghost, 16, 34, 34, "Home view  (Home)");
             UIKit.Button(tb.transform, "Fit", IETMCommand.FitSelection, BtnStyle.Ghost, 12, 40, 34, "Zoom to selection  (F)");
             UIKit.Divider(tb.transform, true);
             v.isolateButton = UIKit.Button(tb.transform, "Isolate", IETMCommand.Isolate, BtnStyle.Ghost, 12, 62, 34, "Isolate selection  (I)");
             UIKit.Button(tb.transform, "Hide", IETMCommand.Hide, BtnStyle.Ghost, 12, 48, 34, "Hide selection  (H)");
             UIKit.Button(tb.transform, "Show all", IETMCommand.ShowAll, BtnStyle.Ghost, 12, 70, 34, "Show all hidden parts");
-            v.xrayButton = UIKit.Button(tb.transform, "X-Ray", IETMCommand.XRay, BtnStyle.Ghost, 12, 56, 34, "Ghost everything except the selection  (X)");
-            v.calloutsButton = UIKit.Button(tb.transform, "Callouts", IETMCommand.Callouts, BtnStyle.Ghost, 12, 70, 34, "Show item number callouts  (L)");
-            v.calloutsButton.On = false;
             UIKit.Divider(tb.transform, true);
             var el = UIKit.Label(tb.transform, "Explode", 12, Theme.Muted, TextAnchor.MiddleLeft, FontStyle.Normal, "Explode Label"); el.LE(50, 34);
             v.explodeSlider = UIKit.Slider(tb.transform, 0f, 110);
@@ -338,6 +357,7 @@ namespace IETM
             UIKit.Button(vp.transform, "+", IETMCommand.ZoomIn, BtnStyle.Ghost, 16, -1, 30, "Zoom in");
             UIKit.Button(vp.transform, "-", IETMCommand.ZoomOut, BtnStyle.Ghost, 16, -1, 30, "Zoom out");
             UIKit.Button(vp.transform, "Snap", IETMCommand.Snapshot, BtnStyle.Ghost, 11, -1, 30, "Save a screenshot");
+            AddDisplayToggles(v, vp.transform);
 
             // selected part card
             var card = UIKit.Panel(o, Theme.Panel.A(0.95f), 14, "Part Card");
