@@ -363,7 +363,7 @@
   "modules": [
     {
       "id": "DM-TITLE",
-      "group": "Front matter",
+      "group": "00 Introduction",
       "type": "description",
       "dmc": "DMC-F16NLG-A-00-00-00-00A-001A-D",
       "title": "Title page",
@@ -391,7 +391,7 @@
     },
     {
       "id": "DM-DESC",
-      "group": "Description and operation",
+      "group": "32-20 Description and operation",
       "type": "description",
       "dmc": "DMC-F16NLG-A-32-20-00-00A-040A-D",
       "title": "Nose landing gear",
@@ -442,7 +442,7 @@
     },
     {
       "id": "DM-OPER",
-      "group": "Description and operation",
+      "group": "32-20 Description and operation",
       "type": "procedure",
       "dmc": "DMC-F16NLG-A-32-20-00-00A-041A-D",
       "title": "Nose landing gear",
@@ -533,7 +533,7 @@
     },
     {
       "id": "DM-DISASSY",
-      "group": "Maintenance",
+      "group": "32-20 Maintenance",
       "type": "procedure",
       "dmc": "DMC-F16NLG-A-32-20-00-00A-520A-A",
       "title": "Nose landing gear",
@@ -696,7 +696,7 @@
     },
     {
       "id": "DM-ASSY",
-      "group": "Maintenance",
+      "group": "32-20 Maintenance",
       "type": "procedure",
       "dmc": "DMC-F16NLG-A-32-20-00-00A-720A-A",
       "title": "Nose landing gear",
@@ -876,134 +876,8 @@
       ]
     },
     {
-      "id": "DM-WHEEL-RI",
-      "group": "Maintenance",
-      "type": "procedure",
-      "dmc": "DMC-F16NLG-A-32-40-00-00A-520A-A",
-      "title": "Nose wheel",
-      "infoName": "Removal procedure",
-      "steps": [
-        {
-          "title": "Preliminary requirements",
-          "text": "Make sure the aircraft is on jacks and the nose wheel is clear of the ground. Install the landing gear ground safety pins.",
-          "warning": "WARNING: Do not remove the wheel unless the aircraft is safely supported on jacks. The aircraft can fall and cause injury.",
-          "focus": [
-            "001"
-          ],
-          "action": "highlight",
-          "view": "iso",
-          "gear": "extended"
-        },
-        {
-          "title": "Identify the wheel and fork assembly",
-          "text": "Find the wheel and fork assembly (200). Examine the area around the fork for loose or missing parts.",
-          "focus": [
-            "200"
-          ],
-          "action": "isolate",
-          "view": "side"
-        },
-        {
-          "title": "Remove the wheel",
-          "text": "Release the axle retaining hardware. Pull the wheel (230) out of the fork (210). Put the wheel on a clean, padded surface.",
-          "focus": [
-            "230"
-          ],
-          "action": "remove",
-          "view": "side"
-        },
-        {
-          "title": "Remove the hub",
-          "text": "Remove the hub (220) from the fork. Do not damage the bearing seats.",
-          "caution": "CAUTION: Keep the bearings clean. Contamination can cause early bearing failure.",
-          "focus": [
-            "220"
-          ],
-          "action": "remove",
-          "view": "side"
-        },
-        {
-          "title": "Examine the fork",
-          "text": "Examine the fork (210) for cracks, corrosion and damage to the axle bores.",
-          "focus": [
-            "210"
-          ],
-          "action": "highlight",
-          "view": "iso"
-        },
-        {
-          "title": "Close-up",
-          "text": "Removal is complete. To install the wheel, do these steps in reverse order: select Restore to put the parts back.",
-          "focus": [
-            "210"
-          ],
-          "action": "restore",
-          "view": "iso"
-        }
-      ]
-    },
-    {
-      "id": "DM-STEER-INSP",
-      "group": "Maintenance",
-      "type": "procedure",
-      "dmc": "DMC-F16NLG-A-32-50-00-00A-310A-A",
-      "title": "Steering linkage",
-      "infoName": "Visual examination",
-      "steps": [
-        {
-          "title": "Access",
-          "text": "Make sure that the hydraulic and electrical power is off and that the steering servo is not powered.",
-          "focus": [
-            "040"
-          ],
-          "action": "highlight",
-          "view": "iso",
-          "gear": "extended"
-        },
-        {
-          "title": "Servo link",
-          "text": "Examine the servo link (90) for bending, and the rod ends for free play.",
-          "focus": [
-            "090"
-          ],
-          "action": "isolate",
-          "view": "front"
-        },
-        {
-          "title": "Upper and lower steering links",
-          "text": "Examine the upper (70) and lower (80) steering links. Measure the bushing free play.",
-          "caution": "CAUTION: The maximum permitted free play is 0.2 mm. Replace the links if the free play is more than this.",
-          "focus": [
-            "070",
-            "080"
-          ],
-          "action": "isolate",
-          "view": "side"
-        },
-        {
-          "title": "Steering collar and head",
-          "text": "Turn the steering collar (50) by hand through its full travel. It must move smoothly and not bind. Examine the steering top head (60).",
-          "focus": [
-            "050",
-            "060"
-          ],
-          "action": "highlight",
-          "view": "iso"
-        },
-        {
-          "title": "Close-up",
-          "text": "Record the results in the maintenance log.",
-          "focus": [
-            "040"
-          ],
-          "action": "restore",
-          "view": "iso"
-        }
-      ]
-    },
-    {
       "id": "DM-RETRACT-CHK",
-      "group": "Maintenance",
+      "group": "32-20 Maintenance",
       "type": "procedure",
       "dmc": "DMC-F16NLG-A-32-30-00-00A-340A-A",
       "title": "Retraction mechanism",
@@ -1066,20 +940,11 @@
     },
     {
       "id": "DM-IPD",
-      "group": "Illustrated parts data",
+      "group": "32-20 Illustrated parts data",
       "type": "ipd",
       "dmc": "DMC-F16NLG-A-32-20-00-00A-941A-D",
       "title": "Nose landing gear",
       "infoName": "Illustrated parts data - IPD"
-    },
-    {
-      "id": "DOC-IPC-PDF",
-      "group": "Illustrated parts data",
-      "type": "document",
-      "dmc": "32-20-00 Fig 1",
-      "title": "Printable IPC (PDF)",
-      "infoName": "Illustrated Parts Catalog - download",
-      "file": "IETM/32-20-00_Fig1_IPC.pdf"
     }
   ],
   "explode": [

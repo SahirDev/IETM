@@ -32,6 +32,7 @@ namespace IETM.EditorTools
                     if (GUILayout.Button("Apply HELIOS Theme (colours, font, icons, logo)", GUILayout.Height(24))) IETMHeliosTheme.Apply(app);
 
                 if (GUILayout.Button("Use Animated GLB Model (Landing_Gear 1.glb)", GUILayout.Height(24))) IETMSceneBuilder.UseAnimatedModel(app);
+                if (GUILayout.Button("Layout Editor (exploded / disassembly positions)", GUILayout.Height(24))) IETMLayoutWindow.Open();
 
                 using (new EditorGUI.DisabledScope(app.view == null))
                 {

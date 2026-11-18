@@ -97,7 +97,7 @@ with item callouts, and the parts list (FIG-ITEM, P/N, indented nomenclature, CA
 
 ## 1g. Publication structure, operation animation, disassembly / assembly
 
-* **Front matter** - Title page.
+* **00 Introduction** - Title page.
 * **Description and operation** - *Description*: click a heading to isolate that subassembly (own colours, rest
   ghosted). *Operation*: the retraction sequence, step by step (lead screw turns -> actuator moves -> actuator arms
   rotate the main swivel arm -> steering turns the wheel to fit the bay -> drag brace folds); the gear animation
@@ -106,7 +106,11 @@ with item callouts, and the parts list (FIG-ITEM, P/N, indented nomenclature, CA
   assembly; every intermediate state is collision-free (`"removal"` block in the JSON, solved in disassembly order).
   Each step shows the part's item, P/N and function. *Assembly*: the same parts in reverse (`"install"`).
   Plus the wheel removal, steering inspection and retraction test procedures.
-* **Illustrated parts data** - IPD and the printable IPC (PDF).
+* **Illustrated parts data** - IPD (the printable IPC PDF is on the title page and in the IPD figure card).
+
+**Adjust the layouts by hand:** IETM > Layout Editor (or the button on IETM App). Pick *Disassembly layout* or
+*Explode layout*, press Edit, move the parts in the Scene view, Save. Saved into the `"removal"` / `"explode"`
+blocks of landing_gear_ietm.json; Cancel restores the model.
 
 ## 1f. HELIOS shell (IETM inside the HELIOS app)
 
