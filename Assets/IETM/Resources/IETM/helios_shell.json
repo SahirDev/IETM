@@ -36,32 +36,32 @@
   ],
   "systems": [
     { "id": "32", "code": "32", "title": "Landing gear", "subtitle": "Main & nose gear, wheels, brakes, steering", "group": "airframe", "icon": "thumb_nose_gear", "available": true, "meta": "6 sections · 1 available" },
-    { "id": "71", "code": "71–80", "title": "Engine", "subtitle": "F110-GE-129 / F100-PW-229 power plant", "group": "powerplant", "icon": "sys_engine" },
-    { "id": "57", "code": "57", "title": "Wings", "subtitle": "Wing structure, leading-edge flaps, flaperons", "group": "structures", "icon": "sys_wings" },
-    { "id": "cockpit", "code": "31 · 35 · 52", "title": "Cockpit", "subtitle": "Displays, oxygen, canopy", "group": "cockpit", "icon": "sys_cockpit" },
-    { "id": "21", "code": "21", "title": "Cooling & air conditioning", "subtitle": "ECS, cockpit pressurisation, avionics cooling", "group": "airframe", "icon": "sys_cooling" },
-    { "id": "28", "code": "28", "title": "Fuel", "subtitle": "Internal & external tanks, air refuelling", "group": "airframe", "icon": "sys_fuel" },
-    { "id": "27", "code": "27", "title": "Flight controls", "subtitle": "Fly-by-wire computers, actuators", "group": "airframe", "icon": "sys_fcs" },
-    { "id": "29", "code": "29", "title": "Hydraulic power", "subtitle": "Systems A and B, pumps, reservoirs", "group": "airframe", "icon": "sys_hydraulics" },
-    { "id": "24", "code": "24", "title": "Electrical power", "subtitle": "Generators, battery, emergency power", "group": "airframe", "icon": "sys_electrical" },
-    { "id": "49", "code": "49", "title": "JFS & EPU", "subtitle": "Jet fuel starter, emergency power unit", "group": "airframe", "icon": "sys_jfs" },
-    { "id": "avionics", "code": "23 · 34 · FCR", "title": "Avionics", "subtitle": "Comms, navigation, fire-control radar", "group": "cockpit", "icon": "sys_avionics" },
-    { "id": "arm", "code": "ARM", "title": "Armament", "subtitle": "Gun, pylons, launchers, stores", "group": "armament", "icon": "sys_armament" },
-    { "id": "egr", "code": "EGR", "title": "Egress", "subtitle": "Ejection seat, canopy jettison", "group": "armament", "icon": "sys_egress" },
-    { "id": "53", "code": "53 · 55", "title": "Fuselage & tail", "subtitle": "Fuselage, stabilisers, vertical tail", "group": "structures", "icon": "sys_fuselage" },
-    { "id": "05", "code": "05 · 12", "title": "Inspections & servicing", "subtitle": "Phase inspections, servicing, ground handling", "group": "ground", "icon": "sys_inspections" }
+    { "id": "71", "code": "71–80", "title": "Engine", "subtitle": "F110-GE-129 / F100-PW-229 power plant", "group": "powerplant", "icon": "thumb_engine" },
+    { "id": "57", "code": "57", "title": "Wings", "subtitle": "Wing structure, leading-edge flaps, flaperons", "group": "structures", "icon": "thumb_wings" },
+    { "id": "cockpit", "code": "31 · 35 · 52", "title": "Cockpit", "subtitle": "Displays, oxygen, canopy", "group": "cockpit", "icon": "thumb_cockpit" },
+    { "id": "21", "code": "21", "title": "Cooling & air conditioning", "subtitle": "ECS, cockpit pressurisation, avionics cooling", "group": "airframe", "icon": "thumb_cooling" },
+    { "id": "28", "code": "28", "title": "Fuel", "subtitle": "Internal & external tanks, air refuelling", "group": "airframe", "icon": "thumb_fuel" },
+    { "id": "27", "code": "27", "title": "Flight controls", "subtitle": "Fly-by-wire computers, actuators", "group": "airframe", "icon": "thumb_fcs" },
+    { "id": "29", "code": "29", "title": "Hydraulic power", "subtitle": "Systems A and B, pumps, reservoirs", "group": "airframe", "icon": "thumb_hydraulics" },
+    { "id": "24", "code": "24", "title": "Electrical power", "subtitle": "Generators, battery, emergency power", "group": "airframe", "icon": "thumb_electrical" },
+    { "id": "49", "code": "49", "title": "JFS & EPU", "subtitle": "Jet fuel starter, emergency power unit", "group": "airframe", "icon": "thumb_jfs" },
+    { "id": "avionics", "code": "23 · 34 · FCR", "title": "Avionics", "subtitle": "Comms, navigation, fire-control radar", "group": "cockpit", "icon": "thumb_avionics" },
+    { "id": "arm", "code": "ARM", "title": "Armament", "subtitle": "Gun, pylons, launchers, stores", "group": "armament", "icon": "thumb_armament" },
+    { "id": "egr", "code": "EGR", "title": "Egress", "subtitle": "Ejection seat, canopy jettison", "group": "armament", "icon": "thumb_egress" },
+    { "id": "53", "code": "53 · 55", "title": "Fuselage & tail", "subtitle": "Fuselage, stabilisers, vertical tail", "group": "structures", "icon": "thumb_fuselage" },
+    { "id": "05", "code": "05 · 12", "title": "Inspections & servicing", "subtitle": "Phase inspections, servicing, ground handling", "group": "ground", "icon": "thumb_inspections" }
   ],
   "systemPages": [
     {
       "id": "32", "code": "32", "title": "Landing Gear",
       "subtitle": "Main and nose gear, extension and retraction, wheels and brakes, steering, position indication",
       "sections": [
-        { "id": "32-10", "code": "32-10-00", "title": "Main landing gear and doors", "subtitle": "Data modules: planned", "icon": "sec_main_gear" },
+        { "id": "32-10", "code": "32-10-00", "title": "Main landing gear and doors", "subtitle": "Data modules: planned", "icon": "thumb_main_gear" },
         { "id": "32-20", "code": "32-20-00", "title": "Nose landing gear and doors", "subtitle": "Description, IPD, procedures, printable IPC", "icon": "thumb_nose_gear", "available": true, "modules": ["DESC", "IPD", "PROC × 3", "PDF"], "module": "DM-TITLE" },
-        { "id": "32-30", "code": "32-30-00", "title": "Extension and retraction", "subtitle": "Incl. emergency extension · planned", "icon": "sec_extension_retraction" },
-        { "id": "32-40", "code": "32-40-00", "title": "Wheels and brakes", "subtitle": "Incl. anti-skid · planned", "icon": "sec_wheels_brakes" },
-        { "id": "32-50", "code": "32-50-00", "title": "Nose wheel steering", "subtitle": "Data modules: planned", "icon": "sec_steering" },
-        { "id": "32-60", "code": "32-60-00", "title": "Position and warning", "subtitle": "Gear indication, warning horn · planned", "icon": "sec_position_warning" }
+        { "id": "32-30", "code": "32-30-00", "title": "Extension and retraction", "subtitle": "Incl. emergency extension · planned", "icon": "thumb_extension_retraction" },
+        { "id": "32-40", "code": "32-40-00", "title": "Wheels and brakes", "subtitle": "Incl. anti-skid · planned", "icon": "thumb_wheels_brakes" },
+        { "id": "32-50", "code": "32-50-00", "title": "Nose wheel steering", "subtitle": "Data modules: planned", "icon": "thumb_steering" },
+        { "id": "32-60", "code": "32-60-00", "title": "Position and warning", "subtitle": "Gear indication, warning horn · planned", "icon": "thumb_position_warning" }
       ],
       "related": [
         { "label": "Printable IPC (PDF) · 32-20-00 Fig 1", "file": "IETM/32-20-00_Fig1_IPC.pdf", "highlight": true },
