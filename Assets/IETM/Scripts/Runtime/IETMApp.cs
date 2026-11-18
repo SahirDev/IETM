@@ -49,6 +49,11 @@ namespace IETM
         public bool inputSuspended;
         [Tooltip("Module opened at start (id from the JSON). Default: the title page.")]
         public string startModule = "DM-TITLE";
+        [Header("Procedures")]
+        [Tooltip("Seconds a part takes to move out (disassembly) or back in (assembly). Can be changed in Play mode.")]
+        [Range(0.3f, 8f)] public float partMoveSeconds = 2.5f;
+        [Tooltip("Camera orbits to a clear view of the part being removed / the parts shown in Operation.")]
+        public bool cameraFollowsParts = true;
         [Tooltip("Printable IPC (PDF) under Assets/StreamingAssets, opened by the 'PDF' button in the IPD figure card.")]
         public string ipdPdfFile = "IETM/32-20-00_Fig1_IPC.pdf";
         [Tooltip("Show the item-number callouts when the IETM starts (toggle with the Callouts button or L).")]
@@ -187,6 +192,7 @@ namespace IETM
 
         void Update()
         {
+            if (model != null) model.removalDuration = partMoveSeconds;   // live from the Inspector
             if (model == null || view == null) return;
 
             SyncViewportRect();
@@ -374,6 +380,67 @@ namespace IETM
             if (model.TryGetBounds(leaves, out var b)) vcam.Frame(b, false, pad);
         }
 
+        /// <summary>
+        /// Orbits the camera to look at 'area' from the side that sees the target parts best: candidate
+        /// directions around the motion axis (or around the vertical when there is no motion) are scored by how much
+        /// of the target is hidden by other parts and by how far the camera has to turn; the camera then backs
+        /// off until it is outside every part, so it never ends up inside the model.
+        /// </summary>
+        void AimAt(List<IPDItem> targets, Bounds area, Vector3 motion, float padding)
+        {
+            vcam.autoRotate = false; if (view.spinButton) view.spinButton.On = false;
+            var tset = new HashSet<IPDItem>(targets);
+            var pts = new List<Vector3> { area.center };
+            if (model.TryGetBounds(targets, out var cur)) pts.Add(cur.center);
+            if (motion.sqrMagnitude > 1e-12f) { pts.Add(area.center - motion * 0.5f); pts.Add(area.center + motion * 0.5f); }
+
+            var all = model.VisibleBounds();
+            float baseDist = vcam.DistanceFor(area, padding);
+            var fNow = vcam.TargetForward;
+
+            // candidate view directions
+            var cands = new List<Vector3>();
+            if (motion.sqrMagnitude > 1e-12f)
+            {
+                var dn = motion.normalized;
+                var e1 = fNow - dn * Vector3.Dot(fNow, dn);
+                if (e1.sqrMagnitude < 1e-6f) e1 = Vector3.Cross(dn, Vector3.up);
+                e1.Normalize();
+                var e2 = Vector3.Cross(dn, e1).normalized;
+                for (int a = 0; a < 360; a += 30)
+                {
+                    float r = a * Mathf.Deg2Rad;
+                    cands.Add((Mathf.Cos(r) * e1 + Mathf.Sin(r) * e2).normalized);
+                }
+            }
+            else
+            {
+                for (int a = 0; a < 360; a += 30)
+                    foreach (float p in new[] { 22f, 38f })
+                        cands.Add(Quaternion.Euler(p, vcam.TargetYaw + a, 0f) * Vector3.forward);
+            }
+
+            Vector3 best = fNow; float bestScore = float.MaxValue; float bestDist = baseDist;
+            foreach (var c0 in cands)
+            {
+                var c = c0;
+                // keep a pleasant elevation: look slightly down, never from far below
+                float pitch = Mathf.Asin(Mathf.Clamp(-c.y, -1f, 1f)) * Mathf.Rad2Deg;
+                if (pitch < -10f || pitch > 70f) continue;
+                float dist = baseDist;
+                // back off until the camera is outside the parts (but not further than outside the whole model)
+                float maxDist = Vector3.Distance(area.center, all.center) + all.extents.magnitude * 1.1f + baseDist * 0.2f;
+                while (dist < maxDist && model.InsideParts(area.center - c * dist, all.extents.magnitude * 0.03f)) dist *= 1.15f;
+                var eye = area.center - c * dist;
+                int occ = model.CountOccluded(eye, pts, tset);
+                float turn = Vector3.Angle(c, fNow) / 180f;
+                float score = occ * 10f + turn * 3f + (pitch < 8f ? 1.5f : 0f) + (dist / baseDist - 1f);
+                if (score < bestScore) { bestScore = score; best = c; bestDist = dist; }
+            }
+            float safe = Vector3.Distance(area.center, all.center) + all.extents.magnitude * 1.05f;
+            vcam.OrbitTo(area.center, best, bestDist, safe);
+        }
+
         void HomeView()
         {
             vcam.autoRotate = false; if (view.spinButton) view.spinButton.On = false;
@@ -539,13 +606,18 @@ namespace IETM
             else { model.Isolate(null); SetOn(view.isolateButton, false); }
 
             if (!string.IsNullOrEmpty(step.view)) vcam.SetPreset(step.view);
-            if (layout && (step.action == "detach" || step.action == "install") && focusLeaves.Count > 0 && focusLeaves.Count <= 4
+            model.removalDuration = partMoveSeconds;
+            if (cameraFollowsParts && layout && (step.action == "detach" || step.action == "install") && focusLeaves.Count > 0 && focusLeaves.Count <= 4
                 && model.TryGetRemovalPath(focusLeaves, out var path, out var motion))
             {
-                // follow the part being removed / installed: look across its path and frame start + end
-                vcam.autoRotate = false; if (view.spinButton) view.spinButton.On = false;
-                vcam.LookAcross(motion);
-                vcam.Frame(path, false, 1.35f);
+                // follow the part being removed / installed: orbit to a clear view across its path
+                AimAt(focusLeaves, path, motion, 1.35f);
+            }
+            else if (cameraFollowsParts && step.action == "operate" && first != null && first.parent != null && focusLeaves.Count > 0
+                && model.TryGetBounds(focusLeaves, out var fb))
+            {
+                // operation: focus the parts that are working (they move, so leave some room)
+                AimAt(focusLeaves, fb, Vector3.zero, 1.9f);
             }
             else if (step.action == "operate" || layout)
             {

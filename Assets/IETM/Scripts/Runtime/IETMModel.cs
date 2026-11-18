@@ -293,6 +293,8 @@ namespace IETM
 
         /// <summary>Removed parts stay visible, laid out next to the assembly (disassembly / assembly procedures).</summary>
         public bool showRemoved;
+        /// <summary>Seconds a part takes to move out / back in (procedures). Set from IETM App.</summary>
+        public float removalDuration = 2.5f;
 
         public bool IsVisible(IPDItem leaf) => !hidden.Contains(leaf) && (showRemoved || !IsRemoved(leaf));
 
@@ -327,7 +329,7 @@ namespace IETM
                 if (Mathf.Abs(cur - tgt) > 0.0001f)
                 {
                     bool wasRemoved = cur > 0.97f;
-                    cur = Mathf.MoveTowards(cur, tgt, dt * 1.1f);
+                    cur = Mathf.MoveTowards(cur, tgt, dt / Mathf.Max(0.05f, removalDuration));
                     removeT[k] = cur;
                     moving = true;
                     if (wasRemoved != (cur > 0.97f)) dirty = true;
@@ -436,6 +438,37 @@ namespace IETM
         // ------------------------------------------------------------------ picking
 
         readonly RaycastHit[] hits = new RaycastHit[64];
+
+        /// <summary>How many of the points are hidden behind other visible (non-ghosted) parts, seen from 'eye'.</summary>
+        public int CountOccluded(Vector3 eye, IList<Vector3> points, HashSet<IPDItem> targets)
+        {
+            if (Active == null) return 0;
+            Physics.SyncTransforms();
+            int occ = 0;
+            foreach (var p in points)
+            {
+                var d = p - eye; float len = d.magnitude;
+                if (len < 1e-5f) continue;
+                int n = Physics.RaycastNonAlloc(eye, d / len, hits, len * 0.97f, ~0, QueryTriggerInteraction.Ignore);
+                for (int i = 0; i < n; i++)
+                {
+                    if (!Active.byCollider.TryGetValue(hits[i].collider, out var pb)) continue;
+                    if (targets.Contains(pb.item) || !IsVisible(pb.item) || IsGhosted(pb.item)) continue;
+                    occ++; break;
+                }
+            }
+            return occ;
+        }
+
+        /// <summary>True when a camera at 'eye' would sit inside or touch a visible part.</summary>
+        public bool InsideParts(Vector3 eye, float radius)
+        {
+            if (Active == null) return false;
+            Physics.SyncTransforms();
+            foreach (var c in Physics.OverlapSphere(eye, radius, ~0, QueryTriggerInteraction.Ignore))
+                if (Active.byCollider.TryGetValue(c, out var pb) && IsVisible(pb.item)) return true;
+            return false;
+        }
 
         public IPDItem Pick(Ray ray)
         {

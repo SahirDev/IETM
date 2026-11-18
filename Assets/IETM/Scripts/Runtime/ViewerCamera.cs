@@ -75,6 +75,35 @@ namespace IETM
             SetView(yawDeg, pitchDeg);
         }
 
+        public float TargetYaw => tYaw;
+        public float TargetPitch => tPitch;
+        public Vector3 TargetForward => Quaternion.Euler(tPitch, tYaw, 0f) * Vector3.forward;
+
+        /// <summary>Distance at which the bounds fill the view (same rule as Frame).</summary>
+        public float DistanceFor(Bounds b, float padding)
+        {
+            float r = Mathf.Max(b.extents.magnitude, minDist);
+            float fov = Cam.fieldOfView * Mathf.Deg2Rad * 0.5f;
+            float fovH = Mathf.Atan(Mathf.Tan(fov) * Mathf.Max(0.3f, Cam.aspect));
+            return Mathf.Clamp(r * padding / Mathf.Sin(Mathf.Min(fov, fovH)), minDist, maxDist);
+        }
+
+        /// <summary>Orbits to a new pivot / direction / distance (smoothly).</summary>
+        [Tooltip("Speed of the automatic orbit when the camera follows a part (lower = slower, smoother).")]
+        public float orbitSmoothing = 3.5f;
+        float orbitHold;
+
+        public void OrbitTo(Vector3 newPivot, Vector3 forward, float newDistance, float safeRadius = 0f)
+        {
+            orbitHold = Mathf.Max(distance, newDistance, safeRadius);
+            forward.Normalize();
+            float p = Mathf.Asin(Mathf.Clamp(-forward.y, -1f, 1f)) * Mathf.Rad2Deg;
+            float y = Mathf.Atan2(forward.x, forward.z) * Mathf.Rad2Deg;
+            SetView(y, p);
+            tPivot = newPivot;
+            tDistance = Mathf.Clamp(newDistance, minDist, maxDist);
+        }
+
         public void SetPreset(string name)
         {
             switch ((name ?? "").ToLowerInvariant())
@@ -113,11 +142,16 @@ namespace IETM
 
             if (autoRotate && !dragging) tYaw += autoRotateSpeed * Time.unscaledDeltaTime;
 
-            float k = 1f - Mathf.Exp(-smoothing * Time.unscaledDeltaTime);
+            float k = 1f - Mathf.Exp(-(orbitHold > 0f ? orbitSmoothing : smoothing) * Time.unscaledDeltaTime);
             pivot = Vector3.Lerp(pivot, tPivot, k);
             yaw = Mathf.Lerp(yaw, tYaw, k);
             pitch = Mathf.Lerp(pitch, tPitch, k);
-            distance = Mathf.Lerp(distance, tDistance, k);
+            // orbit transitions: stay out at the safe radius while turning, close in only when the turn is done
+            float turnLeft = Mathf.Abs(Mathf.DeltaAngle(yaw, tYaw)) + Mathf.Abs(pitch - tPitch);
+            float dTarget = orbitHold > 0f && turnLeft > 6f ? Mathf.Max(orbitHold, tDistance) : tDistance;
+            if (orbitHold > 0f && turnLeft <= 6f) orbitHold = 0f;
+            if (dragging) orbitHold = 0f;
+            distance = Mathf.Lerp(distance, dTarget, k);
             Apply();
         }
 
