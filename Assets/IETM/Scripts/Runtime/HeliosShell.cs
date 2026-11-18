@@ -18,6 +18,8 @@ namespace IETM
         public TextAsset shellData;
         [Tooltip("Page shown at start. The HELIOS flow starts on the 3D View; click IETM in the side menu.")]
         public ShellPage startPage = ShellPage.View3D;
+        [Tooltip("On the IETM page the side menu shows icons only, so the IETM gets the space.")]
+        public bool collapseMenuInIetm = true;
 
         public ShellPage CurrentPage { get; private set; }
         string currentSystem;
@@ -117,12 +119,47 @@ namespace IETM
             for (int i = 0; i < shell.systemPages.Count; i++)
                 shell.systemPages[i].SetActive(page == ShellPage.System && shell.systemPageIds[i] == currentSystem);
             if (shell.ietmCrumbs) shell.ietmCrumbs.SetActive(ietm);
+            SetMenuCollapsed(ietm && collapseMenuInIetm);
             if (shell.menu3D) shell.menu3D.On = page == ShellPage.View3D;
             if (shell.menuIetm) shell.menuIetm.On = page != ShellPage.View3D;
             app.inputSuspended = !ietm;
 
             // new page starts at the top
             foreach (var sr in shell.pages.GetComponentsInChildren<ScrollRect>(false)) sr.verticalNormalizedPosition = 1f;
+        }
+
+        /// <summary>Side menu: icons only (collapsed) or icons + labels. Moves the IETM frame, breadcrumb and backdrop with it.</summary>
+        public void SetMenuCollapsed(bool collapsed)
+        {
+            if (shell == null || shell.sideMenu == null) return;
+            const float M = HeliosShellBuilder.M;
+            float menuW = collapsed ? HeliosShellBuilder.MenuCollapsedW : HeliosShellBuilder.MenuW;
+            float left = M + menuW + M;
+            shell.sideMenu.sizeDelta = new Vector2(menuW, shell.sideMenu.sizeDelta.y);
+            foreach (var b in shell.sideMenu.GetComponentsInChildren<IETMButton>(true))
+            {
+                if (b.label != null) b.label.gameObject.SetActive(!collapsed);
+                if (b.icon != null) b.icon.rectTransform.anchoredPosition = new Vector2(collapsed ? (menuW - 12f - b.icon.rectTransform.sizeDelta.x) * 0.5f : 10f, 0f);
+                if (b.TryGetComponent<UITooltip>(out var tip)) tip.enabled = collapsed;
+            }
+            if (shell.ietmFrame != null) shell.ietmFrame.offsetMin = new Vector2(left, shell.ietmFrame.offsetMin.y);
+            if (shell.ietmCrumbs != null)
+            {
+                var rt = (RectTransform)shell.ietmCrumbs.transform;
+                rt.anchoredPosition = new Vector2(left, rt.anchoredPosition.y);
+                rt.sizeDelta = new Vector2(-left - M, rt.sizeDelta.y);
+            }
+            if (shell.pages != null) shell.pages.offsetMin = new Vector2(left, shell.pages.offsetMin.y);
+            if (shell.backdrop != null)
+            {
+                var l = shell.backdrop.Find("Left") as RectTransform;
+                if (l != null) l.offsetMax = new Vector2(left, l.offsetMax.y);
+                foreach (var n in new[] { "Top", "Bottom" })
+                {
+                    var s = shell.backdrop.Find(n) as RectTransform;
+                    if (s != null) s.offsetMin = new Vector2(left, s.offsetMin.y);
+                }
+            }
         }
 
         public void ApplyFilter(string group)

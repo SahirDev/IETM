@@ -68,6 +68,9 @@ namespace IETM
             Clear(v.paragraphContent); Clear(v.procStepList); Clear(v.orderList);
             Clear(v.calloutLayer); Clear(v.toastStack); Clear(v.searchResults);
 
+            if (v.publicationTitle != null && db != null && db.publication != null && !string.IsNullOrEmpty(db.publication.title))
+                v.publicationTitle.text = "<b>" + db.publication.title + "</b>";
+
             // panel geometry (respects edits made in the Editor)
             leftW = v.leftPanel.rect.width; rightW = v.rightPanel.rect.width;
             leftBaseX = v.leftPanel.anchoredPosition.x; rightBaseX = v.rightPanel.anchoredPosition.x;

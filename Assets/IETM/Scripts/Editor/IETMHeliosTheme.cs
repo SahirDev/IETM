@@ -204,6 +204,8 @@ namespace IETM.EditorTools
         /// <summary>Brings a UI built with an earlier version up to date (idempotent).</summary>
         static void UpdateLayout(IETMView v)
         {
+            IETMUIBuilder.CompactHeader(v);
+
             // viewer toolbar: X-Ray + Callouts move to the VIEW bar; the toolbar shrinks to fit the viewport
             if (v.isolateButton != null)
             {

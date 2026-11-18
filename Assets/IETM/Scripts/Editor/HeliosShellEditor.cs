@@ -42,6 +42,8 @@ namespace IETM.EditorTools
             var data = HeliosShellData.Load(dataAsset);
             var db = IETMDatabase.Load(app.dataFile != null ? app.dataFile : Resources.Load<TextAsset>("IETM/landing_gear_ietm"));
 
+            IETMHeliosTheme.ApplyToView(v);   // theme + latest IETM layout (header, view bar) first
+
             HeliosShellView sv = null;
             var prevFont = UIKit.FontOverride;
             IETMSceneBuilder.WithSprites(() =>

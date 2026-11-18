@@ -14,7 +14,7 @@ namespace IETM
     public static class HeliosShellBuilder
     {
         // layout (reference resolution 1920 x 1080)
-        public const float TopH = 60f, MenuW = 210f, M = 12f, CrumbH = 30f;
+        public const float TopH = 60f, MenuW = 210f, MenuCollapsedW = 56f, M = 12f, CrumbH = 30f;
         public static float ContentLeft => M + MenuW + M;
         public static float ContentTop => TopH + M;
         public static float FrameTop => ContentTop + CrumbH + 6f;
@@ -183,6 +183,7 @@ namespace IETM
             foreach (var m in d.menu)
             {
                 var b = MenuButton(p.transform, m.label, m.icon, MenuW - 12, 44, 14);
+                var tip = b.gameObject.AddComponent<UITooltip>(); tip.text = m.label;   // shown when the menu is collapsed to icons
                 switch (m.id)
                 {
                     case "3d": Target(b, ShellAction.Page3D, null, m.label); sv.menu3D = b; break;

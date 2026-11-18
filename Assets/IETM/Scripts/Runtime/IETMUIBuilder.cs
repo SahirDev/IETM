@@ -89,6 +89,45 @@ namespace IETM
 
             v.orderListButton = UIKit.Button(row, "Order list  0", IETMCommand.ToggleOrderList, BtnStyle.Solid, 13, 128, 34, "Parts order list");
             UIKit.Button(row, "?", IETMCommand.ToggleHelp, BtnStyle.Ghost, 16, 36, 34, "Help and shortcuts  ( / )");
+            CompactHeader(v);
+        }
+
+        /// <summary>
+        /// Top bar layout: publication title over the subtitle, no back / forward / title-page buttons
+        /// (the HELIOS breadcrumb and the publication tree cover them), search next to the Order list.
+        /// Safe to run more than once (Apply HELIOS Theme / Build Shell call it on existing scenes).
+        /// </summary>
+        public static void CompactHeader(IETMView v)
+        {
+            if (v == null || v.root == null) return;
+            var row = v.root.Find("Top Bar/Row");
+            if (row == null) return;
+            IETMButton help = null;
+            bool afterTitles = false;
+            foreach (Transform c in row)
+            {
+                if (v.publicationTitle != null && c == v.publicationTitle.transform.parent) { afterTitles = true; continue; }
+                if (afterTitles && c.name == "Divider") c.gameObject.SetActive(false);
+                if (!c.TryGetComponent<IETMButton>(out var b)) continue;
+                if (b.command == IETMCommand.HistoryBack || b.command == IETMCommand.HistoryForward || b.command == IETMCommand.OpenTitlePage)
+                    c.gameObject.SetActive(false);
+                if (b.command == IETMCommand.ToggleHelp) help = b;
+            }
+            if (v.searchField != null && v.orderListButton != null)
+            {
+                v.searchField.transform.SetAsLastSibling();
+                v.orderListButton.transform.SetAsLastSibling();
+                if (help != null) help.transform.SetAsLastSibling();
+                var le = v.searchField.GetComponent<LayoutElement>();
+                if (le != null) { le.preferredWidth = 380; le.flexibleWidth = 0; }
+            }
+            foreach (var t in new[] { v.publicationTitle, v.publicationSubtitle })
+                if (t != null) { t.verticalOverflow = VerticalWrapMode.Overflow; t.gameObject.SetActive(true); }
+            if (v.publicationTitle != null)
+            {
+                v.publicationTitle.fontSize = 17;
+                v.publicationTitle.rectTransform.Anchor(new Vector2(0, 0.5f), new Vector2(1, 1), new Vector2(0, 1), Vector2.zero, Vector2.zero);
+            }
         }
 
         // ------------------------------------------------------------------ left panel
