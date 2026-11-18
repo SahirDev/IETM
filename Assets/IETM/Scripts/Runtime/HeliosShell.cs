@@ -139,6 +139,10 @@ namespace IETM
             foreach (var b in shell.sideMenu.GetComponentsInChildren<IETMButton>(true))
             {
                 if (b.label != null) b.label.gameObject.SetActive(!collapsed);
+                // the button keeps its own preferred width: shrink it with the menu (else its highlight sticks out)
+                if (b.TryGetComponent<LayoutElement>(out var le)) { le.preferredWidth = menuW - 12f; le.minWidth = -1f; }
+                var brt = (RectTransform)b.transform;
+                brt.sizeDelta = new Vector2(menuW - 12f, brt.sizeDelta.y);
                 if (b.icon != null) b.icon.rectTransform.anchoredPosition = new Vector2(collapsed ? (menuW - 12f - b.icon.rectTransform.sizeDelta.x) * 0.5f : 10f, 0f);
                 if (b.TryGetComponent<UITooltip>(out var tip)) tip.enabled = collapsed;
             }
