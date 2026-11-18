@@ -57,7 +57,7 @@
       "subtitle": "Main and nose gear, extension and retraction, wheels and brakes, steering, position indication",
       "sections": [
         { "id": "32-10", "code": "32-10-00", "title": "Main landing gear and doors", "subtitle": "Data modules: planned", "icon": "thumb_main_gear" },
-        { "id": "32-20", "code": "32-20-00", "title": "Nose landing gear and doors", "subtitle": "Description, IPD, procedures, printable IPC", "icon": "thumb_nose_gear", "available": true, "modules": ["DESC", "IPD", "PROC × 3", "PDF"], "module": "DM-TITLE" },
+        { "id": "32-20", "code": "32-20-00", "title": "Nose landing gear and doors", "subtitle": "Description, IPD, procedures, printable IPC", "icon": "thumb_landing_gear", "available": true, "modules": ["DESC", "IPD", "PROC × 3", "PDF"], "module": "DM-TITLE" },
         { "id": "32-30", "code": "32-30-00", "title": "Extension and retraction", "subtitle": "Incl. emergency extension · planned", "icon": "thumb_extension_retraction" },
         { "id": "32-40", "code": "32-40-00", "title": "Wheels and brakes", "subtitle": "Incl. anti-skid · planned", "icon": "thumb_wheels_brakes" },
         { "id": "32-50", "code": "32-50-00", "title": "Nose wheel steering", "subtitle": "Data modules: planned", "icon": "thumb_steering" },
