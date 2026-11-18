@@ -86,7 +86,7 @@ namespace IETM
             pages.gameObject.AddComponent<RectMask2D>();
             sv.pages = pages.rectTransform;
 
-            Build3DPage(sv);
+            Build3DPage(sv, d);
             BuildAircraftPage(sv, d);
             foreach (var p in d.systemPages) BuildSystemPage(sv, d, p, db);
 
@@ -137,17 +137,20 @@ namespace IETM
             Icon(tail.transform, "icon_chevron_down", Theme.Muted, 14, new Vector2(1, 0.5f), new Vector2(-16, 0));
 
             Spacer(row);
-            var nav = UIKit.Rect("Nav", row);
-            nav.HLayout(6, 0, 0, 0, 0, TextAnchor.MiddleCenter, false, false);
-            nav.LE(-1, 40);
-            for (int i = 0; i < d.nav.Count; i++)
+            if (d.nav.Count > 0)   // centre tabs (the current HELIOS design has none)
             {
-                var n = d.nav[i];
-                var b = MenuButton(nav, n.label, n.icon, -1, 38, 14);
-                if (i == 0) { Target(b, ShellAction.Page3D, null, n.label); b.On = true; }
-                else Target(b, ShellAction.NotInPoc, null, n.label);
+                var nav = UIKit.Rect("Nav", row);
+                nav.HLayout(6, 0, 0, 0, 0, TextAnchor.MiddleCenter, false, false);
+                nav.LE(-1, 40);
+                for (int i = 0; i < d.nav.Count; i++)
+                {
+                    var n = d.nav[i];
+                    var b = MenuButton(nav, n.label, n.icon, -1, 38, 14);
+                    if (i == 0) { Target(b, ShellAction.Page3D, null, n.label); b.On = true; }
+                    else Target(b, ShellAction.NotInPoc, null, n.label);
+                }
+                Spacer(row);
             }
-            Spacer(row);
 
             var bell = IconButton(row, "icon_bell", 40, "Notifications"); Target(bell, ShellAction.NotInPoc, null, "Notifications");
             var dot = UIKit.Panel(bell.transform, Theme.Danger, 4, "Dot", false);
@@ -155,6 +158,8 @@ namespace IETM
             var light = MenuButton(row, "Light", "sun", 86, 34, 13);
             light.normal = C("111A44"); light.Apply();
             Target(light, ShellAction.NotInPoc, null, "Light theme");
+            var vline = UIKit.Panel(row, CardBorder, 0, "Divider", false);
+            vline.LE(1, 26, -1, -1, 1, 26);
 
             var avatar = UIKit.Panel(row, ActiveFill, 16, "Avatar");
             avatar.Border(ActiveBorder);
@@ -167,6 +172,7 @@ namespace IETM
             un.horizontalOverflow = HorizontalWrapMode.Overflow;
             var ur = UIKit.Label(who, d.userRole, 11, Theme.Muted, TextAnchor.UpperLeft, FontStyle.Normal, "Role");
             ur.rectTransform.Anchor(new Vector2(0, 0), new Vector2(1, 0.5f), new Vector2(0, 0), Vector2.zero, Vector2.zero);
+            var userMenu = IconButton(row, "icon_chevron_down", 24, "Account"); Target(userMenu, ShellAction.NotInPoc, null, "Account menu");
             var lo = IconButton(row, "icon_logout", 40, "Sign out"); Target(lo, ShellAction.NotInPoc, null, "Sign out");
         }
 
@@ -217,23 +223,61 @@ namespace IETM
 
         // ================================================================== pages
 
-        static void Build3DPage(HeliosShellView sv)
+        static void Build3DPage(HeliosShellView sv, HeliosShellData d)
         {
             var page = UIKit.Rect("Page 3D View", sv.pages).Stretch();
             sv.page3D = page.gameObject;
-            var ph = S("placeholder_3d_view");
-            var img = UIKit.Rect("Placeholder", page).gameObject.AddComponent<Image>();
-            img.raycastTarget = false;
-            img.sprite = ph; img.color = ph != null ? Color.white : Clear;
-            var fit = img.gameObject.AddComponent<AspectRatioFitter>();
-            fit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
-            fit.aspectRatio = ph != null ? ph.rect.width / ph.rect.height : 16f / 9f;
 
-            var note = UIKit.Panel(page, C("0C122E").A(0.9f), 10, "Note");
-            note.Border(CardBorder);
-            note.rectTransform.Anchor(new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), new Vector2(16, 16), new Vector2(560, 40));
-            var nt = UIKit.Label(note.transform, "3D View is part of the HELIOS app (placeholder image).  Open <b>IETM</b> in the menu for the manuals.", 13, Theme.Muted, TextAnchor.MiddleLeft, FontStyle.Normal, "Text");
-            nt.rectTransform.Stretch(14, 0, 14, 0);
+            // aircraft
+            var sp = S(string.IsNullOrEmpty(d.aircraftImage) ? "aircraft_f16" : d.aircraftImage);
+            var img = UIKit.Rect("Aircraft", page).gameObject.AddComponent<Image>();
+            img.raycastTarget = false; img.preserveAspect = true;
+            img.sprite = sp; img.color = sp != null ? Color.white : Clear;
+            img.rectTransform.anchorMin = new Vector2(0.12f, 0.12f); img.rectTransform.anchorMax = new Vector2(0.80f, 0.92f);
+            img.rectTransform.offsetMin = img.rectTransform.offsetMax = Vector2.zero;
+
+            // telemetry metrics card (top right)
+            if (d.metrics.Count > 0)
+            {
+                float h = d.metrics.Count * 74f + (d.metrics.Count - 1) * 1f + 28f;
+                var card = UIKit.Panel(page, CardBg, 14, "Metrics");
+                card.Border(CardBorder);
+                card.rectTransform.Anchor(new Vector2(1, 1), new Vector2(1, 1), new Vector2(1, 1), new Vector2(-16, -16), new Vector2(330, h));
+                card.VLayout(0, 20, 20, 14, 14, TextAnchor.UpperLeft, true, false);
+                for (int i = 0; i < d.metrics.Count; i++)
+                {
+                    var m = d.metrics[i];
+                    if (i > 0) { var ln = UIKit.Panel(card.transform, CardBorder, 0, "Line", false); ln.LE(-1, 1); }
+                    var r = UIKit.Rect("Metric " + m.label, card.transform); r.LE(-1, 74);
+                    var box = UIKit.Panel(r, C("16205A").A(0.8f), 10, "Icon Box", false);
+                    box.Border(CardBorder);
+                    box.rectTransform.Anchor(new Vector2(0, 0.5f), new Vector2(0, 0.5f), new Vector2(0, 0.5f), Vector2.zero, new Vector2(52, 52));
+                    Icon(box.transform, "icon_" + m.icon, Theme.Accent2, 24, new Vector2(0.5f, 0.5f), Vector2.zero);
+                    var l1 = UIKit.Label(r, m.label, 14, Theme.Muted, TextAnchor.LowerLeft, FontStyle.Normal, "Label");
+                    l1.rectTransform.Anchor(new Vector2(0, 0.5f), new Vector2(1, 0.5f), new Vector2(0, 0), new Vector2(70, 4), new Vector2(-100, 20));
+                    var l2 = UIKit.Label(r, m.value, 26, Theme.Text, TextAnchor.UpperLeft, FontStyle.Normal, "Value");
+                    l2.rectTransform.Anchor(new Vector2(0, 0.5f), new Vector2(1, 0.5f), new Vector2(0, 1), new Vector2(70, 2), new Vector2(-100, 34));
+                    if (m.link) Icon(r, "icon_chevron_right", Theme.Muted, 18, new Vector2(1, 0.5f), new Vector2(-10, 0));
+                }
+            }
+
+            // viewport dock (bottom centre)
+            if (d.dock.Count > 0)
+            {
+                var dock = UIKit.Panel(page, CardBg, 14, "Dock");
+                dock.Border(CardBorder);
+                dock.rectTransform.Anchor(new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 16), new Vector2(10, 58));
+                dock.HLayout(4, 12, 12, 8, 8, TextAnchor.MiddleCenter, false, false);
+                var fitter = dock.gameObject.AddComponent<ContentSizeFitter>(); fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                for (int i = 0; i < d.dock.Count; i++)
+                {
+                    var k = d.dock[i];
+                    if (i > 0) { var dv = UIKit.Panel(dock.transform, CardBorder, 0, "Divider", false); dv.LE(1, 20, -1, -1, 1, 20); }
+                    var b = MenuButton(dock.transform, k.label, k.icon, -1, 40, 14);
+                    if (b.icon != null) b.icon.color = Theme.Accent2;
+                    Target(b, ShellAction.NotInPoc, null, k.label);
+                }
+            }
         }
 
         static RectTransform ScrollPage(HeliosShellView sv, string name, out GameObject pageGo)

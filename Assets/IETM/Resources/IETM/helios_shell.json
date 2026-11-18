@@ -4,72 +4,326 @@
   "user": "K. Williams",
   "userRole": "Inspector",
   "userInitials": "KW",
-  "nav": [
-    { "id": "overview", "label": "Overview", "icon": "nav_overview" },
-    { "id": "maintenance", "label": "Maintenance", "icon": "nav_maintenance" },
-    { "id": "analytics", "label": "Analytics", "icon": "nav_analytics" },
-    { "id": "reports", "label": "Reports", "icon": "nav_reports" }
-  ],
+  "nav": [],
   "menu": [
-    { "id": "3d", "label": "3D View", "icon": "menu_3d" },
-    { "id": "ietm", "label": "IETM", "icon": "menu_ietm" },
-    { "id": "sensors", "label": "Sensors", "icon": "menu_sensors" },
-    { "id": "integrity", "label": "Asset Integrity", "icon": "menu_integrity" },
-    { "id": "health", "label": "Health", "icon": "menu_health" },
-    { "id": "maintenance", "label": "Maintenance", "icon": "menu_maintenance" },
-    { "id": "settings", "label": "Settings", "icon": "menu_settings" }
+    {
+      "id": "3d",
+      "label": "3D View",
+      "icon": "menu_3d"
+    },
+    {
+      "id": "ietm",
+      "label": "IETM",
+      "icon": "menu_ietm"
+    },
+    {
+      "id": "sensors",
+      "label": "Sensors",
+      "icon": "menu_sensors"
+    },
+    {
+      "id": "health",
+      "label": "Health",
+      "icon": "menu_health"
+    },
+    {
+      "id": "integrity",
+      "label": "Asset Integrity",
+      "icon": "menu_integrity"
+    },
+    {
+      "id": "maintenance",
+      "label": "Maintenance",
+      "icon": "menu_maintenance"
+    },
+    {
+      "id": "settings",
+      "label": "Settings",
+      "icon": "menu_settings"
+    }
   ],
   "aircraft": {
     "name": "F-16C Fighting Falcon",
-    "tags": ["Block 50/52", "AF-3287"],
+    "tags": [
+      "Block 50/52",
+      "AF-3287"
+    ],
     "dataStatus": "Sample data",
     "issue": "001"
   },
   "filters": [
-    { "id": "all", "label": "All" },
-    { "id": "airframe", "label": "Airframe systems" },
-    { "id": "powerplant", "label": "Power plant" },
-    { "id": "structures", "label": "Structures" },
-    { "id": "cockpit", "label": "Cockpit & avionics" },
-    { "id": "armament", "label": "Armament & egress" },
-    { "id": "ground", "label": "Ground handling" }
+    {
+      "id": "all",
+      "label": "All"
+    },
+    {
+      "id": "airframe",
+      "label": "Airframe systems"
+    },
+    {
+      "id": "powerplant",
+      "label": "Power plant"
+    },
+    {
+      "id": "structures",
+      "label": "Structures"
+    },
+    {
+      "id": "cockpit",
+      "label": "Cockpit & avionics"
+    },
+    {
+      "id": "armament",
+      "label": "Armament & egress"
+    },
+    {
+      "id": "ground",
+      "label": "Ground handling"
+    }
   ],
   "systems": [
-    { "id": "32", "code": "32", "title": "Landing gear", "subtitle": "Main & nose gear, wheels, brakes, steering", "group": "airframe", "icon": "thumb_landing_gear", "available": true, "meta": "6 sections · 1 available" },
-    { "id": "71", "code": "71–80", "title": "Engine", "subtitle": "F110-GE-129 / F100-PW-229 power plant", "group": "powerplant", "icon": "thumb_engine" },
-    { "id": "57", "code": "57", "title": "Wings", "subtitle": "Wing structure, leading-edge flaps, flaperons", "group": "structures", "icon": "thumb_wings" },
-    { "id": "cockpit", "code": "31 · 35 · 52", "title": "Cockpit", "subtitle": "Displays, oxygen, canopy", "group": "cockpit", "icon": "thumb_cockpit" },
-    { "id": "21", "code": "21", "title": "Cooling & air conditioning", "subtitle": "ECS, cockpit pressurisation, avionics cooling", "group": "airframe", "icon": "thumb_cooling" },
-    { "id": "28", "code": "28", "title": "Fuel", "subtitle": "Internal & external tanks, air refuelling", "group": "airframe", "icon": "thumb_fuel" },
-    { "id": "27", "code": "27", "title": "Flight controls", "subtitle": "Fly-by-wire computers, actuators", "group": "airframe", "icon": "thumb_fcs" },
-    { "id": "29", "code": "29", "title": "Hydraulic power", "subtitle": "Systems A and B, pumps, reservoirs", "group": "airframe", "icon": "thumb_hydraulics" },
-    { "id": "24", "code": "24", "title": "Electrical power", "subtitle": "Generators, battery, emergency power", "group": "airframe", "icon": "thumb_electrical" },
-    { "id": "49", "code": "49", "title": "JFS & EPU", "subtitle": "Jet fuel starter, emergency power unit", "group": "airframe", "icon": "thumb_jfs" },
-    { "id": "avionics", "code": "23 · 34 · FCR", "title": "Avionics", "subtitle": "Comms, navigation, fire-control radar", "group": "cockpit", "icon": "thumb_avionics" },
-    { "id": "arm", "code": "ARM", "title": "Armament", "subtitle": "Gun, pylons, launchers, stores", "group": "armament", "icon": "thumb_armament" },
-    { "id": "egr", "code": "EGR", "title": "Egress", "subtitle": "Ejection seat, canopy jettison", "group": "armament", "icon": "thumb_egress" },
-    { "id": "53", "code": "53 · 55", "title": "Fuselage & tail", "subtitle": "Fuselage, stabilisers, vertical tail", "group": "structures", "icon": "thumb_fuselage" },
-    { "id": "05", "code": "05 · 12", "title": "Inspections & servicing", "subtitle": "Phase inspections, servicing, ground handling", "group": "ground", "icon": "thumb_inspections" }
+    {
+      "id": "32",
+      "code": "32",
+      "title": "Landing gear",
+      "subtitle": "Main & nose gear, wheels, brakes, steering",
+      "group": "airframe",
+      "icon": "thumb_landing_gear",
+      "available": true,
+      "meta": "6 sections · 1 available"
+    },
+    {
+      "id": "71",
+      "code": "71–80",
+      "title": "Engine",
+      "subtitle": "F110-GE-129 / F100-PW-229 power plant",
+      "group": "powerplant",
+      "icon": "thumb_engine"
+    },
+    {
+      "id": "57",
+      "code": "57",
+      "title": "Wings",
+      "subtitle": "Wing structure, leading-edge flaps, flaperons",
+      "group": "structures",
+      "icon": "thumb_wings"
+    },
+    {
+      "id": "cockpit",
+      "code": "31 · 35 · 52",
+      "title": "Cockpit",
+      "subtitle": "Displays, oxygen, canopy",
+      "group": "cockpit",
+      "icon": "thumb_cockpit"
+    },
+    {
+      "id": "21",
+      "code": "21",
+      "title": "Cooling & air conditioning",
+      "subtitle": "ECS, cockpit pressurisation, avionics cooling",
+      "group": "airframe",
+      "icon": "thumb_cooling"
+    },
+    {
+      "id": "28",
+      "code": "28",
+      "title": "Fuel",
+      "subtitle": "Internal & external tanks, air refuelling",
+      "group": "airframe",
+      "icon": "thumb_fuel"
+    },
+    {
+      "id": "27",
+      "code": "27",
+      "title": "Flight controls",
+      "subtitle": "Fly-by-wire computers, actuators",
+      "group": "airframe",
+      "icon": "thumb_fcs"
+    },
+    {
+      "id": "29",
+      "code": "29",
+      "title": "Hydraulic power",
+      "subtitle": "Systems A and B, pumps, reservoirs",
+      "group": "airframe",
+      "icon": "thumb_hydraulics"
+    },
+    {
+      "id": "24",
+      "code": "24",
+      "title": "Electrical power",
+      "subtitle": "Generators, battery, emergency power",
+      "group": "airframe",
+      "icon": "thumb_electrical"
+    },
+    {
+      "id": "49",
+      "code": "49",
+      "title": "JFS & EPU",
+      "subtitle": "Jet fuel starter, emergency power unit",
+      "group": "airframe",
+      "icon": "thumb_jfs"
+    },
+    {
+      "id": "avionics",
+      "code": "23 · 34 · FCR",
+      "title": "Avionics",
+      "subtitle": "Comms, navigation, fire-control radar",
+      "group": "cockpit",
+      "icon": "thumb_avionics"
+    },
+    {
+      "id": "arm",
+      "code": "ARM",
+      "title": "Armament",
+      "subtitle": "Gun, pylons, launchers, stores",
+      "group": "armament",
+      "icon": "thumb_armament"
+    },
+    {
+      "id": "egr",
+      "code": "EGR",
+      "title": "Egress",
+      "subtitle": "Ejection seat, canopy jettison",
+      "group": "armament",
+      "icon": "thumb_egress"
+    },
+    {
+      "id": "53",
+      "code": "53 · 55",
+      "title": "Fuselage & tail",
+      "subtitle": "Fuselage, stabilisers, vertical tail",
+      "group": "structures",
+      "icon": "thumb_fuselage"
+    },
+    {
+      "id": "05",
+      "code": "05 · 12",
+      "title": "Inspections & servicing",
+      "subtitle": "Phase inspections, servicing, ground handling",
+      "group": "ground",
+      "icon": "thumb_inspections"
+    }
   ],
   "systemPages": [
     {
-      "id": "32", "code": "32", "title": "Landing Gear",
+      "id": "32",
+      "code": "32",
+      "title": "Landing Gear",
       "subtitle": "Main and nose gear, extension and retraction, wheels and brakes, steering, position indication",
       "sections": [
-        { "id": "32-10", "code": "32-10-00", "title": "Main landing gear and doors", "subtitle": "Data modules: planned", "icon": "thumb_main_gear" },
-        { "id": "32-20", "code": "32-20-00", "title": "Nose landing gear and doors", "subtitle": "Description, IPD, procedures, printable IPC", "icon": "thumb_landing_gear", "available": true, "modules": ["DESC", "OPER", "PROC × 3", "IPD", "PDF"], "module": "DM-TITLE" },
-        { "id": "32-30", "code": "32-30-00", "title": "Extension and retraction", "subtitle": "Incl. emergency extension · planned", "icon": "thumb_extension_retraction" },
-        { "id": "32-40", "code": "32-40-00", "title": "Wheels and brakes", "subtitle": "Incl. anti-skid · planned", "icon": "thumb_wheels_brakes" },
-        { "id": "32-50", "code": "32-50-00", "title": "Nose wheel steering", "subtitle": "Data modules: planned", "icon": "thumb_steering" },
-        { "id": "32-60", "code": "32-60-00", "title": "Position and warning", "subtitle": "Gear indication, warning horn · planned", "icon": "thumb_position_warning" }
+        {
+          "id": "32-10",
+          "code": "32-10-00",
+          "title": "Main landing gear and doors",
+          "subtitle": "Data modules: planned",
+          "icon": "thumb_main_gear"
+        },
+        {
+          "id": "32-20",
+          "code": "32-20-00",
+          "title": "Nose landing gear and doors",
+          "subtitle": "Description, IPD, procedures, printable IPC",
+          "icon": "thumb_landing_gear",
+          "available": true,
+          "modules": [
+            "DESC",
+            "OPER",
+            "PROC × 3",
+            "IPD",
+            "PDF"
+          ],
+          "module": "DM-TITLE"
+        },
+        {
+          "id": "32-30",
+          "code": "32-30-00",
+          "title": "Extension and retraction",
+          "subtitle": "Incl. emergency extension · planned",
+          "icon": "thumb_extension_retraction"
+        },
+        {
+          "id": "32-40",
+          "code": "32-40-00",
+          "title": "Wheels and brakes",
+          "subtitle": "Incl. anti-skid · planned",
+          "icon": "thumb_wheels_brakes"
+        },
+        {
+          "id": "32-50",
+          "code": "32-50-00",
+          "title": "Nose wheel steering",
+          "subtitle": "Data modules: planned",
+          "icon": "thumb_steering"
+        },
+        {
+          "id": "32-60",
+          "code": "32-60-00",
+          "title": "Position and warning",
+          "subtitle": "Gear indication, warning horn · planned",
+          "icon": "thumb_position_warning"
+        }
       ],
       "related": [
-        { "label": "Printable IPC (PDF) · 32-20-00 Fig 1", "file": "IETM/32-20-00_Fig1_IPC.pdf", "highlight": true },
-        { "label": "05 · Landing gear inspections" },
-        { "label": "Fault isolation · landing gear" },
-        { "label": "12 · Tyre and strut servicing" },
-        { "label": "29 · Hydraulic power" }
+        {
+          "label": "Printable IPC (PDF) · 32-20-00 Fig 1",
+          "file": "IETM/32-20-00_Fig1_IPC.pdf",
+          "highlight": true
+        },
+        {
+          "label": "05 · Landing gear inspections"
+        },
+        {
+          "label": "Fault isolation · landing gear"
+        },
+        {
+          "label": "12 · Tyre and strut servicing"
+        },
+        {
+          "label": "29 · Hydraulic power"
+        }
       ]
+    }
+  ],
+  "aircraftImage": "aircraft_f16",
+  "metrics": [
+    {
+      "label": "Total Flight Hours",
+      "value": "3,250 h",
+      "icon": "clock"
+    },
+    {
+      "label": "Next Service Due",
+      "value": "350 h",
+      "icon": "calendar",
+      "link": true
+    }
+  ],
+  "dock": [
+    {
+      "id": "rotate",
+      "label": "Rotate",
+      "icon": "rotate"
+    },
+    {
+      "id": "zoom",
+      "label": "Zoom",
+      "icon": "zoom"
+    },
+    {
+      "id": "pan",
+      "label": "Pan",
+      "icon": "pan"
+    },
+    {
+      "id": "reset",
+      "label": "Reset",
+      "icon": "reset"
+    },
+    {
+      "id": "fullscreen",
+      "label": "Full Screen",
+      "icon": "fullscreen"
     }
   ]
 }

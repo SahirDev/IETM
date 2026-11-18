@@ -9,6 +9,8 @@ namespace IETM
 {
     [Serializable] public class ShellLink { public string id; public string label; public string icon; }
 
+    [Serializable] public class ShellMetric { public string label, value, icon; public bool link; }
+
     [Serializable]
     public class ShellAircraft
     {
@@ -64,6 +66,10 @@ namespace IETM
         public List<ShellLink> filters = new List<ShellLink>();
         public List<ShellSystem> systems = new List<ShellSystem>();
         public List<ShellSystemPage> systemPages = new List<ShellSystemPage>();
+        [Tooltip("3D View page: aircraft image (UI/Shell), telemetry cards and the viewport dock.")]
+        public string aircraftImage = "aircraft_f16";
+        public List<ShellMetric> metrics = new List<ShellMetric>();
+        public List<ShellLink> dock = new List<ShellLink>();
 
         public static HeliosShellData Load(TextAsset json)
         {
