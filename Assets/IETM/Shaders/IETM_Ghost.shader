@@ -1,4 +1,4 @@
-// Transparent "x-ray" ghost shader for context parts (URP).
+// Transparent "x-ray" ghost shader for context parts (URP + Built-in).
 // Faint body + fresnel edge, no depth write, so isolated parts stay visible through it.
 Shader "IETM/Ghost"
 {
@@ -48,6 +48,42 @@ Shader "IETM/Ghost"
                 return half4(_Color.rgb + rim * 0.3h, saturate(_Color.a + rim * _RimStrength));
             }
             ENDHLSL
+        }
+    }
+    // Built-in render pipeline (used when no URP asset is active, e.g. the HELIOS project)
+    SubShader
+    {
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" "IgnoreProjector"="True" }
+        Pass
+        {
+            Name "GhostBuiltIn"
+            Tags { "LightMode"="ForwardBase" }
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+            Cull Back
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "UnityCG.cginc"
+            fixed4 _Color;
+            half _RimPower;
+            half _RimStrength;
+            struct appdata { float4 vertex : POSITION; float3 normal : NORMAL; };
+            struct v2f { float4 pos : SV_POSITION; float3 normalWS : TEXCOORD0; float3 viewWS : TEXCOORD1; };
+            v2f vert (appdata v)
+            {
+                v2f o;
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.normalWS = UnityObjectToWorldNormal(v.normal);
+                o.viewWS = WorldSpaceViewDir(v.vertex);
+                return o;
+            }
+            fixed4 frag (v2f i) : SV_Target
+            {
+                half rim = pow(1.0 - saturate(abs(dot(normalize(i.normalWS), normalize(i.viewWS)))), _RimPower);
+                return fixed4(_Color.rgb + rim * 0.3, saturate(_Color.a + rim * _RimStrength));
+            }
+            ENDCG
         }
     }
     FallBack Off
