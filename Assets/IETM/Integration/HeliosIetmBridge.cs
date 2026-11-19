@@ -12,8 +12,8 @@
 //     right of the HELIOS menu and below the HELIOS top bar, and follow it when the window is resized.
 //   - The HELIOS aircraft, its lights and its double-click isolate are paused so they don't mix with the
 //     landing gear. Everything is restored as soon as another HELIOS page is opened.
-// Opening another HELIOS page hides the IETM (its state is kept). Clicking IETM again while it is open
-// goes back to the IETM home (aircraft systems).
+// Opening another HELIOS page hides the IETM. Every click on the HELIOS IETM menu item starts the IETM
+// workflow again from the top (aircraft systems cards, IETM reset to its start state).
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -159,10 +159,21 @@ namespace IETM.Integration
             inIetm = true;
             if (module == null) return;
             if (!started) { if (!warming) StartCoroutine(StartIetm()); return; }
-            if (!ready) return;                        // still starting: shown when ready
-            if (wasOpen) { shell.Show(ShellPage.Aircraft); return; }   // IETM clicked again: back to the IETM home
-            if (shell.CurrentPage == ShellPage.View3D) shell.Show(ShellPage.Aircraft);   // left via a "3D View" link last time
-            SetIetmVisible(true);
+            if (!ready) return;                        // still starting: shown when ready (already fresh)
+            if (!wasOpen) SetIetmVisible(true);
+            ResetWorkflow();                           // every IETM click starts the IETM workflow from the top
+        }
+
+        /// <summary>Back to the start of the IETM workflow: aircraft systems cards, all filters cleared, and the
+        /// IETM itself reset (start module, gear assembled and extended, no selection, home camera).</summary>
+        void ResetWorkflow()
+        {
+            if (app != null) app.ResetSession();
+            if (shell != null)
+            {
+                shell.ApplyFilter("all");
+                shell.Show(ShellPage.Aircraft);
+            }
         }
 
         void Leave()

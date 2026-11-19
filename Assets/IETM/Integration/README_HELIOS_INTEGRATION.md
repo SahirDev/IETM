@@ -34,7 +34,7 @@ To edit the IETM in the HELIOS scene, tick **IETM Module** active, edit, then un
 
 1. Open `Assets/HELIOS/Scenes/HELIOS.unity` and press **Play**. Only this scene appears in the Hierarchy.
 2. Click **IETM** in the HELIOS side menu: aircraft systems → **32 Landing Gear** → sections → the Landing Gear IETM.
-3. Click any other HELIOS menu item to go back. The IETM keeps its state. Clicking **IETM** again while it's open goes back to the IETM home.
+3. Click any other HELIOS menu item to go back. **Every click on IETM starts the IETM workflow from the top**: the aircraft systems cards, with the IETM reset to its start state (title page, all parts back, gear extended, no explode, isolate, x-ray or selection, home camera). It doesn't resume where you left it.
 
 ## What the bridge does at Play
 
