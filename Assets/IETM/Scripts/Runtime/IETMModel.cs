@@ -150,8 +150,8 @@ namespace IETM
                     var remLocal = ro != null ? new Vector3(-ro.offset[0], ro.offset[1], ro.offset[2]) : Vector3.zero;
                     pb.removalLocal.Add(remLocal);
                     var vo = FindOffset(db.removalVia, t.name);
-                    pb.removalViaLocal.Add(!db.removalLPath ? remLocal
-                        : vo != null ? new Vector3(-vo.offset[0], vo.offset[1], vo.offset[2]) : AutoVia(remLocal));
+                    pb.removalViaLocal.Add(vo != null ? new Vector3(-vo.offset[0], vo.offset[1], vo.offset[2])
+                        : db.removalLPath ? AutoVia(remLocal) : remLocal);   // via == end: straight move
                     if (ro != null) pb.hasRemoval = true;
                     foreach (var r in t.GetComponentsInChildren<Renderer>(true))
                     {
@@ -301,6 +301,8 @@ namespace IETM
         public bool showRemoved;
         /// <summary>Seconds a part takes to move out / back in (procedures). Set from IETM App.</summary>
         public float removalDuration = 2.5f;
+        /// <summary>While true, parts wait in place (the camera is still moving to them).</summary>
+        public bool holdRemovals;
 
         public bool IsVisible(IPDItem leaf) => !hidden.Contains(leaf) && (showRemoved || !IsRemoved(leaf));
 
@@ -325,9 +327,10 @@ namespace IETM
 
         public void Tick(float dt)
         {
-            // removal animation
+            // removal animation (held while the camera moves to the part)
             bool moving = false;
             var keys = new List<IPDItem>(removeTarget.Keys);
+            if (holdRemovals) keys.Clear();
             foreach (var k in keys)
             {
                 float cur = removeT.TryGetValue(k, out var c) ? c : 0f;

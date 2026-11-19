@@ -75,6 +75,12 @@ namespace IETM
             SetView(yawDeg, pitchDeg);
         }
 
+        /// <summary>True when the camera has (nearly) reached its target view.</summary>
+        public bool IsSettled =>
+            Mathf.Abs(Mathf.DeltaAngle(yaw, tYaw)) < 1.5f && Mathf.Abs(pitch - tPitch) < 1.5f &&
+            Mathf.Abs(distance - Mathf.Max(tDistance, orbitHold > 0f ? orbitHold : 0f)) < Mathf.Max(0.002f, tDistance * 0.03f) &&
+            (pivot - tPivot).magnitude < Mathf.Max(0.001f, tDistance * 0.02f) && orbitHold <= 0f;
+
         public float TargetYaw => tYaw;
         public float TargetPitch => tPitch;
         public Vector3 TargetForward => Quaternion.Euler(tPitch, tYaw, 0f) * Vector3.forward;

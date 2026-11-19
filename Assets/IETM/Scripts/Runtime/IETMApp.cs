@@ -54,6 +54,9 @@ namespace IETM
         [Range(0.3f, 8f)] public float partMoveSeconds = 2.5f;
         [Tooltip("Camera orbits to a clear view of the part being removed / the parts shown in Operation.")]
         public bool cameraFollowsParts = true;
+        [Tooltip("Pause (s) after the camera arrives, before the part starts to move.")]
+        [Range(0f, 2f)] public float pauseBeforeMove = 0.3f;
+        float cameraWaitUntil, cameraSettledAt = -1f;
         [Tooltip("Printable IPC (PDF) under Assets/StreamingAssets, opened by the 'PDF' button in the IPD figure card.")]
         public string ipdPdfFile = "IETM/32-20-00_Fig1_IPC.pdf";
         [Tooltip("Show the item-number callouts when the IETM starts (toggle with the Callouts button or L).")]
@@ -193,6 +196,12 @@ namespace IETM
         void Update()
         {
             if (model != null) model.removalDuration = partMoveSeconds;   // live from the Inspector
+            if (model != null && model.holdRemovals)
+            {
+                if (vcam != null && vcam.IsSettled && cameraSettledAt < 0f) cameraSettledAt = Time.unscaledTime;
+                bool ready = cameraSettledAt >= 0f && Time.unscaledTime - cameraSettledAt >= pauseBeforeMove;
+                if (ready || Time.unscaledTime > cameraWaitUntil) { model.holdRemovals = false; cameraSettledAt = -1f; }
+            }
             if (model == null || view == null) return;
 
             SyncViewportRect();
@@ -613,6 +622,9 @@ namespace IETM
             {
                 // follow the part being removed / installed: orbit to a clear view across its path
                 AimAt(focusLeaves, path, motion, 1.35f);
+                // parts start moving once the camera is in place
+                model.holdRemovals = true;
+                cameraWaitUntil = Time.unscaledTime + 3f;
             }
             else if (cameraFollowsParts && step.action == "operate" && first != null && first.parent != null && focusLeaves.Count > 0
                 && model.TryGetBounds(focusLeaves, out var fb))

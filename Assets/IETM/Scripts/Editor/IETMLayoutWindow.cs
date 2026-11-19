@@ -25,6 +25,9 @@ namespace IETM.EditorTools
         readonly Dictionary<Transform, (Vector3 pos, Quaternion rot, Vector3 scale)> original = new Dictionary<Transform, (Vector3, Quaternion, Vector3)>();
         readonly Dictionary<Transform, Vector3> basePos = new Dictionary<Transform, Vector3>();
         readonly List<Transform> parts = new List<Transform>();
+        // corner tab: laid-out end position per part, and which parts use an L path
+        readonly Dictionary<Transform, Vector3> endPos = new Dictionary<Transform, Vector3>();
+        readonly HashSet<Transform> lPath = new HashSet<Transform>();
 
         [MenuItem("IETM/Layout Editor (exploded and disassembly positions)", priority = 60)]
         public static void Open() => GetWindow<IETMLayoutWindow>("IETM Layout");
@@ -44,7 +47,7 @@ namespace IETM.EditorTools
                 "2. Click a part (list below or Scene view) and move it with the Move tool (W).\n" +
                 "3. Save writes the positions into landing_gear_ietm.json. Cancel restores the model.\n\n" +
                 "Disassembly = where a part is laid out when a procedure removes it.\n" +
-                "L-path corner = where the part goes FIRST (e.g. pulled straight off its pin) before it moves on to its laid-out position.\n" +
+                "L-path corner = tick 'L path' on the parts that should move in an L, then drag each to where its FIRST move ends (e.g. pulled straight off its pin). Unticked parts move straight.\n" +
                 "Explode = the Explode slider at 100 %.",
                 MessageType.None);
 
@@ -77,7 +80,18 @@ namespace IETM.EditorTools
                 bool sel = Selection.activeTransform == t;
                 if (GUILayout.Toggle(sel, t.name, "Button", GUILayout.MinWidth(170)) && !sel) { Selection.activeTransform = t; SceneView.lastActiveSceneView?.FrameSelected(); }
                 GUILayout.Label(d.sqrMagnitude < 1e-10f ? "in place" : (d.magnitude * 1000f).ToString("0") + " mm", GUILayout.Width(70));
-                if (GUILayout.Button("Reset", GUILayout.Width(50))) { Undo.RecordObject(t, "Reset part"); t.localPosition = basePos[t]; }
+                if (layout == Layout.DisassemblyCorner && endPos.ContainsKey(t))
+                {
+                    bool on = lPath.Contains(t);
+                    bool now = GUILayout.Toggle(on, "L path", GUILayout.Width(60));
+                    if (now != on)
+                    {
+                        Undo.RecordObject(t, "L path");
+                        if (now) { lPath.Add(t); t.localPosition = basePos[t] + IETMModel.AutoVia(endPos[t] - basePos[t]); }
+                        else { lPath.Remove(t); t.localPosition = endPos[t]; }
+                    }
+                }
+                else if (GUILayout.Button("Reset", GUILayout.Width(50))) { Undo.RecordObject(t, "Reset part"); t.localPosition = basePos[t]; }
                 EditorGUILayout.EndHorizontal();
             }
             EditorGUILayout.EndScrollView();
@@ -92,7 +106,7 @@ namespace IETM.EditorTools
             var db = IETMDatabase.Load(json);
             var root = app.extendedModel.transform;
 
-            original.Clear(); basePos.Clear(); parts.Clear();
+            original.Clear(); basePos.Clear(); parts.Clear(); endPos.Clear(); lPath.Clear();
             foreach (var t in root.GetComponentsInChildren<Transform>(true)) original[t] = (t.localPosition, t.localRotation, t.localScale);
             Undo.RegisterFullObjectHierarchyUndo(root.gameObject, "IETM layout");
 
@@ -129,8 +143,13 @@ namespace IETM.EditorTools
                     if (t == null) continue;
                     var end = new Vector3(-e.offset[0], e.offset[1], e.offset[2]);
                     var v = db.removalVia != null ? db.removalVia.Find(x => x != null && x.node == e.node && x.offset != null && x.offset.Length >= 3) : null;
-                    var via = v != null ? new Vector3(-v.offset[0], v.offset[1], v.offset[2]) : IETMModel.AutoVia(end);
-                    t.localPosition = basePos[t] + via;
+                    endPos[t] = basePos[t] + end;
+                    if (v != null || db.removalLPath)
+                    {
+                        lPath.Add(t);
+                        t.localPosition = basePos[t] + (v != null ? new Vector3(-v.offset[0], v.offset[1], v.offset[2]) : IETMModel.AutoVia(end));
+                    }
+                    else t.localPosition = endPos[t];   // straight path: shown at its end, tick "L path" to give it a corner
                 }
             }
             else
@@ -166,6 +185,7 @@ namespace IETM.EditorTools
             {
                 var d = t.localPosition - basePos[t];
                 if (d.sqrMagnitude < 1e-12f) continue;
+                if (layout == Layout.DisassemblyCorner && !lPath.Contains(t)) continue;   // straight path: no corner saved
                 if (!first) sb.Append(",\n");
                 first = false;
                 // Unity local -> glTF (x mirrored, as glTFast imports it)

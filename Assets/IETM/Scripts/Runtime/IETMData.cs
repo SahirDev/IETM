@@ -160,8 +160,8 @@ namespace IETM
         public List<ExplodeOffset> removal = new List<ExplodeOffset>();
         [Tooltip("Corner of the L-shaped removal path (first move, then on to the laid-out position). Missing = automatic: first along the main axis of the removal.")]
         public List<ExplodeOffset> removalVia = new List<ExplodeOffset>();
-        [Tooltip("Removal paths: true = L-shaped (two moves), false = straight.")]
-        public bool removalLPath = true;
+        [Tooltip("true = every part without its own corner gets an automatic L path; false = only parts listed in removalVia move in an L, the rest straight.")]
+        public bool removalLPath = false;
 
         [NonSerialized] public Dictionary<string, IPDItem> byItemNo = new Dictionary<string, IPDItem>();
 
