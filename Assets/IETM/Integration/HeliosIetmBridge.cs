@@ -205,6 +205,7 @@ namespace IETM.Integration
             hostAmbient.Apply();
 
             RedirectShellLinks();
+            ClipIetmToFrame();
             shell.Show(ShellPage.Aircraft);
             ready = true;
             SetIetmVisible(inIetm);
@@ -258,6 +259,15 @@ namespace IETM.Integration
             foreach (var es in FindObjectsByType<EventSystem>(FindObjectsSortMode.None))
                 if (es != mine && es.isActiveAndEnabled && !IsIetm(es.gameObject)) return true;
             return false;
+        }
+
+        /// <summary>The IETM side panels collapse by sliding out past the frame edge. In the stand-alone IETM
+        /// its own side menu covered that strip; inside HELIOS the strip is next to the HELIOS menu, so the
+        /// frame clips its content: a collapsed panel disappears instead of drawing beside the HELIOS menu.</summary>
+        void ClipIetmToFrame()
+        {
+            var frame = shell.shell.ietmFrame;
+            if (frame != null && frame.GetComponent<RectMask2D>() == null) frame.gameObject.AddComponent<RectMask2D>();
         }
 
         /// <summary>IETM shell buttons that went to its own "3D View" placeholder now open the HELIOS 3D View.</summary>
