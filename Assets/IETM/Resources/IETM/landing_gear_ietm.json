@@ -1,0 +1,1131 @@
+{
+  "publication": {
+    "title": "F-16 Nose Landing Gear",
+    "subtitle": "Interactive Electronic Technical Manual",
+    "pmc": "PMC-F16NLG-K0F16-00001-00",
+    "issue": "001",
+    "issueDate": "2026-11-17",
+    "applicability": "F-16 NLG scale assembly - Serial 001 002 003",
+    "dataStatus": "SAMPLE DATA - part numbers, CAGE codes and procedures are placeholders for the POC. Replace with OEM data."
+  },
+  "figure": {
+    "title": "Nose Landing Gear",
+    "icn": "ICN-F16NLG-A-322000-0-K0F16-00001-A-01-1",
+    "figureNumber": "Fig. 1"
+  },
+  "items": [
+    {
+      "itemNo": "001",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1000-01",
+      "description": "LANDING GEAR ASSY - NOSE",
+      "indent": 1,
+      "upa": "RF",
+      "smr": "PAOOO",
+      "nodes": [],
+      "info": "Complete nose landing gear assembly. Shown in the extended (down-locked) position."
+    },
+    {
+      "itemNo": "010",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1010-01",
+      "description": "HOUSING - STRUT, NOSE GEAR",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "F-16 Front Landing Gear"
+      ],
+      "info": "Primary structural member. Carries the trunnion that attaches the gear to the airframe.",
+      "remarks": "Inspect trunnion lugs for cracks and corrosion."
+    },
+    {
+      "itemNo": "020",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1020-03",
+      "description": "ARM - SWIVEL, MAIN",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Main Swivel Arm"
+      ],
+      "info": "Allows the strut to swivel about the trunnion axis during retraction."
+    },
+    {
+      "itemNo": "030",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1030-01",
+      "description": "COLLAR - STRUT",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Collar"
+      ],
+      "info": "Locates the steering collar on the strut and limits axial play."
+    },
+    {
+      "itemNo": "040",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1100-01",
+      "description": "STEERING ASSY",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOOO",
+      "nodes": [],
+      "info": "Nose-wheel steering linkage. Transfers servo motion to the wheel fork."
+    },
+    {
+      "itemNo": "050",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1110-02",
+      "description": "COLLAR - STEERING",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Steering Collar"
+      ],
+      "info": "Rotating collar driven by the steering links."
+    },
+    {
+      "itemNo": "060",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1120-01",
+      "description": "HEAD - STEERING, TOP",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Steering Top Head"
+      ],
+      "info": "Upper steering head. Connects the collar to the swivel arm."
+    },
+    {
+      "itemNo": "070",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1130-01",
+      "description": "LINK - STEERING, UPPER",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Steering Link Upper"
+      ],
+      "info": "Upper steering link (torque link).",
+      "remarks": "Check bushings for wear. Max free play 0.2 mm."
+    },
+    {
+      "itemNo": "080",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1140-01",
+      "description": "LINK - STEERING, LOWER",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Steering Link Lower"
+      ],
+      "info": "Lower steering link (torque link)."
+    },
+    {
+      "itemNo": "090",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1150-01",
+      "description": "LINK - STEERING SERVO",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Steering Link for servo"
+      ],
+      "info": "Input link from the steering servo."
+    },
+    {
+      "itemNo": "100",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1200-01",
+      "description": "RETRACTION MECHANISM ASSY",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOOO",
+      "nodes": [],
+      "info": "Actuator and linkage that retract and extend the gear."
+    },
+    {
+      "itemNo": "110",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1210-04",
+      "description": "ACTUATOR - GEAR RETRACTION",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Gear Actuator"
+      ],
+      "info": "Linear actuator that drives the retraction linkage.",
+      "remarks": "Functional check required after installation."
+    },
+    {
+      "itemNo": "115",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1215-01",
+      "description": "ROD - PISTON, GEAR ACTUATOR",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Gear Actuator Piston Rod"
+      ],
+      "info": "Actuator piston rod. Extends and retracts with the actuator stroke.",
+      "remarks": "Inspect the rod surface for scoring and seal leakage."
+    },
+    {
+      "itemNo": "120",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1220-01",
+      "description": "ARM - ACTUATOR, MAIN",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Main Actuator Arm"
+      ],
+      "info": "Main actuator output arm."
+    },
+    {
+      "itemNo": "130",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1230-01",
+      "description": "ARM - ACTUATOR, SECONDARY",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Secondary Actuator Arm"
+      ],
+      "info": "Secondary arm. Drives the inner folding arm pivot."
+    },
+    {
+      "itemNo": "140",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1240-01",
+      "description": "NUT - ACTUATOR",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Actuator Nut"
+      ],
+      "info": "Retaining nut for the actuator rod end."
+    },
+    {
+      "itemNo": "150",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1250-02",
+      "description": "LINK - GEAR ROTATION",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Gear Rotation Link"
+      ],
+      "info": "Rotates the strut about the trunnion as the actuator strokes."
+    },
+    {
+      "itemNo": "160",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1300-01",
+      "description": "DRAG BRACE ASSY - FOLDING",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOOO",
+      "nodes": [],
+      "info": "Folding drag brace. Locks over-centre when the gear is down."
+    },
+    {
+      "itemNo": "170",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1310-01",
+      "description": "ARM - FOLDING, INNER",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Inner Folding Arm"
+      ],
+      "info": "Inner half of the folding drag brace."
+    },
+    {
+      "itemNo": "180",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1320-01",
+      "description": "ARM - FOLDING, OUTER",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Outer Folding Arm"
+      ],
+      "info": "Outer half of the folding drag brace."
+    },
+    {
+      "itemNo": "190",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1330-01",
+      "description": "PIVOT - INNER ARM",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Pivot for Inner Arm"
+      ],
+      "info": "Pivot pin for the inner folding arm."
+    },
+    {
+      "itemNo": "210",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1410-01",
+      "description": "FORK - WHEEL",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Fork"
+      ],
+      "info": "Wheel fork. Carries the axle."
+    },
+    {
+      "itemNo": "200",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1400-01",
+      "description": "WHEEL AND FORK ASSY",
+      "indent": 2,
+      "upa": "1",
+      "smr": "PAOOO",
+      "nodes": [],
+      "info": "Wheel, hub and fork."
+    },
+    {
+      "itemNo": "220",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1420-02",
+      "description": "HUB - WHEEL",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Main Gear"
+      ],
+      "info": "Wheel hub and bearing seat."
+    },
+    {
+      "itemNo": "230",
+      "isn": "00A",
+      "cage": "K0F16",
+      "partNumber": "NLG-32-1430-01",
+      "description": "WHEEL - NOSE, TIRE",
+      "indent": 3,
+      "upa": "1",
+      "smr": "PAOZZ",
+      "nodes": [
+        "Wheel"
+      ],
+      "info": "Nose wheel tyre.",
+      "remarks": "Replace if tread depth is below limits or if the sidewall is damaged."
+    }
+  ],
+  "modules": [
+    {
+      "id": "DM-TITLE",
+      "group": "00 Introduction",
+      "type": "description",
+      "dmc": "DMC-F16NLG-A-00-00-00-00A-001A-D",
+      "title": "Title page",
+      "infoName": "Title page",
+      "paragraphs": [
+        {
+          "heading": "F-16 Nose Landing Gear",
+          "text": "Interactive Electronic Technical Manual (IETM) for the F-16 nose landing gear assembly. The manual combines descriptive data, an interactive Illustrated Parts Data (IPD) module and step-by-step procedures, all linked to the 3D model."
+        },
+        {
+          "heading": "How to use",
+          "text": "Select a data module in the publication tree. Click a part in the 3D view or a row in the parts list to cross-highlight it. Use the viewer toolbar to isolate, hide, x-ray or explode the assembly. Add parts to the order list with the cart button."
+        },
+        {
+          "heading": "Printable Illustrated Parts Catalog",
+          "text": "32-20-00 Figure 1 - title page, assembly, exploded view, three detail sheets and the full parts list (7 pages, PDF).",
+          "link": "IETM/32-20-00_Fig1_IPC.pdf",
+          "linkLabel": "Download PDF"
+        },
+        {
+          "heading": "Data status",
+          "text": "This is a proof-of-concept publication. Part numbers, CAGE codes and procedures are sample data."
+        }
+      ]
+    },
+    {
+      "id": "DM-DESC",
+      "group": "32-20 Description and operation",
+      "type": "description",
+      "dmc": "DMC-F16NLG-A-32-20-00-00A-040A-D",
+      "title": "Nose landing gear",
+      "infoName": "Description",
+      "focus": [
+        "001"
+      ],
+      "paragraphs": [
+        {
+          "heading": "General",
+          "text": "The nose landing gear supports the forward fuselage on the ground, steers the aircraft during taxi and retracts forward into the nose gear bay in flight. Select a heading to isolate that subassembly in the 3D view: it keeps its own colours and the rest of the gear turns transparent.",
+          "focus": [
+            "001"
+          ]
+        },
+        {
+          "heading": "Strut and swivel",
+          "text": "The strut housing (10) carries the trunnion. The main swivel arm (20) and strut collar (30) let the strut rotate during retraction.",
+          "focus": [
+            "010",
+            "020",
+            "030"
+          ]
+        },
+        {
+          "heading": "Steering",
+          "text": "The steering assembly (40) transfers servo input through the servo link (90), the upper and lower steering links (70, 80) and the steering top head (60) to the steering collar (50).",
+          "focus": [
+            "040"
+          ]
+        },
+        {
+          "heading": "Retraction",
+          "text": "The retraction actuator (110) drives the main and secondary actuator arms (120, 130). The gear rotation link (150) swings the strut forward while the folding drag brace (160) - inner and outer arms, pivot and fork (210) - breaks over-centre.",
+          "focus": [
+            "100",
+            "160"
+          ]
+        },
+        {
+          "heading": "Wheel",
+          "text": "The wheel (230) runs on the hub (220).",
+          "focus": [
+            "200"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DM-OPER",
+      "group": "32-20 Description and operation",
+      "type": "procedure",
+      "dmc": "DMC-F16NLG-A-32-20-00-00A-041A-D",
+      "title": "Nose landing gear",
+      "infoName": "Operation (retraction sequence)",
+      "focus": [
+        "001"
+      ],
+      "steps": [
+        {
+          "title": "Retraction - overview",
+          "text": "When the gear handle is set UP, the retraction actuator drives the linkage and the gear swings forward and up into the nose gear bay. The animation plays the full cycle (extend - retract) in a loop. Use Next to follow each stage; the parts that do the work stay in colour.",
+          "focus": [
+            "001"
+          ],
+          "action": "operate",
+          "animate": "cycle",
+          "gear": "extended",
+          "view": "iso"
+        },
+        {
+          "title": "1. The actuator lead screw turns",
+          "text": "The drive in the retraction actuator turns the lead screw (piston rod, 115). The screw runs through the actuator nut (140) and is the first moving part of the sequence.",
+          "focus": [
+            "115",
+            "140"
+          ],
+          "action": "operate",
+          "animate": "cycle"
+        },
+        {
+          "title": "2. The gear actuator moves",
+          "text": "As the screw turns, the actuator nut (140) travels along it and the retraction actuator (110) changes length. The actuator body pivots on its mount to follow the linkage.",
+          "focus": [
+            "110",
+            "115",
+            "140"
+          ],
+          "action": "operate",
+          "animate": "cycle"
+        },
+        {
+          "title": "3. The actuator arms rotate the main swivel arm",
+          "text": "The main and secondary actuator arms (120, 130) turn the actuation into rotation of the main swivel arm (20). The swivel arm carries the strut, so the whole gear starts to swing forward and up.",
+          "focus": [
+            "120",
+            "130",
+            "020"
+          ],
+          "action": "operate",
+          "animate": "cycle"
+        },
+        {
+          "title": "4. Steering turns the wheel to fit the bay",
+          "text": "While the gear swings, the gear rotation link (150) and the steering assembly - servo link (90), top head (60), steering collar (50) and the upper and lower steering links (70, 80) - turn the strut and wheel (230) so the wheel lines up with the nose gear bay.",
+          "focus": [
+            "150",
+            "090",
+            "060",
+            "050",
+            "070",
+            "080",
+            "230"
+          ],
+          "action": "operate",
+          "animate": "cycle"
+        },
+        {
+          "title": "5. The drag brace folds",
+          "text": "At the same time the folding drag brace - inner arm (170), outer arm (180), pivot (190) and fork (210) - unlocks and folds, so the strut can swing up. When the gear extends the brace opens again and locks over-centre to hold the gear down.",
+          "focus": [
+            "170",
+            "180",
+            "190",
+            "210"
+          ],
+          "action": "operate",
+          "animate": "cycle"
+        },
+        {
+          "title": "Gear up and locked",
+          "text": "The gear is stowed in the bay. Extension is the same sequence in reverse: the brace opens and locks, the steering re-centres the wheel and the actuator drives the gear down and locked.",
+          "focus": [
+            "001"
+          ],
+          "action": "operate",
+          "animate": "retract"
+        }
+      ]
+    },
+    {
+      "id": "DM-DISASSY",
+      "group": "32-20 Maintenance",
+      "type": "procedure",
+      "dmc": "DMC-F16NLG-A-32-20-00-00A-520A-A",
+      "title": "Nose landing gear",
+      "infoName": "Disassembly",
+      "focus": [
+        "001"
+      ],
+      "steps": [
+        {
+          "title": "Preliminary requirements",
+          "text": "Gear extended, safety pins installed, hydraulic and electrical power off. The removed parts are laid out next to the assembly in the order they come off - nothing overlaps.",
+          "warning": "WARNING: Make sure the aircraft is safely supported on jacks before you disassemble the nose landing gear.",
+          "focus": [
+            "001"
+          ],
+          "action": "highlight",
+          "gear": "extended",
+          "view": "iso"
+        },
+        {
+          "title": "1. Remove the nose wheel",
+          "text": "Remove the axle nut and slide the wheel off the axle.\n\nPart details:\n• Item 230 · Wheel - Nose, Tire · P/N NLG-32-1430-01 - Carries the aircraft weight on the ground and rolls on the hub. Tubeless tyre on a split wheel.",
+          "focus": [
+            "230"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "2. Remove the upper steering link",
+          "text": "Remove the pin at the steering collar and take off the upper link.\n\nPart details:\n• Item 70 · Link - Steering, Upper · P/N NLG-32-1130-01 - Upper half of the steering (torque) link: keeps the wheel aligned with the steering collar while the shock strut compresses.",
+          "focus": [
+            "070"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "3. Remove the lower steering link",
+          "text": "Remove the pin at the lower strut and take off the lower link.\n\nPart details:\n• Item 80 · Link - Steering, Lower · P/N NLG-32-1140-01 - Lower half of the steering (torque) link: joins the upper link to the lower strut so steering input reaches the wheel.",
+          "focus": [
+            "080"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "4. Remove the wheel hub / lower strut",
+          "text": "Slide the lower strut and hub down out of the collars and put it on a padded stand.\n\nPart details:\n• Item 220 · Hub - Wheel · P/N NLG-32-1420-02 - Lower strut and hub: absorbs landing loads and carries the wheel axle.",
+          "focus": [
+            "220"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "5. Remove the actuator nut",
+          "text": "Turn the nut off the end of the lead screw.\n\nPart details:\n• Item 140 · Nut - Actuator · P/N NLG-32-1240-01 - Rides on the lead screw and turns its rotation into the linear travel that drives the actuator arms.",
+          "focus": [
+            "140"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "6. Remove the retraction actuator",
+          "text": "Disconnect the actuator mounts and remove the actuator with its lead screw.\n\nPart details:\n• Item 110 · Actuator - Gear Retraction · P/N NLG-32-1210-04 - Gear retraction actuator: drives the gear up and down.\n• Item 115 · Rod - Piston, Gear Actuator · P/N NLG-32-1215-01 - Lead screw (piston rod) inside the actuator: its rotation moves the actuator nut.",
+          "focus": [
+            "110",
+            "115"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "7. Remove the main and secondary actuator arms",
+          "text": "Remove the pins and take off both actuator arms together.\n\nPart details:\n• Item 120 · Arm - Actuator, Main · P/N NLG-32-1220-01 - Main actuator arm: transmits the actuator force to the main swivel arm.\n• Item 130 · Arm - Actuator, Secondary · P/N NLG-32-1230-01 - Secondary actuator arm: links the actuator nut to the main actuator arm.",
+          "focus": [
+            "120",
+            "130"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "8. Remove the inner arm pivot",
+          "text": "Pull the pivot pin out of the inner folding arm.\n\nPart details:\n• Item 190 · Pivot - Inner Arm · P/N NLG-32-1330-01 - Hinge pin of the drag-brace inner arm on the gear structure.",
+          "focus": [
+            "190"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "9. Remove the fork fitting",
+          "text": "Remove the fork fitting from the linkage.\n\nPart details:\n• Item 210 · Fork - Wheel · P/N NLG-32-1410-01 - Fork fitting: clevis that carries the drag-brace / linkage pin.",
+          "focus": [
+            "210"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "10. Remove the drag brace (outer and inner folding arms)",
+          "text": "Remove the drag brace pins and take off the outer and inner folding arms together.\n\nPart details:\n• Item 180 · Arm - Folding, Outer · P/N NLG-32-1320-01 - Outer folding arm of the drag brace: connects the brace to the strut.\n• Item 170 · Arm - Folding, Inner · P/N NLG-32-1310-01 - Inner folding arm of the drag brace: locks over-centre to hold the gear down, folds for retraction.",
+          "focus": [
+            "180",
+            "170"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "11. Remove the steering collar",
+          "text": "Slide the steering collar down off its seat.\n\nPart details:\n• Item 50 · Collar - Steering · P/N NLG-32-1110-02 - Steering collar: turns around the strut and passes the steering input to the torque links.",
+          "focus": [
+            "050"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "12. Remove the strut collar",
+          "text": "Slide the strut collar down out of the swivel arm.\n\nPart details:\n• Item 30 · Collar - Strut · P/N NLG-32-1030-01 - Strut collar: holds the strut in the swivel arm and takes radial loads.",
+          "focus": [
+            "030"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "13. Remove the gear rotation link",
+          "text": "Remove the pins and take out the gear rotation link.\n\nPart details:\n• Item 150 · Link - Gear Rotation · P/N NLG-32-1250-02 - Gear rotation link: turns the strut during retraction so the wheel fits the bay.",
+          "focus": [
+            "150"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "14. Remove the steering servo link",
+          "text": "Disconnect the servo link from the steering head.\n\nPart details:\n• Item 90 · Link - Steering Servo · P/N NLG-32-1150-01 - Steering servo link: connects the nose wheel steering servo to the steering head.",
+          "focus": [
+            "090"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "15. Remove the main swivel arm",
+          "text": "Remove the trunnion bolts and lower the main swivel arm out of the housing.\n\nPart details:\n• Item 20 · Arm - Swivel, Main · P/N NLG-32-1020-03 - Main swivel arm (trunnion): carries the strut in the housing and pivots during retraction.",
+          "focus": [
+            "020"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "16. Remove the steering top head",
+          "text": "Lift the steering top head out of the swivel arm.\n\nPart details:\n• Item 60 · Head - Steering, Top · P/N NLG-32-1120-01 - Steering top head: receives the servo input at the top of the strut.",
+          "focus": [
+            "060"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "Disassembly complete",
+          "text": "All 16 removal steps are done. Only the strut housing (10) stays on the aircraft. Examine all parts for wear, corrosion and damage before you assemble the gear.",
+          "focus": [
+            "010"
+          ],
+          "action": "highlight"
+        }
+      ]
+    },
+    {
+      "id": "DM-ASSY",
+      "group": "32-20 Maintenance",
+      "type": "procedure",
+      "dmc": "DMC-F16NLG-A-32-20-00-00A-720A-A",
+      "title": "Nose landing gear",
+      "infoName": "Assembly",
+      "focus": [
+        "001"
+      ],
+      "steps": [
+        {
+          "title": "Preliminary requirements",
+          "text": "All parts cleaned, examined and serviceable, laid out next to the strut housing. Assembly is the disassembly in reverse order.",
+          "caution": "CAUTION: Use new seals and cotter pins. Lubricate the pins and bushings before you install them.",
+          "focus": [
+            "230",
+            "070",
+            "080",
+            "220",
+            "140",
+            "120",
+            "130",
+            "110",
+            "115",
+            "190",
+            "210",
+            "180",
+            "170",
+            "050",
+            "030",
+            "150",
+            "090",
+            "060",
+            "020"
+          ],
+          "action": "detach",
+          "gear": "extended",
+          "view": "iso"
+        },
+        {
+          "title": "1. Install the steering top head",
+          "text": "Put the steering top head back in position and install its pins and fasteners.\n\nPart details:\n• Item 60 · Head - Steering, Top · P/N NLG-32-1120-01 - Steering top head: receives the servo input at the top of the strut.",
+          "focus": [
+            "060"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "2. Install the main swivel arm",
+          "text": "Put the main swivel arm back in position and install its pins and fasteners.\n\nPart details:\n• Item 20 · Arm - Swivel, Main · P/N NLG-32-1020-03 - Main swivel arm (trunnion): carries the strut in the housing and pivots during retraction.",
+          "focus": [
+            "020"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "3. Install the steering servo link",
+          "text": "Put the steering servo link back in position and install its pins and fasteners.\n\nPart details:\n• Item 90 · Link - Steering Servo · P/N NLG-32-1150-01 - Steering servo link: connects the nose wheel steering servo to the steering head.",
+          "focus": [
+            "090"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "4. Install the gear rotation link",
+          "text": "Put the gear rotation link back in position and install its pins and fasteners.\n\nPart details:\n• Item 150 · Link - Gear Rotation · P/N NLG-32-1250-02 - Gear rotation link: turns the strut during retraction so the wheel fits the bay.",
+          "focus": [
+            "150"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "5. Install the strut collar",
+          "text": "Put the strut collar back in position and install its pins and fasteners.\n\nPart details:\n• Item 30 · Collar - Strut · P/N NLG-32-1030-01 - Strut collar: holds the strut in the swivel arm and takes radial loads.",
+          "focus": [
+            "030"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "6. Install the steering collar",
+          "text": "Put the steering collar back in position and install its pins and fasteners.\n\nPart details:\n• Item 50 · Collar - Steering · P/N NLG-32-1110-02 - Steering collar: turns around the strut and passes the steering input to the torque links.",
+          "focus": [
+            "050"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "7. Install the drag brace (outer and inner folding arms)",
+          "text": "Put the drag brace (outer and inner folding arms) back in position and install its pins and fasteners.\n\nPart details:\n• Item 180 · Arm - Folding, Outer · P/N NLG-32-1320-01 - Outer folding arm of the drag brace: connects the brace to the strut.\n• Item 170 · Arm - Folding, Inner · P/N NLG-32-1310-01 - Inner folding arm of the drag brace: locks over-centre to hold the gear down, folds for retraction.",
+          "focus": [
+            "180",
+            "170"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "8. Install the fork fitting",
+          "text": "Put the fork fitting back in position and install its pins and fasteners.\n\nPart details:\n• Item 210 · Fork - Wheel · P/N NLG-32-1410-01 - Fork fitting: clevis that carries the drag-brace / linkage pin.",
+          "focus": [
+            "210"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "9. Install the inner arm pivot",
+          "text": "Put the inner arm pivot back in position and install its pins and fasteners.\n\nPart details:\n• Item 190 · Pivot - Inner Arm · P/N NLG-32-1330-01 - Hinge pin of the drag-brace inner arm on the gear structure.",
+          "focus": [
+            "190"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "10. Install the main and secondary actuator arms",
+          "text": "Put the main and secondary actuator arms back in position and install its pins and fasteners.\n\nPart details:\n• Item 120 · Arm - Actuator, Main · P/N NLG-32-1220-01 - Main actuator arm: transmits the actuator force to the main swivel arm.\n• Item 130 · Arm - Actuator, Secondary · P/N NLG-32-1230-01 - Secondary actuator arm: links the actuator nut to the main actuator arm.",
+          "focus": [
+            "120",
+            "130"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "11. Install the retraction actuator",
+          "text": "Put the retraction actuator back in position and install its pins and fasteners.\n\nPart details:\n• Item 110 · Actuator - Gear Retraction · P/N NLG-32-1210-04 - Gear retraction actuator: drives the gear up and down.\n• Item 115 · Rod - Piston, Gear Actuator · P/N NLG-32-1215-01 - Lead screw (piston rod) inside the actuator: its rotation moves the actuator nut.",
+          "focus": [
+            "110",
+            "115"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "12. Install the actuator nut",
+          "text": "Put the actuator nut back in position and install its pins and fasteners.\n\nPart details:\n• Item 140 · Nut - Actuator · P/N NLG-32-1240-01 - Rides on the lead screw and turns its rotation into the linear travel that drives the actuator arms.",
+          "focus": [
+            "140"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "13. Install the wheel hub / lower strut",
+          "text": "Put the wheel hub / lower strut back in position and install its pins and fasteners.\n\nPart details:\n• Item 220 · Hub - Wheel · P/N NLG-32-1420-02 - Lower strut and hub: absorbs landing loads and carries the wheel axle.",
+          "focus": [
+            "220"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "14. Install the lower steering link",
+          "text": "Put the lower steering link back in position and install its pins and fasteners.\n\nPart details:\n• Item 80 · Link - Steering, Lower · P/N NLG-32-1140-01 - Lower half of the steering (torque) link: joins the upper link to the lower strut so steering input reaches the wheel.",
+          "focus": [
+            "080"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "15. Install the upper steering link",
+          "text": "Put the upper steering link back in position and install its pins and fasteners.\n\nPart details:\n• Item 70 · Link - Steering, Upper · P/N NLG-32-1130-01 - Upper half of the steering (torque) link: keeps the wheel aligned with the steering collar while the shock strut compresses.",
+          "focus": [
+            "070"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "16. Install the nose wheel",
+          "text": "Put the nose wheel back in position and install its pins and fasteners.\n\nPart details:\n• Item 230 · Wheel - Nose, Tire · P/N NLG-32-1430-01 - Carries the aircraft weight on the ground and rolls on the hub. Tubeless tyre on a split wheel.",
+          "focus": [
+            "230"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "Assembly complete",
+          "text": "The nose landing gear is assembled. Do the retraction functional test before flight.",
+          "focus": [
+            "001"
+          ],
+          "action": "highlight"
+        }
+      ]
+    },
+    {
+      "id": "DM-RETRACT-CHK",
+      "group": "32-20 Maintenance",
+      "type": "procedure",
+      "dmc": "DMC-F16NLG-A-32-30-00-00A-340A-A",
+      "title": "Retraction mechanism",
+      "infoName": "Functional test",
+      "steps": [
+        {
+          "title": "Preparation",
+          "text": "Put the aircraft on jacks. Make sure that the nose gear bay is clear of people and equipment.",
+          "warning": "WARNING: Keep clear of the gear bay during retraction. The moving parts can cause serious injury.",
+          "focus": [
+            "100"
+          ],
+          "action": "highlight",
+          "view": "iso",
+          "gear": "extended"
+        },
+        {
+          "title": "Down-lock check",
+          "text": "Make sure that the folding drag brace (160) is over-centre and the actuator (110) is fully extended.",
+          "focus": [
+            "160",
+            "110"
+          ],
+          "action": "isolate",
+          "view": "side",
+          "gear": "extended"
+        },
+        {
+          "title": "Retract the gear",
+          "text": "Operate the retraction actuator. The gear rotation link (150) swings the strut forward into the bay. Watch for interference.",
+          "focus": [
+            "110",
+            "150"
+          ],
+          "action": "highlight",
+          "view": "side",
+          "gear": "retracted"
+        },
+        {
+          "title": "Extend the gear",
+          "text": "Extend the gear. Make sure that the drag brace locks over-centre and that the indicator shows down and locked.",
+          "focus": [
+            "160"
+          ],
+          "action": "highlight",
+          "view": "iso",
+          "gear": "extended"
+        },
+        {
+          "title": "Close-up",
+          "text": "Remove the jacks and the safety pins after the test is complete.",
+          "focus": [
+            "001"
+          ],
+          "action": "restore",
+          "view": "iso",
+          "gear": "extended"
+        }
+      ]
+    },
+    {
+      "id": "DM-IPD",
+      "group": "32-20 Illustrated parts data",
+      "type": "ipd",
+      "dmc": "DMC-F16NLG-A-32-20-00-00A-941A-D",
+      "title": "Nose landing gear",
+      "infoName": "Illustrated parts data - IPD"
+    }
+  ],
+  "explode": [
+    {
+      "node": "Actuator Nut",
+      "offset": [
+        0.0844,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Collar",
+      "offset": [
+        -0.0001,
+        0.0137,
+        0.0664
+      ]
+    },
+    {
+      "node": "Fork",
+      "offset": [
+        0.01026,
+        0.02966,
+        -0.11867
+      ]
+    },
+    {
+      "node": "Gear Actuator",
+      "offset": [
+        0.0345,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Gear Actuator Piston Rod",
+      "offset": [
+        0.0429,
+        -0.05745,
+        -0.02111
+      ]
+    },
+    {
+      "node": "Gear Rotation Link",
+      "offset": [
+        0.00044,
+        0.12414,
+        0.00054
+      ]
+    },
+    {
+      "node": "Inner Folding Arm",
+      "offset": [
+        0,
+        -0.0658,
+        0.0616
+      ]
+    },
+    {
+      "node": "Main Actuator Arm",
+      "offset": [
+        0.0687,
+        0,
+        0
+      ]
+    },
+    {
+      "node": "Main Gear",
+      "offset": [
+        -0.0005,
+        0.0396,
+        0.1894
+      ]
+    },
+    {
+      "node": "Main Swivel Arm",
+      "offset": [
+        0,
+        0.0099,
+        0.0481
+      ]
+    },
+    {
+      "node": "Outer Folding Arm",
+      "offset": [
+        0,
+        -0.04188,
+        0.06384
+      ]
+    },
+    {
+      "node": "Pivot for Inner Arm",
+      "offset": [
+        -0.0499,
+        0.01196,
+        -0.05731
+      ]
+    },
+    {
+      "node": "Secondary Actuator Arm",
+      "offset": [
+        0.0587,
+        -0.02924,
+        -1e-05
+      ]
+    },
+    {
+      "node": "Steering Collar",
+      "offset": [
+        -0.0003,
+        0.0212,
+        0.1014
+      ]
+    },
+    {
+      "node": "Steering Link Lower",
+      "offset": [
+        0.0012,
+        0.0664,
+        0.0171
+      ]
+    },
+    {
+      "node": "Steering Link Upper",
+      "offset": [
+        0.0013,
+        0.0589,
+        -0.0123
+      ]
+    },
+    {
+      "node": "Steering Link for servo",
+      "offset": [
+        0,
+        0.0631,
+        0.0241
+      ]
+    },
+    {
+      "node": "Steering Top Head",
+      "offset": [
+        -0.0001,
+        0.0046,
+        0.0218
+      ]
+    },
+    {
+      "node": "Wheel",
+      "offset": [
+        -0.14238,
+        0.00225,
+        0.00065
+      ]
+    }
+  ],
+  "removal": [
+    { "node": "Actuator Nut", "offset": [0.0844, 0, 0] },
+    { "node": "Collar", "offset": [-0.0001, 0.0137, 0.0664] },
+    { "node": "Fork", "offset": [-0.00014, -0.06734, 0.06233] },
+    { "node": "Gear Actuator", "offset": [0.0345, 0, 0] },
+    { "node": "Gear Actuator Piston Rod", "offset": [0.0429, -0.05745, -0.02111] },
+    { "node": "Gear Rotation Link", "offset": [0.00044, 0.12414, 0.00054] },
+    { "node": "Inner Folding Arm", "offset": [0, -0.0658, 0.0616] },
+    { "node": "Main Actuator Arm", "offset": [0.0687, 0, 0] },
+    { "node": "Main Gear", "offset": [-0.0005, 0.0396, 0.1894] },
+    { "node": "Main Swivel Arm", "offset": [0, 0.0099, 0.0481] },
+    { "node": "Outer Folding Arm", "offset": [0, -0.04188, 0.09894] },
+    { "node": "Pivot for Inner Arm", "offset": [-0.0318, -0.00004, -0.09271] },
+    { "node": "Secondary Actuator Arm", "offset": [0.0587, -0.02924, -0.00001] },
+    { "node": "Steering Collar", "offset": [-0.0003, 0.0212, 0.1014] },
+    { "node": "Steering Link Lower", "offset": [0.0012, 0.0664, 0.0171] },
+    { "node": "Steering Link Upper", "offset": [0.0013, 0.0589, -0.0123] },
+    { "node": "Steering Link for servo", "offset": [0, 0.0797, 0.0117] },
+    { "node": "Steering Top Head", "offset": [-0.0001, 0.0046, 0.0218] },
+    { "node": "Wheel", "offset": [-0.14238, 0.00225, 0.00065] }
+  ],
+  "removalLPath": false,
+  "removalVia": [
+    { "node": "Pivot for Inner Arm", "offset": [-0.0357, -0.00004, -0.00001] },
+    { "node": "Steering Link for servo", "offset": [0, -0.0041, 0.0117] }
+  ]
+}
