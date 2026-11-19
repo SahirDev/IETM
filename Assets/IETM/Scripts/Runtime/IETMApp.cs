@@ -586,6 +586,9 @@ namespace IETM
             model.showRemoved = layout;
             model.designedExplode = CurrentGear == 0;
 
+            // a part still moving from the previous step jumps to its end; only this step's parts animate
+            model.CompleteRemovalAnimations();
+
             var removed = new HashSet<IPDItem>();
             for (int i = 0; i <= procStep; i++)
             {

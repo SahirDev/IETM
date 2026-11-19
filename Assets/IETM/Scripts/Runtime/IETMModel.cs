@@ -269,6 +269,19 @@ namespace IETM
             dirty = true;
         }
 
+        /// <summary>Jumps every part that is still moving out / in straight to where it is going.</summary>
+        public void CompleteRemovalAnimations()
+        {
+            bool any = false;
+            var keys = new List<IPDItem>(removeTarget.Keys);
+            foreach (var k in keys)
+            {
+                float cur = removeT.TryGetValue(k, out var c) ? c : 0f;
+                if (Mathf.Abs(cur - removeTarget[k]) > 0.0001f) { removeT[k] = removeTarget[k]; any = true; }
+            }
+            if (any) { ApplyOffsets(); dirty = true; }
+        }
+
         /// <summary>
         /// Re-reads the parts' current local positions as their base pose (call after an animation
         /// such as gear extend / retract has moved them), and recomputes bounds and explode directions.
