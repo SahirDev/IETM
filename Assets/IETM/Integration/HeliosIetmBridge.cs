@@ -69,6 +69,11 @@ namespace IETM.Integration
         float menuFullWidth = -1f;
         readonly List<GameObject> menuLabels = new List<GameObject>();
 
+        // 3D viewport background (HELIOS blue glow) behind the landing gear
+        [Tooltip("Image under Resources drawn behind the IETM 3D view (empty = the IETM's plain colour).")]
+        public string viewportBackground = "IETM/ViewportBackground";
+        Camera bgCamera;
+
         // ------------------------------------------------------------------ start-up
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -206,6 +211,7 @@ namespace IETM.Integration
 
             RedirectShellLinks();
             ClipIetmToFrame();
+            SetupViewportBackground();
             shell.Show(ShellPage.Aircraft);
             ready = true;
             SetIetmVisible(inIetm);
@@ -259,6 +265,46 @@ namespace IETM.Integration
             foreach (var es in FindObjectsByType<EventSystem>(FindObjectsSortMode.None))
                 if (es != mine && es.isActiveAndEnabled && !IsIetm(es.gameObject)) return true;
             return false;
+        }
+
+        /// <summary>Draws the background image behind the IETM 3D view only: a background camera with the same
+        /// viewport renders the image (scaled to cover, centred), then the IETM camera draws the gear on top.</summary>
+        void SetupViewportBackground()
+        {
+            if (string.IsNullOrEmpty(viewportBackground) || ietmCamera == null || bgCamera != null) return;
+            var tex = Resources.Load<Texture2D>(viewportBackground);
+            if (tex == null) { Debug.LogWarning("[IETM] Viewport background not found: Resources/" + viewportBackground); return; }
+
+            const int uiLayer = 5;
+            var go = new GameObject("IETM Viewport Background");
+            go.transform.SetParent(module.transform, false);           // shown / hidden with the IETM
+            bgCamera = go.AddComponent<Camera>();
+            bgCamera.clearFlags = CameraClearFlags.SolidColor;
+            bgCamera.backgroundColor = Color.black;
+            bgCamera.cullingMask = 1 << uiLayer;
+            bgCamera.nearClipPlane = 0.01f; bgCamera.farClipPlane = 10f;
+            bgCamera.depth = ietmCamera.depth - 0.5f;                  // before the IETM camera, after HELIOS's background
+            bgCamera.pixelRect = ietmCamera.pixelRect;
+
+            var cgo = new GameObject("Canvas", typeof(RectTransform)) { layer = uiLayer };
+            cgo.transform.SetParent(go.transform, false);
+            var canvas = cgo.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceCamera;
+            canvas.worldCamera = bgCamera;
+            canvas.planeDistance = 1f;
+
+            var igo = new GameObject("Background", typeof(RectTransform)) { layer = uiLayer };
+            igo.transform.SetParent(cgo.transform, false);
+            var rt = (RectTransform)igo.transform;
+            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
+            var img = igo.AddComponent<RawImage>();
+            img.texture = tex;
+            img.raycastTarget = false;
+            var fit = igo.AddComponent<AspectRatioFitter>();               // cover the viewport, keep the glow round
+            fit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
+            fit.aspectRatio = tex.width / (float)Mathf.Max(1, tex.height);
+
+            ietmCamera.clearFlags = CameraClearFlags.Depth;             // keep the background, draw the gear on it
         }
 
         /// <summary>The IETM side panels collapse by sliding out past the frame edge. In the stand-alone IETM
@@ -333,6 +379,11 @@ namespace IETM.Integration
 
         void LateUpdate()
         {
+            if (bgCamera != null && ietmCamera != null)
+            {
+                bgCamera.enabled = ietmCamera.enabled && ietmCamera.isActiveAndEnabled;
+                if (bgCamera.pixelRect != ietmCamera.pixelRect) bgCamera.pixelRect = ietmCamera.pixelRect;
+            }
             if (!ready || !inIetm) return;
             SetMenuIconsOnly(iconMenuInIetm && shell != null && shell.CurrentPage == ShellPage.Ietm);
             ApplyLayout();
