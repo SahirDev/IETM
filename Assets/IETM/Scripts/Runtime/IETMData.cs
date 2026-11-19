@@ -158,6 +158,10 @@ namespace IETM
         public List<ExplodeOffset> explode = new List<ExplodeOffset>();
         [Tooltip("Where each part is laid out when a procedure removes it (disassembly order, collision-free).")]
         public List<ExplodeOffset> removal = new List<ExplodeOffset>();
+        [Tooltip("Corner of the L-shaped removal path (first move, then on to the laid-out position). Missing = automatic: first along the main axis of the removal.")]
+        public List<ExplodeOffset> removalVia = new List<ExplodeOffset>();
+        [Tooltip("Removal paths: true = L-shaped (two moves), false = straight.")]
+        public bool removalLPath = true;
 
         [NonSerialized] public Dictionary<string, IPDItem> byItemNo = new Dictionary<string, IPDItem>();
 

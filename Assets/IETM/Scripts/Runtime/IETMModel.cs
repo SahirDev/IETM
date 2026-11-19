@@ -18,6 +18,8 @@ namespace IETM
         public bool hasDesign;
         /// <summary>Designed travel when a procedure removes the part (see IETMDatabase.removal).</summary>
         public readonly List<Vector3> removalLocal = new List<Vector3>();
+        /// <summary>Corner of the L-shaped removal path (node parent space, Unity axes).</summary>
+        public readonly List<Vector3> removalViaLocal = new List<Vector3>();
         public bool hasRemoval;
         public Vector3 baseCenter;
         public bool IsBound => renderers.Count > 0;
@@ -145,7 +147,11 @@ namespace IETM
                     pb.designLocal.Add(eo != null ? new Vector3(-eo.offset[0], eo.offset[1], eo.offset[2]) : Vector3.zero);
                     if (eo != null) { pb.hasDesign = true; v.hasDesign = true; }
                     var ro = FindOffset(db.removal, t.name);
-                    pb.removalLocal.Add(ro != null ? new Vector3(-ro.offset[0], ro.offset[1], ro.offset[2]) : Vector3.zero);
+                    var remLocal = ro != null ? new Vector3(-ro.offset[0], ro.offset[1], ro.offset[2]) : Vector3.zero;
+                    pb.removalLocal.Add(remLocal);
+                    var vo = FindOffset(db.removalVia, t.name);
+                    pb.removalViaLocal.Add(!db.removalLPath ? remLocal
+                        : vo != null ? new Vector3(-vo.offset[0], vo.offset[1], vo.offset[2]) : AutoVia(remLocal));
                     if (ro != null) pb.hasRemoval = true;
                     foreach (var r in t.GetComponentsInChildren<Renderer>(true))
                     {
@@ -348,6 +354,24 @@ namespace IETM
 
         ExplodeOffset FindExplode(string node) => FindOffset(db.explode, node);
 
+        /// <summary>Default corner of the L path: the removal's largest axis component (pull out along the pin / shaft first).</summary>
+        public static Vector3 AutoVia(Vector3 d)
+        {
+            var a = new Vector3(Mathf.Abs(d.x), Mathf.Abs(d.y), Mathf.Abs(d.z));
+            if (a.x >= a.y && a.x >= a.z) return new Vector3(d.x, 0, 0);
+            if (a.y >= a.z) return new Vector3(0, d.y, 0);
+            return new Vector3(0, 0, d.z);
+        }
+
+        /// <summary>Point on the L-shaped removal path at 0..1 (constant speed along both legs).</summary>
+        public static Vector3 AlongPath(Vector3 via, Vector3 end, float e)
+        {
+            float l1 = via.magnitude, l2 = (end - via).magnitude, L = l1 + l2;
+            if (L < 1e-9f) return Vector3.zero;
+            float s = e * L;
+            return s <= l1 ? via * (l1 > 1e-9f ? s / l1 : 0f) : via + (end - via) * ((s - l1) / Mathf.Max(1e-9f, l2));
+        }
+
         static ExplodeOffset FindOffset(List<ExplodeOffset> list, string node)
         {
             if (list == null) return null;
@@ -381,10 +405,11 @@ namespace IETM
                     if (designedExplode && pb.hasRemoval && ease > 0f)
                     {
                         // laid-out removal position (collision-free disassembly layout) + any explode
-                        Vector3 rem = parent ? parent.TransformVector(pb.removalLocal[i]) : pb.removalLocal[i];
+                        var remL = AlongPath(pb.removalViaLocal[i], pb.removalLocal[i], ease);
+                        Vector3 rem = parent ? parent.TransformVector(remL) : remL;
                         Vector3 ex = design ? (parent ? parent.TransformVector(pb.designLocal[i]) : pb.designLocal[i]) * explode
                                             : pb.explodeDir * (explode * r * 0.9f);
-                        offset = rem * ease + ex;
+                        offset = rem + ex;
                     }
                     else if (design)
                     {
@@ -504,18 +529,20 @@ namespace IETM
             {
                 if (!Active.parts.TryGetValue(l, out var pb) || !pb.IsBound) continue;
                 var bb = pb.CurrentBounds();
-                Vector3 rem = Vector3.zero;
+                Vector3 rem = Vector3.zero, via = Vector3.zero, now = Vector3.zero;
+                float rt = removeT.TryGetValue(l, out var t) ? t : 0f;
+                float ease = rt * rt * (3f - 2f * rt);
                 if (pb.hasRemoval && pb.nodes.Count > 0 && pb.nodes[0] != null)
                 {
                     var parent = pb.nodes[0].parent;
-                    rem = parent ? parent.TransformVector(pb.removalLocal[0]) : pb.removalLocal[0];
+                    System.Func<Vector3, Vector3> W = v => parent ? parent.TransformVector(v) : v;
+                    rem = W(pb.removalLocal[0]); via = W(pb.removalViaLocal[0]);
+                    now = W(AlongPath(pb.removalViaLocal[0], pb.removalLocal[0], ease));
                 }
-                float rt = removeT.TryGetValue(l, out var t) ? t : 0f;
-                float ease = rt * rt * (3f - 2f * rt);
-                var rest = new Bounds(bb.center - rem * ease, bb.size);
-                var away = new Bounds(rest.center + rem, bb.size);
+                var rest = new Bounds(bb.center - now, bb.size);
                 if (!has) { path = rest; has = true; } else path.Encapsulate(rest);
-                path.Encapsulate(away);
+                path.Encapsulate(new Bounds(rest.center + via, bb.size));
+                path.Encapsulate(new Bounds(rest.center + rem, bb.size));
                 direction += rem;
             }
             return has;

@@ -14,7 +14,7 @@ namespace IETM.EditorTools
 {
     public class IETMLayoutWindow : EditorWindow
     {
-        enum Layout { Disassembly = 0, Explode = 1 }
+        enum Layout { Disassembly = 0, DisassemblyCorner = 1, Explode = 2 }
 
         Layout layout = Layout.Disassembly;
         bool editing;
@@ -43,11 +43,13 @@ namespace IETM.EditorTools
                 "1. Pick a layout and press Edit: the gear is shown EXTENDED with every part at its saved position.\n" +
                 "2. Click a part (list below or Scene view) and move it with the Move tool (W).\n" +
                 "3. Save writes the positions into landing_gear_ietm.json. Cancel restores the model.\n\n" +
-                "Disassembly = where a part is laid out when a procedure removes it.\nExplode = the Explode slider at 100 %.",
+                "Disassembly = where a part is laid out when a procedure removes it.\n" +
+                "L-path corner = where the part goes FIRST (e.g. pulled straight off its pin) before it moves on to its laid-out position.\n" +
+                "Explode = the Explode slider at 100 %.",
                 MessageType.None);
 
             using (new EditorGUI.DisabledScope(editing))
-                layout = (Layout)GUILayout.Toolbar((int)layout, new[] { "Disassembly layout", "Explode layout" });
+                layout = (Layout)GUILayout.Toolbar((int)layout, new[] { "Disassembly layout", "L-path corner", "Explode layout" });
 
             EditorGUILayout.Space(4);
             if (!editing)
@@ -117,14 +119,31 @@ namespace IETM.EditorTools
             }
             parts.Sort((a, b) => string.Compare(a.name, b.name, StringComparison.Ordinal));
 
-            var list = layout == Layout.Disassembly ? db.removal : db.explode;
-            if (list != null)
-                foreach (var e in list)
+            if (layout == Layout.DisassemblyCorner)
+            {
+                // corner of each part's L-shaped removal path: saved corner, else the automatic one
+                foreach (var e in db.removal)
                 {
                     if (e == null || e.offset == null || e.offset.Length < 3) continue;
                     var t = parts.Find(p => p.name == e.node);
-                    if (t != null) t.localPosition = basePos[t] + new Vector3(-e.offset[0], e.offset[1], e.offset[2]);
+                    if (t == null) continue;
+                    var end = new Vector3(-e.offset[0], e.offset[1], e.offset[2]);
+                    var v = db.removalVia != null ? db.removalVia.Find(x => x != null && x.node == e.node && x.offset != null && x.offset.Length >= 3) : null;
+                    var via = v != null ? new Vector3(-v.offset[0], v.offset[1], v.offset[2]) : IETMModel.AutoVia(end);
+                    t.localPosition = basePos[t] + via;
                 }
+            }
+            else
+            {
+                var list = layout == Layout.Disassembly ? db.removal : db.explode;
+                if (list != null)
+                    foreach (var e in list)
+                    {
+                        if (e == null || e.offset == null || e.offset.Length < 3) continue;
+                        var t = parts.Find(p => p.name == e.node);
+                        if (t != null) t.localPosition = basePos[t] + new Vector3(-e.offset[0], e.offset[1], e.offset[2]);
+                    }
+            }
             editing = true;
             Tools.current = Tool.Move;
             SceneView.lastActiveSceneView?.Frame(BoundsOf(root), false);
@@ -157,7 +176,7 @@ namespace IETM.EditorTools
 
             string path = AssetDatabase.GetAssetPath(json);
             string text = File.ReadAllText(path);
-            string key = layout == Layout.Disassembly ? "removal" : "explode";
+            string key = layout == Layout.Disassembly ? "removal" : layout == Layout.DisassemblyCorner ? "removalVia" : "explode";
             text = ReplaceArray(text, key, sb.ToString());
             File.WriteAllText(path, text);
             AssetDatabase.ImportAsset(path);
