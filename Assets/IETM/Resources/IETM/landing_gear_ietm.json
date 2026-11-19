@@ -595,20 +595,20 @@
           "action": "detach"
         },
         {
-          "title": "6. Remove the main and secondary actuator arms",
-          "text": "Remove the pins and take off both actuator arms together.\n\nPart details:\n• Item 120 · Arm - Actuator, Main · P/N NLG-32-1220-01 - Main actuator arm: transmits the actuator force to the main swivel arm.\n• Item 130 · Arm - Actuator, Secondary · P/N NLG-32-1230-01 - Secondary actuator arm: links the actuator nut to the main actuator arm.",
-          "focus": [
-            "120",
-            "130"
-          ],
-          "action": "detach"
-        },
-        {
-          "title": "7. Remove the retraction actuator",
+          "title": "6. Remove the retraction actuator",
           "text": "Disconnect the actuator mounts and remove the actuator with its lead screw.\n\nPart details:\n• Item 110 · Actuator - Gear Retraction · P/N NLG-32-1210-04 - Gear retraction actuator: drives the gear up and down.\n• Item 115 · Rod - Piston, Gear Actuator · P/N NLG-32-1215-01 - Lead screw (piston rod) inside the actuator: its rotation moves the actuator nut.",
           "focus": [
             "110",
             "115"
+          ],
+          "action": "detach"
+        },
+        {
+          "title": "7. Remove the main and secondary actuator arms",
+          "text": "Remove the pins and take off both actuator arms together.\n\nPart details:\n• Item 120 · Arm - Actuator, Main · P/N NLG-32-1220-01 - Main actuator arm: transmits the actuator force to the main swivel arm.\n• Item 130 · Arm - Actuator, Secondary · P/N NLG-32-1230-01 - Secondary actuator arm: links the actuator nut to the main actuator arm.",
+          "focus": [
+            "120",
+            "130"
           ],
           "action": "detach"
         },
@@ -809,20 +809,20 @@
           "action": "install"
         },
         {
-          "title": "10. Install the retraction actuator",
-          "text": "Put the retraction actuator back in position and install its pins and fasteners.\n\nPart details:\n• Item 110 · Actuator - Gear Retraction · P/N NLG-32-1210-04 - Gear retraction actuator: drives the gear up and down.\n• Item 115 · Rod - Piston, Gear Actuator · P/N NLG-32-1215-01 - Lead screw (piston rod) inside the actuator: its rotation moves the actuator nut.",
-          "focus": [
-            "110",
-            "115"
-          ],
-          "action": "install"
-        },
-        {
-          "title": "11. Install the main and secondary actuator arms",
+          "title": "10. Install the main and secondary actuator arms",
           "text": "Put the main and secondary actuator arms back in position and install its pins and fasteners.\n\nPart details:\n• Item 120 · Arm - Actuator, Main · P/N NLG-32-1220-01 - Main actuator arm: transmits the actuator force to the main swivel arm.\n• Item 130 · Arm - Actuator, Secondary · P/N NLG-32-1230-01 - Secondary actuator arm: links the actuator nut to the main actuator arm.",
           "focus": [
             "120",
             "130"
+          ],
+          "action": "install"
+        },
+        {
+          "title": "11. Install the retraction actuator",
+          "text": "Put the retraction actuator back in position and install its pins and fasteners.\n\nPart details:\n• Item 110 · Actuator - Gear Retraction · P/N NLG-32-1210-04 - Gear retraction actuator: drives the gear up and down.\n• Item 115 · Rod - Piston, Gear Actuator · P/N NLG-32-1215-01 - Lead screw (piston rod) inside the actuator: its rotation moves the actuator nut.",
+          "focus": [
+            "110",
+            "115"
           ],
           "action": "install"
         },
