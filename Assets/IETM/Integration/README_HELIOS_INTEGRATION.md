@@ -1,49 +1,53 @@
-# IETM inside the HELIOS app
+# IETM inside the HELIOS app (one scene)
 
-The Landing Gear IETM opens from the HELIOS side menu (**IETM**). The HELIOS UI, its scripts, its prefab and its scene are not changed: everything is in new files.
+The Landing Gear IETM opens from the HELIOS side menu (**IETM**). There's only **one scene**, `Assets/HELIOS/Scenes/HELIOS.unity`. The IETM objects are inside it, under one parent named **IETM Module**, which is **inactive (hidden)** in the scene. At Play it's shown on the HELIOS IETM page and hidden on every other page.
 
-## What was added (new files only)
+## What changed in the HELIOS project
 
-| Path | What it is |
+| Path | Change |
 |---|---|
-| `Assets/IETM/` | The IETM module: scripts (namespace `IETM`), shaders, UI art, data (`Resources/IETM/*.json`), scene `Scenes/LandingGear_IETM.unity` |
-| `Assets/IETM/Integration/HeliosIetmBridge.cs` | Connects the IETM to the HELIOS IETM page (see below) |
-| `Assets/IETM/Integration/Editor/HeliosIetmBuildHook.cs` | Adds the IETM scene to player builds, plus the **IETM > HELIOS Integration** menu |
-| `Assets/3DModels/Landing_Gear 1.glb` + `Materials/` | The animated F-16 nose landing gear |
-| `Assets/StreamingAssets/IETM/32-20-00_Fig1_IPC.pdf` | Printable IPC (PDF button in the IETM) |
-| `Tools/` | Python tools that regenerate the IPC PDF and illustrations (optional) |
-| `.gitignore` | Standard Unity ignore list (Library, Temp, Logs…) |
+| `Assets/HELIOS/Scenes/HELIOS.unity` | **Only additions**: the `IETM Module` object tree and one entry in the scene root list. No existing HELIOS object or value was changed. |
+| `Assets/IETM/` | The IETM module: scripts (namespace `IETM`), shaders, UI art, data (`Resources/IETM/*.json`), and the stand-alone scene `Scenes/LandingGear_IETM.unity` |
+| `Assets/IETM/Integration/HeliosIetmBridge.cs` | Shows and hides `IETM Module` with the HELIOS IETM page |
+| `Assets/IETM/Integration/Editor/HeliosIetmIntegrationMenu.cs` | Menu **IETM > HELIOS Integration** |
+| `Assets/3DModels/Landing_Gear 1.glb` + `Materials/` | Animated F-16 nose landing gear |
+| `Assets/StreamingAssets/IETM/32-20-00_Fig1_IPC.pdf` | Printable IPC |
+| `Tools/`, `.gitignore` | PDF generator (optional), Unity ignore list |
 
-Packages: no new packages are needed. The project already has glTFast, URP 17.3, the Input System and uGUI.
+No HELIOS script, prefab, project setting or package was changed. No new packages are needed.
+
+## Hierarchy
+
+```
+HELIOS.unity
+  EventSystem, HELIOS, Directional Light, Main Camera, HELIOS UI   (HELIOS, unchanged)
+  IETM Module   (inactive)
+    IETM Camera   (untagged, audio listener off: HELIOS keeps the main camera)
+    Key Light
+    Landing Gear
+    IETM App      (IETMApp + HeliosShell)
+    IETM Canvas   (IETM pages, panels, breadcrumb)
+```
+To edit the IETM in the HELIOS scene, tick **IETM Module** active, edit, then untick it again before saving. The bridge hides it at Play anyway.
 
 ## How to run
 
-1. Open `Assets/HELIOS/Scenes/HELIOS.unity` (or use **IETM > HELIOS Integration > Open HELIOS Scene**).
-2. Press **Play**.
-3. Click **IETM** in the HELIOS side menu:
-   aircraft systems → **32 Landing Gear** → sections → the Landing Gear IETM (publication tree, 3D, IPD, procedures).
-4. Click any other HELIOS menu item (3D View, Sensors…) to go back. The IETM keeps its state. Clicking **IETM** again while it's open goes back to the IETM home.
+1. Open `Assets/HELIOS/Scenes/HELIOS.unity` and press **Play**. Only this scene appears in the Hierarchy.
+2. Click **IETM** in the HELIOS side menu: aircraft systems → **32 Landing Gear** → sections → the Landing Gear IETM.
+3. Click any other HELIOS menu item to go back. The IETM keeps its state. Clicking **IETM** again while it's open goes back to the IETM home.
 
-## How the bridge works
+## What the bridge does at Play
 
-`HeliosIetmBridge` creates itself at Play (`RuntimeInitializeOnLoadMethod`), so no object was added to the HELIOS scene. It does the following:
+`HeliosIetmBridge` creates itself (`RuntimeInitializeOnLoadMethod`) and listens to `HeliosNavigator.onPageOpened`:
 
-- Listens to `HeliosNavigator.onPageOpened`. The HELIOS **IETM** page already exists and is empty, with no model and no toolbar.
-- The first time IETM is opened, it loads `LandingGear_IETM.unity` **additively**.
-- Fits the IETM pages, breadcrumb and frame into the HELIOS content area: right of the HELIOS menu and below the HELIOS top bar, with a 16 px gap. The layout follows window resizing.
-- Hides the IETM's own copy of the HELIOS top bar, side menu and backdrop. The real HELIOS ones stay visible and clickable on top.
-- Shares the screen safely: keeps one EventSystem and one AudioListener (the HELIOS ones). The IETM camera is untagged, so `Camera.main` stays the HELIOS camera. The IETM canvas sits just below the HELIOS UI canvas, so HELIOS popups appear above it.
-- While the IETM is open, it pauses the HELIOS aircraft (hidden), the HELIOS lights and `IsolateOnDoubleClick`, and swaps the global ambient light. All of these are restored when another HELIOS page opens.
-- IETM buttons that pointed to its own "3D View" now open the HELIOS **3D View** page.
+- **IETM page:** switches `IETM Module` on and fits the IETM pages, breadcrumb and frame into the HELIOS content area, right of the HELIOS menu and below the HELIOS top bar. It hides the IETM's own copy of the HELIOS top bar, menu and backdrop, puts the IETM canvas just below the HELIOS UI canvas (HELIOS popups stay on top), and pauses the HELIOS aircraft, lights and double-click isolate. It also uses the IETM ambient light.
+- **Any other page:** switches `IETM Module` off and restores all of the above.
+- IETM buttons that pointed to its own "3D View" open the HELIOS **3D View** page.
 
-## Builds (WebGL / desktop)
+## Updating the IETM
 
-When you build from the Build window, the IETM scene is appended to that build automatically. The Build Settings file isn't changed. If you build with a custom script, or prefer it listed permanently, run **IETM > HELIOS Integration > Add IETM Scene To Build** once. It's appended after the HELIOS scene, which stays first.
+Keep editing the IETM in `Assets/IETM/Scenes/LandingGear_IETM.unity` (stand-alone, as before), then run **IETM > HELIOS Integration > Merge IETM Into HELIOS Scene**. It replaces `IETM Module` in HELIOS with a fresh copy and saves the HELIOS scene. Content-only changes (JSON in `Resources/IETM`) need no merge.
 
 ## Removing the IETM
 
-Delete `Assets/IETM`, `Assets/3DModels/Landing_Gear 1.glb` (+ `Materials`) and `Assets/StreamingAssets/IETM`. HELIOS goes back to its empty IETM page.
-
-## Editing the IETM
-
-See `Assets/IETM/README.md`. Content is in `Assets/IETM/Resources/IETM/landing_gear_ietm.json` (IETM) and `helios_shell.json` (system and section cards).
+Delete `IETM Module` from the HELIOS scene, then delete `Assets/IETM`, `Assets/3DModels/Landing_Gear 1.glb` (+ `Materials`) and `Assets/StreamingAssets/IETM`.

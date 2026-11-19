@@ -1,8 +1,9 @@
 // IETM <-> HELIOS bridge: shows the Landing Gear IETM inside the HELIOS app's own "IETM" page.
 //
-// Nothing in the HELIOS project is edited. This component starts itself when Play begins
-// (RuntimeInitializeOnLoadMethod), listens to HeliosNavigator.onPageOpened, and the first time the
-// HELIOS "IETM" menu item is opened it loads Assets/IETM/Scenes/LandingGear_IETM.unity additively.
+// One scene only: the IETM objects live in the HELIOS scene under "IETM Module" (inactive = hidden).
+// This component starts itself when Play begins (RuntimeInitializeOnLoadMethod), listens to
+// HeliosNavigator.onPageOpened and shows "IETM Module" on the HELIOS "IETM" page, hides it on the others.
+// (IETM > HELIOS Integration > Merge IETM Into HELIOS Scene refreshes the module from LandingGear_IETM.unity.)
 //
 // While the IETM page is open:
 //   - The HELIOS top bar and side menu stay as they are (they draw on top). The IETM's own copy of the
@@ -30,6 +31,7 @@ namespace IETM.Integration
     public class HeliosIetmBridge : MonoBehaviour
     {
         public const string ScenePath = "Assets/IETM/Scenes/LandingGear_IETM.unity";
+        public const string ModuleName = "IETM Module";
 
         [Tooltip("The HELIOS page id that shows the IETM.")]
         public string ietmPageId = "IETM";
@@ -43,13 +45,13 @@ namespace IETM.Integration
         Canvas hostCanvas;
         RectTransform hostMenu, hostTopBar;
 
-        Scene ietmScene;
+        GameObject module;                       // "IETM Module" in the HELIOS scene
         readonly List<GameObject> ietmRoots = new List<GameObject>();
         IETMApp app;
         HeliosShell shell;
         Canvas ietmCanvas;
         Camera ietmCamera;
-        bool loading, loaded, ready, inIetm;
+        bool warming, started, ready, inIetm;
 
         // host state paused while the IETM is open
         readonly List<Light> pausedLights = new List<Light>();
@@ -91,6 +93,16 @@ namespace IETM.Integration
             }
             hostAmbient = AmbientState.Capture();
 
+            module = FindModule();
+            if (module == null)
+            {
+                Debug.LogError("[IETM] No '" + ModuleName + "' in the HELIOS scene. Run IETM > HELIOS Integration > Merge IETM Into HELIOS Scene.");
+                yield break;
+            }
+            ietmRoots.Clear(); ietmRoots.Add(module);
+            PrepareIetm();
+            if (module.activeSelf) module.SetActive(false);    // hidden until the IETM page opens
+
             nav.onPageOpened.AddListener(OnPage);
             if (nav.Current != null) OnPage(nav.Current);
         }
@@ -100,6 +112,15 @@ namespace IETM.Integration
             var a = HeliosApp.Instance;
             if (a != null && a.ui != null) return a.ui;
             return FindAnyObjectByType<HeliosNavigator>();
+        }
+
+        static GameObject FindModule()
+        {
+            var app = FindAnyObjectByType<IETMApp>(FindObjectsInactive.Include);
+            if (app == null) return null;
+            var t = app.transform;
+            while (t.parent != null && t.name != ModuleName) t = t.parent;
+            return t.gameObject;
         }
 
         static Transform TopChildOf(Transform root, Transform t)
@@ -120,7 +141,8 @@ namespace IETM.Integration
         {
             bool wasOpen = inIetm && ready;
             inIetm = true;
-            if (!loaded) { if (!loading) StartCoroutine(LoadIetm()); return; }
+            if (module == null) return;
+            if (!started) { if (!warming) StartCoroutine(StartIetm()); return; }
             if (!ready) return;                        // still starting: shown when ready
             if (wasOpen) { shell.Show(ShellPage.Aircraft); return; }   // IETM clicked again: back to the IETM home
             if (shell.CurrentPage == ShellPage.View3D) shell.Show(ShellPage.Aircraft);   // left via a "3D View" link last time
@@ -134,39 +156,19 @@ namespace IETM.Integration
             if (ready && was) SetIetmVisible(false);
         }
 
-        IEnumerator LoadIetm()
+        /// <summary>First time the IETM page opens: switch the module on (its Start runs), wait for the
+        /// IETM to build itself, then fit it into the HELIOS layout and show it.</summary>
+        IEnumerator StartIetm()
         {
-            loading = true;
-            AsyncOperation op;
-#if UNITY_EDITOR
-            // In the Editor the scene loads by path: it does not need to be in the build list.
-            op = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(ScenePath, new LoadSceneParameters(LoadSceneMode.Additive));
-#else
-            if (SceneUtility.GetBuildIndexByScenePath(ScenePath) < 0)
-            {
-                Debug.LogError("[IETM] " + ScenePath + " is not in this build. In the Editor run IETM > HELIOS Integration > Add IETM Scene To Build, then build again.");
-                loading = false; yield break;
-            }
-            op = SceneManager.LoadSceneAsync(ScenePath, LoadSceneMode.Additive);
-#endif
-            if (op == null) { Debug.LogError("[IETM] Could not load " + ScenePath); loading = false; yield break; }
-            yield return op;
-
-            ietmScene = SceneManager.GetSceneByPath(ScenePath);
-            if (!ietmScene.IsValid()) { Debug.LogError("[IETM] Scene did not load: " + ScenePath); loading = false; yield break; }
-            ietmRoots.Clear();
-            ietmRoots.AddRange(ietmScene.GetRootGameObjects());
-            loaded = true; loading = false;
-
-            PrepareIetmScene();
-
-            // IETMApp.Start and HeliosShell.Start run on the next frame(s)
+            warming = true;
+            module.SetActive(true);                     // canvas + camera stay off until it is fitted
             for (int i = 0; i < 300 && (shell == null || shell.shell == null || app == null || app.view == null); i++) yield return null;
-            yield return null;      // IETMApp.Start + HeliosShell.Start (pre-built shell: no waiting inside)
+            yield return null;                          // IETMApp.Start + HeliosShell.Start
             yield return null;
+            warming = false; started = true;
             if (shell == null || shell.shell == null)
             {
-                Debug.LogError("[IETM] The IETM scene has no HELIOS shell (IETM App > HeliosShell). Open the IETM scene and run IETM > HELIOS Shell > Build Shell.");
+                Debug.LogError("[IETM] '" + ModuleName + "' has no HELIOS shell (IETM App > HeliosShell).");
                 yield break;
             }
 
@@ -181,9 +183,9 @@ namespace IETM.Integration
             Debug.Log("[IETM] Landing Gear IETM ready inside HELIOS (page '" + ietmPageId + "').");
         }
 
-        /// <summary>One-time fixes so two scenes share one screen: one main camera, one audio listener,
+        /// <summary>One-time fixes so the IETM shares the HELIOS screen: one main camera, one audio listener,
         /// one EventSystem, IETM canvas under the HELIOS UI.</summary>
-        void PrepareIetmScene()
+        void PrepareIetm()
         {
             foreach (var r in ietmRoots)
             {
@@ -221,10 +223,12 @@ namespace IETM.Integration
             if (ietmCamera != null) ietmCamera.enabled = false;
         }
 
+        bool IsIetm(GameObject go) => module != null && go.transform.IsChildOf(module.transform);
+
         bool OtherEventSystemExists(EventSystem mine)
         {
             foreach (var es in FindObjectsByType<EventSystem>(FindObjectsSortMode.None))
-                if (es != mine && es.isActiveAndEnabled && es.gameObject.scene != ietmScene) return true;
+                if (es != mine && es.isActiveAndEnabled && !IsIetm(es.gameObject)) return true;
             return false;
         }
 
@@ -271,7 +275,7 @@ namespace IETM.Integration
             }
             pausedLights.Clear();
             foreach (var l in FindObjectsByType<Light>(FindObjectsSortMode.None))
-                if (l.enabled && l.gameObject.scene != ietmScene) { l.enabled = false; pausedLights.Add(l); }
+                if (l.enabled && !IsIetm(l.gameObject)) { l.enabled = false; pausedLights.Add(l); }
 
             // HELIOS double-click isolate would also fade the landing gear parts
             pausedIsolate = null;
