@@ -62,6 +62,13 @@ namespace IETM.Integration
 
         static readonly Vector3[] corners = new Vector3[4];
 
+        // HELIOS side menu: icons only while the IETM itself (last breadcrumb level) is open
+        [Tooltip("While the IETM publication is open, the HELIOS side menu shows icons only (more room for the IETM).")]
+        public bool iconMenuInIetm = true;
+        bool menuCollapsed;
+        float menuFullWidth = -1f;
+        readonly List<GameObject> menuLabels = new List<GameObject>();
+
         // ------------------------------------------------------------------ start-up
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -90,6 +97,15 @@ namespace IETM.Integration
             {
                 var item = nav.GetComponentInChildren<HeliosMenuItem>(true);
                 if (item != null) hostMenu = TopChildOf(nav.transform, item.transform) as RectTransform;
+            }
+            if (hostMenu != null)
+            {
+                menuFullWidth = hostMenu.sizeDelta.x;
+                foreach (var mi in hostMenu.GetComponentsInChildren<HeliosMenuItem>(true))
+                {
+                    var label = mi.transform.Find("Label");
+                    if (label != null) menuLabels.Add(label.gameObject);
+                }
             }
             hostAmbient = AmbientState.Capture();
 
@@ -153,6 +169,7 @@ namespace IETM.Integration
         {
             bool was = inIetm;
             inIetm = false;
+            SetMenuIconsOnly(false);
             if (ready && was) SetIetmVisible(false);
         }
 
@@ -295,7 +312,32 @@ namespace IETM.Integration
 
         void LateUpdate()
         {
-            if (ready && inIetm) ApplyLayout();
+            if (!ready || !inIetm) return;
+            SetMenuIconsOnly(iconMenuInIetm && shell != null && shell.CurrentPage == ShellPage.Ietm);
+            ApplyLayout();
+        }
+
+        /// <summary>HELIOS side menu with icons only (true) or as designed (false). Runtime only: the
+        /// HELIOS prefab is not changed. The IETM frame follows the menu edge, so it gains the space.</summary>
+        void SetMenuIconsOnly(bool on)
+        {
+            if (on == menuCollapsed || hostMenu == null || menuFullWidth <= 0f) return;
+            menuCollapsed = on;
+            foreach (var l in menuLabels) if (l != null) l.SetActive(!on);
+            float w = menuFullWidth;
+            if (on)
+            {
+                // item width = twice the icon's centre offset, plus the Items padding
+                var items = hostMenu.Find("Items");
+                var lg = items != null ? items.GetComponent<HorizontalOrVerticalLayoutGroup>() : null;
+                float pad = lg != null ? lg.padding.left + lg.padding.right : 16f;
+                var mi = hostMenu.GetComponentInChildren<HeliosMenuItem>(true);
+                var icon = mi != null ? mi.transform.Find("Icon") as RectTransform : null;
+                float iconCentre = icon != null ? icon.anchoredPosition.x : 17f;
+                w = pad + iconCentre * 2f;
+            }
+            hostMenu.sizeDelta = new Vector2(w, hostMenu.sizeDelta.y);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(hostMenu);
         }
 
         /// <summary>Fits the IETM pages, breadcrumb and frame into the HELIOS content area.</summary>
