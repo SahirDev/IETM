@@ -8,6 +8,7 @@ The Landing Gear IETM opens from the HELIOS side menu (**IETM**). There's only *
 |---|---|
 | `Assets/HELIOS/Scenes/HELIOS.unity` | **Only additions**: the `IETM Module` object tree and one entry in the scene root list. No existing HELIOS object or value was changed. |
 | `Assets/HELIOS/Resources/HELIOS UI.prefab` | **Only an addition**: `Backdrop > Blue Background` (Image, full screen, `Resources/IETM/ViewportBackground.png`). Note: if the HELIOS UI is regenerated from the HELIOS builder menu, add it again. |
+| `Assets/HELIOS/Resources/HELIOS UI.prefab` → `Top Bar` | **Top bar refined to the Figma header** (node 956:6585, scaled 0.8125 to the 36 px bar): bigger logo (preserve aspect), new `Title` text "F-16 Digital Twin" (bold 14), bell 30, Light pill 66×29, divider 24, user chip 130×36 with 28 px avatar + left-aligned name/role, sign-out 29. Same icons/sprites, bar height unchanged so Menu/Cards/3D view don't move. Regenerating from the HELIOS builder will undo this. |
 | `Assets/HELIOS/Scripts/HeliosInput.cs` | One line: mouse-wheel scroll normalised (the 3D View zoom was about 120× too slow with Input System 1.20). |
 | `Assets/IETM/` | The IETM module: scripts (namespace `IETM`), shaders, UI art, data (`Resources/IETM/*.json`), and the stand-alone scene `Scenes/LandingGear_IETM.unity` |
 | `Assets/IETM/Integration/HeliosIetmBridge.cs` | Shows and hides `IETM Module` with the HELIOS IETM page |
