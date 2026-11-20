@@ -13,7 +13,17 @@ namespace Helios
         public static Vector2 Position { get { return Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero; } }
         public static Vector2 Delta { get { return Mouse.current != null ? Mouse.current.delta.ReadValue() : Vector2.zero; } }
         /// <summary>Scroll notches this frame (+ away from you).</summary>
-        public static float Scroll { get { return Mouse.current != null ? Mathf.Clamp(Mouse.current.scroll.ReadValue().y / 120f, -3f, 3f) : 0f; } }
+        public static float Scroll
+        {
+            get
+            {
+                if (Mouse.current == null) return 0f;
+                float y = Mouse.current.scroll.ReadValue().y;
+                // Input System 1.8+ reports about 1 per notch on every platform (WebGL too); older versions / settings report 120
+                // per notch on Windows. Normalise both to notches, so one wheel notch zooms by the same amount everywhere.
+                return Mathf.Clamp(Mathf.Abs(y) > 20f ? y / 120f : y, -3f, 3f);
+            }
+        }
         public static bool Held(int button)
         {
             var m = Mouse.current; if (m == null) return false;
