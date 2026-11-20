@@ -74,10 +74,6 @@ namespace IETM.Integration
         public string viewportBackground = "IETM/ViewportBackground";
         Camera bgCamera;
 
-        // whole-screen background (all HELIOS pages): replaces the HELIOS backdrop glow
-        [Tooltip("Image under Resources drawn over the HELIOS backdrop, full screen on every page (empty = HELIOS backdrop as designed).")]
-        public string screenBackground = "IETM/ViewportBackground";
-
         // ------------------------------------------------------------------ start-up
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -117,7 +113,6 @@ namespace IETM.Integration
                 }
             }
             hostAmbient = AmbientState.Capture();
-            ApplyScreenBackground();
 
             module = FindModule();
             if (module == null)
@@ -270,30 +265,6 @@ namespace IETM.Integration
             foreach (var es in FindObjectsByType<EventSystem>(FindObjectsSortMode.None))
                 if (es != mine && es.isActiveAndEnabled && !IsIetm(es.gameObject)) return true;
             return false;
-        }
-
-        /// <summary>Puts the blue background image on the HELIOS backdrop canvas (drawn by the HELIOS background
-        /// camera, behind the 3D model and all UI), on top of its Base / Glow layers. Full screen, every page.
-        /// Runtime only: the HELIOS prefab is not changed.</summary>
-        void ApplyScreenBackground()
-        {
-            if (string.IsNullOrEmpty(screenBackground)) return;
-            var backdrop = FindAnyObjectByType<HeliosBackdrop>(FindObjectsInactive.Include);
-            if (backdrop == null) return;
-            var tex = Resources.Load<Texture2D>(screenBackground);
-            if (tex == null) { Debug.LogWarning("[IETM] Screen background not found: Resources/" + screenBackground); return; }
-
-            var go = new GameObject("IETM Screen Background", typeof(RectTransform)) { layer = backdrop.gameObject.layer };
-            go.transform.SetParent(backdrop.transform, false);
-            go.transform.SetAsLastSibling();                            // over Base / Glow / Glow Centre
-            var rt = (RectTransform)go.transform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            var img = go.AddComponent<RawImage>();
-            img.texture = tex;
-            img.raycastTarget = false;
-            var fit = go.AddComponent<AspectRatioFitter>();             // cover the screen, keep the glow round
-            fit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
-            fit.aspectRatio = tex.width / (float)Mathf.Max(1, tex.height);
         }
 
         /// <summary>Draws the background image behind the IETM 3D view only: a background camera with the same

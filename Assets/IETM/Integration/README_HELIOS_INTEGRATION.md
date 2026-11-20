@@ -7,6 +7,8 @@ The Landing Gear IETM opens from the HELIOS side menu (**IETM**). There's only *
 | Path | Change |
 |---|---|
 | `Assets/HELIOS/Scenes/HELIOS.unity` | **Only additions**: the `IETM Module` object tree and one entry in the scene root list. No existing HELIOS object or value was changed. |
+| `Assets/HELIOS/Resources/HELIOS UI.prefab` | **Only an addition**: `Backdrop > Blue Background` (Image, full screen, `Resources/IETM/ViewportBackground.png`). Note: if the HELIOS UI is regenerated from the HELIOS builder menu, add it again. |
+| `Assets/HELIOS/Scripts/HeliosInput.cs` | One line: mouse-wheel scroll normalised (the 3D View zoom was about 120× too slow with Input System 1.20). |
 | `Assets/IETM/` | The IETM module: scripts (namespace `IETM`), shaders, UI art, data (`Resources/IETM/*.json`), and the stand-alone scene `Scenes/LandingGear_IETM.unity` |
 | `Assets/IETM/Integration/HeliosIetmBridge.cs` | Shows and hides `IETM Module` with the HELIOS IETM page |
 | `Assets/IETM/Integration/Editor/HeliosIetmIntegrationMenu.cs` | Menu **IETM > HELIOS Integration** |
@@ -14,7 +16,7 @@ The Landing Gear IETM opens from the HELIOS side menu (**IETM**). There's only *
 | `Assets/StreamingAssets/IETM/32-20-00_Fig1_IPC.pdf` | Printable IPC |
 | `Tools/`, `.gitignore` | PDF generator (optional), Unity ignore list |
 
-No HELIOS script, prefab, project setting or package was changed. No new packages are needed.
+Apart from the rows above (and WebGL-only player settings, see `Assets/IETM/WebGL/WEBGL_BUILD.md`), no HELIOS script, prefab, project setting or package was changed. No new packages are needed.
 
 ## Hierarchy
 
@@ -43,7 +45,7 @@ To edit the IETM in the HELIOS scene, tick **IETM Module** active, edit, then un
 - **IETM page:** switches `IETM Module` on and fits the IETM pages, breadcrumb and frame into the HELIOS content area, right of the HELIOS menu and below the HELIOS top bar. It hides the IETM's own copy of the HELIOS top bar, menu and backdrop, puts the IETM canvas just below the HELIOS UI canvas (HELIOS popups stay on top), and pauses the HELIOS aircraft, lights and double-click isolate. It also uses the IETM ambient light.
 - **IETM publication open** (the last breadcrumb level, e.g. *IETM > F-16C > 32 Landing Gear > 32-20 Nose landing gear*): the HELIOS side menu shows **icons only**, so the IETM gets the extra width. On the IETM aircraft and system card pages, and on every other HELIOS page, the menu is shown in full as designed. This is runtime only (the HELIOS prefab isn't changed). To turn it off, untick **Icon Menu In Ietm** on the `IETM - HELIOS Bridge` object at Play, or set `iconMenuInIetm = false` in `HeliosIetmBridge.cs`.
 - **Any other page:** switches `IETM Module` off and restores all of the above.
-- **Whole screen, every page:** the blue background image (`Resources/IETM/ViewportBackground.png`) is laid over the HELIOS backdrop glow at runtime, behind the 3D model and all UI. The HELIOS prefab isn't changed. Set `screenBackground` to empty in `HeliosIetmBridge.cs` to get the original HELIOS backdrop back.
+- **Whole screen, every page:** the blue background is the **Blue Background** image in the HELIOS UI prefab (`Backdrop > Blue Background`, last child, over Base / Glow). It's visible in the Editor. Untick it to see the original HELIOS glow.
 - IETM buttons that pointed to its own "3D View" open the HELIOS **3D View** page.
 
 ## Updating the IETM
