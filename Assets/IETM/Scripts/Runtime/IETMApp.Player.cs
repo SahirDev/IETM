@@ -3,7 +3,9 @@
 // - A music-player style bar sits at the bottom of the 3D view: Previous · Pause/Continue · Replay · Next,
 //   with the current step's instruction (title, warning / caution, text) shown above the buttons.
 // - While a part moves, its name label (same as the mouse-over label) follows it.
-// Everything is created at runtime from code under the IETM viewport overlay; icons: Resources/IETM/Player.
+// The player and the moving-part labels are objects in the scene (IETM viewport overlay: "Procedure Player",
+// "Moving Part Label 1..4"): at Play they are only found and connected, nothing is built. A scene without them
+// (stand-alone IETM) gets them created from code as a fallback. Icons: Resources/IETM/Player.
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,6 +21,8 @@ namespace IETM
         [Range(360f, 900f)] public float playerWidth = 480f;
         [Tooltip("Seconds a moving part keeps its name label after it stops.")]
         [Range(0f, 3f)] public float movingLabelLinger = 0.8f;
+        [Tooltip("Icons of the Pause / Continue toggle.")]
+        public Sprite playerPlayIcon, playerPauseIcon;
 
         // state
         bool procPaused;
@@ -104,8 +108,9 @@ namespace IETM
         void BuildPlayer()
         {
             if (player != null || view == null || view.overlay == null) return;
-            spPlay = Resources.Load<Sprite>("IETM/Player/player_play");
-            spPause = Resources.Load<Sprite>("IETM/Player/player_pause");
+            spPlay = playerPlayIcon != null ? playerPlayIcon : Resources.Load<Sprite>("IETM/Player/player_play");
+            spPause = playerPauseIcon != null ? playerPauseIcon : Resources.Load<Sprite>("IETM/Player/player_pause");
+            if (BindPlayer()) return;          // built in the Editor (HELIOS scene)
 
             var p = UIKit.Panel(view.overlay, Theme.Panel.A(0.94f), 14, "Procedure Player");
             p.Border(Theme.Border);
@@ -143,6 +148,38 @@ namespace IETM
             playerNext = PlayerButton(row, "Next", "IETM/Player/player_next", 40, false, "Next step  (→)", PlayerNext, out _);
 
             player.gameObject.SetActive(false);
+        }
+
+        /// <summary>Connects the player that is already in the scene. False if there is none.</summary>
+        bool BindPlayer()
+        {
+            var p = view.overlay.Find("Procedure Player") as RectTransform;
+            if (p == null) return false;
+            T Get<T>(string path) where T : Component { var c = p.Find(path); return c != null ? c.GetComponent<T>() : null; }
+            playerStep = Get<Text>("Header/Step Chip/Step");
+            playerTitle = Get<Text>("Header/Title");
+            playerNote = Get<Text>("Warning");
+            playerText = Get<Text>("Instruction");
+            playerProgress = p.Find("Progress/Fill") as RectTransform;
+            playerPrev = Get<Button>("Controls/Previous");
+            playerNext = Get<Button>("Controls/Next");
+            var pause = Get<Button>("Controls/Pause");
+            var replay = Get<Button>("Controls/Replay");
+            playerToggleIcon = Get<Image>("Controls/Pause/Icon");
+            if (playerStep == null || playerTitle == null || playerNote == null || playerText == null || playerProgress == null
+                || playerPrev == null || playerNext == null || pause == null || replay == null || playerToggleIcon == null)
+            {
+                Debug.LogWarning("[IETM] 'Procedure Player' in the scene is incomplete: it is rebuilt from code.");
+                p.gameObject.SetActive(false);
+                p.name = "Procedure Player (incomplete)";
+                return false;
+            }
+            playerPrev.onClick.AddListener(PlayerPrev);
+            playerNext.onClick.AddListener(PlayerNext);
+            pause.onClick.AddListener(TogglePause);
+            replay.onClick.AddListener(ReplayStep);
+            player = p;
+            return true;
         }
 
         Button PlayerButton(RectTransform parent, string name, string icon, float size, bool accent, string tip, UnityEngine.Events.UnityAction onClick, out Image iconImg)
@@ -318,6 +355,14 @@ namespace IETM
             while (movingLabels.Count <= i)
             {
                 var o = view.overlay;
+                // pool built in the Editor: "Moving Part Label n" / "Moving Part Dot n"
+                int n = movingLabels.Count + 1;
+                var eb = o.Find("Moving Part Label " + n); var ed = o.Find("Moving Part Dot " + n);
+                if (eb != null && ed != null && eb.TryGetComponent<Image>(out var ebi))
+                {
+                    var et = eb.GetComponentInChildren<Text>(true);
+                    if (et != null) { movingLabels.Add(new MovingLabel { box = ebi, text = et, dot = (RectTransform)ed }); continue; }
+                }
                 var dot = UIKit.Panel(o, Theme.Warn, 5, "Moving Part Dot", false);
                 dot.rectTransform.anchorMin = dot.rectTransform.anchorMax = Vector2.zero;
                 dot.rectTransform.pivot = new Vector2(0.5f, 0.5f);

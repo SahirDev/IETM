@@ -8,6 +8,8 @@
 // The choice is remembered (PlayerPrefs) for the next start.
 //
 // Bell: no unread badge; clicking it shows "No new notifications" under the bell for 3 seconds.
+// The component sits on "IETM Integration" in the HELIOS scene and the popup is in the HELIOS UI prefab, so nothing is
+// built at Play (both are created from code only if missing).
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -280,6 +282,7 @@ namespace IETM
         {
             var bell = topBar != null ? topBar.Find("Notifications") as RectTransform : null;
             if (bell == null) return;
+            if (popup == null) BindPopup();
             if (popup == null) BuildPopup();
             if (popup == null) return;
 
@@ -303,6 +306,20 @@ namespace IETM
             popup.gameObject.SetActive(true);
         }
 
+        /// <summary>The popup is in the HELIOS UI prefab ("UI > Notifications Popup"): only found here.</summary>
+        void BindPopup()
+        {
+            foreach (var t in heliosRoot.GetComponentsInChildren<Transform>(true))
+                if (t.name == "Notifications Popup" && t is RectTransform rt)
+                {
+                    popup = rt;
+                    popupGroup = rt.GetComponent<CanvasGroup>();
+                    if (popupGroup == null) popupGroup = rt.gameObject.AddComponent<CanvasGroup>();
+                    return;
+                }
+        }
+
+        /// <summary>Fallback when the prefab has no popup.</summary>
         void BuildPopup()
         {
             var theme = Helios.HeliosTheme.Current;

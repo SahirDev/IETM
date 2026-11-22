@@ -78,3 +78,23 @@ Delete `IETM Module` from the HELIOS scene, then delete `Assets/IETM`, `Assets/3
 - **Light** button in the top bar switches the whole application (HELIOS pages, menu, cards and the IETM) to a white / grey theme; it then reads **Dark** to switch back. The choice is remembered for the next start.
 - Colours are converted from the ones already used (dark surfaces → white / light grey, light text → dark grey, accents keep their hue), so no HELIOS theme or prefab colour was changed. Dark mode restores the exact original colours. Photos, logos and white glyphs on coloured buttons stay as they are; the blue backgrounds become light grey (**Light View Background** on the *HELIOS Theme Mode* object). Buttons tinted by their colour block (IETM buttons) get light fills with dark labels; the full-screen HELIOS **Vignette** is hidden (it would veil the screen). The **top bar** (and the bell popup) keeps its dark design in both modes; only the area below it changes.
 - **Bell**: the red badge is switched off in the HELIOS UI prefab (`Top Bar > Notifications > Badge` inactive). Clicking the bell shows "No new notifications" under it for 3 seconds.
+
+## Built in the Editor (nothing created at Play)
+
+Everything this integration adds is a real object in the scene / prefab, visible and editable before Play:
+
+| Object | Where |
+|---|---|
+| **IETM Integration** (HeliosIetmBridge + HeliosThemeMode) | HELIOS scene, root |
+| **Procedure Player** (instruction + Previous / Pause / Replay / Next) | IETM Module > IETM Canvas > … > viewport overlay (inactive until a procedure opens) |
+| **Moving Part Label 1-4 / Moving Part Dot 1-4** | same overlay (inactive) |
+| **IETM Viewport Background** (camera > canvas > blue image) | IETM Module |
+| RectMask2D on the IETM frame | IETM Module > HELIOS Shell > IETM frame |
+| **Notifications Popup** | HELIOS UI prefab > UI (inactive) |
+
+At Play the scripts only find and connect them (button listeners). The code still creates any of them if missing
+(stand-alone IETM scene, or after *Merge IETM Into HELIOS Scene* rebuilds the module).
+
+**Warm-up**: the IETM starts hidden while HELIOS loads (`IETM Integration > Heliosietm Bridge > Prewarm`), so its data and
+lists are ready before the first click on IETM — no wait on the first open in WebGL. The landing gear model, its data
+file and all textures are scene references (loaded with the scene, nothing loaded from Resources at Play).

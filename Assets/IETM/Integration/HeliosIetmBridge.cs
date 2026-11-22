@@ -1,7 +1,7 @@
 // IETM <-> HELIOS bridge: shows the Landing Gear IETM inside the HELIOS app's own "IETM" page.
 //
 // One scene only: the IETM objects live in the HELIOS scene under "IETM Module" (inactive = hidden).
-// This component starts itself when Play begins (RuntimeInitializeOnLoadMethod), listens to
+// This component sits on "IETM Integration" in the HELIOS scene (created from code only if missing), listens to
 // HeliosNavigator.onPageOpened and shows "IETM Module" on the HELIOS "IETM" page, hides it on the others.
 // (IETM > HELIOS Integration > Merge IETM Into HELIOS Scene refreshes the module from LandingGear_IETM.unity.)
 //
@@ -74,6 +74,9 @@ namespace IETM.Integration
         public string viewportBackground = "IETM/ViewportBackground";
         Camera bgCamera;
 
+        [Tooltip("Start the IETM hidden while HELIOS loads, so the first click on IETM opens it without delay.")]
+        public bool prewarm = true;
+
         // ------------------------------------------------------------------ start-up
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -126,6 +129,10 @@ namespace IETM.Integration
 
             nav.onPageOpened.AddListener(OnPage);
             if (nav.Current != null) OnPage(nav.Current);
+
+            // Warm-up while HELIOS loads: the IETM builds itself now (hidden), so the first click on the
+            // IETM menu item opens it at once instead of waiting for it to start (noticeable in WebGL).
+            if (prewarm && !started && !warming) StartCoroutine(StartIetm());
         }
 
         static HeliosNavigator FindNavigator()
@@ -271,7 +278,19 @@ namespace IETM.Integration
         /// viewport renders the image (scaled to cover, centred), then the IETM camera draws the gear on top.</summary>
         void SetupViewportBackground()
         {
-            if (string.IsNullOrEmpty(viewportBackground) || ietmCamera == null || bgCamera != null) return;
+            if (ietmCamera == null || bgCamera != null) return;
+
+            // built in the Editor: IETM Module > IETM Viewport Background (camera > canvas > image)
+            var existing = module != null ? module.transform.Find("IETM Viewport Background") : null;
+            if (existing != null && existing.TryGetComponent(out bgCamera))
+            {
+                bgCamera.depth = ietmCamera.depth - 0.5f;               // before the IETM camera, after HELIOS's background
+                bgCamera.pixelRect = ietmCamera.pixelRect;
+                ietmCamera.clearFlags = CameraClearFlags.Depth;         // keep the background, draw the gear on it
+                return;
+            }
+
+            if (string.IsNullOrEmpty(viewportBackground)) return;
             var tex = Resources.Load<Texture2D>(viewportBackground);
             if (tex == null) { Debug.LogWarning("[IETM] Viewport background not found: Resources/" + viewportBackground); return; }
 
