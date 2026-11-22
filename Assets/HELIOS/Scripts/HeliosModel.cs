@@ -567,7 +567,7 @@ namespace Helios
                 fillMat.SetFloat("_SrcBlend", 1f);                                   // One
                 fillMat.SetFloat("_DstBlend", st.solidBody ? 0f : 1f);               // Zero (solid) or One (additive glow)
                 fillMat.SetFloat("_ZWrite", st.solidBody ? 1f : 0f);
-                fillMat.SetFloat("_Cull", st.solidBody ? 2f : 0f);                   // Back (solid) or Off (see-through)
+                fillMat.SetFloat("_Cull", 0f);                                       // Off: the model is made of surfaces (no closed solids), so both sides are drawn
                 fillMat.renderQueue = st.solidBody ? 2000 : 3000;                    // Geometry or Transparent
                 fillMat.SetFloat("_RimPower", st.outlineSharpness); fillMat.SetFloat("_RimStrength", st.outlineGlow);
                 fillMat.SetFloat("_GridSpacing", Mathf.Max(0.001f, st.gridSpacing * len)); fillMat.SetFloat("_GridWidth", st.gridLineWidth);

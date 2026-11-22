@@ -21,7 +21,7 @@ Shader "HELIOS/Hologram Surface"
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend ("Blend source", Float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend ("Blend destination", Float) = 0
         [Enum(Off, 0, On, 1)] _ZWrite ("Depth write", Float) = 1
-        [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 2
+        [Enum(UnityEngine.Rendering.CullMode)] _Cull ("Cull", Float) = 0
     }
     SubShader
     {

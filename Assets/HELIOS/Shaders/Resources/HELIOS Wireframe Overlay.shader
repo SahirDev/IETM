@@ -22,7 +22,7 @@ Shader "HELIOS/Wireframe Overlay"
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
             ZTest LEqual
-            Cull Back
+            Cull Off                // surface model: lines on both sides of every panel
             Offset -1, -1
             CGPROGRAM
             #pragma vertex vert
