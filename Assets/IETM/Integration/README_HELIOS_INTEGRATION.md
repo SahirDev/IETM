@@ -103,8 +103,13 @@ file and all textures are scene references (loaded with the scene, nothing loade
 
 Added in `HELIOS UI.prefab` (page **3D View**), visible in the Editor:
 
-- **View Tools** (right edge, Figma 56 x 402): Select, Full Screen, Zoom, Reset, Pan | Opaque, Wireframe, Transparent | X-Ray.
-  Buttons call HeliosActions (CameraTool, ShowOriginalModel, ToggleWireframe, ShowHologram, ToggleHologram) — see each OnClick.
+- **View Tools** (right edge, Figma 56 x 402): Select, Fit View, Zoom, Rotate, Pan | Opaque, Wireframe, Transparent | **Cross Section**.
+  Icons are white and follow the theme (HeliosThemed, Text role); Zoom / Rotate / Pan light up while left-drag does that.
+  Buttons call HeliosActions (CameraTool 0 rotate, 1 zoom, 2 pan, 3 fit; ShowOriginalModel, ToggleWireframe, ShowHologram).
+- **Cross Section** (`Assets/HELIOS/Scripts/HeliosSection.cs`, shader `Assets/HELIOS/Shaders/HeliosSection.shader`): the last button
+  cuts the aircraft with a plane. *Cross Section Controls* (next to it): **X / Y / Z** = wing-to-wing, top-to-bottom, nose-to-tail
+  plane; the slider moves the plane through the aircraft and the cut follows it; **Flip** keeps the other half. The faces the cut
+  exposes are drawn in *Section Colour* (cyan), a faint plane shows the cut. Turning it off (or leaving the page) restores the model.
 - **Telemetry Strip** (bottom, Figma 953 x 70): Aircraft Health, Asset Integrity, Maintenance, Open Findings; each opens its page.
 - Sizes, positions and colours measured on the Figma frame and converted x 744/1300 (same share of the screen as in Figma).
   Icons cut from the Figma frame: `Assets/HELIOS/Art/Icons/figma_*.png`.
