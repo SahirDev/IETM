@@ -16,7 +16,7 @@ namespace Helios
     {
         [Tooltip("Shader of the cut model (HELIOS/Section).")]
         public Shader sectionShader;
-        [Tooltip("Colour of the faces the cut exposes.")]
+        [Tooltip("Colour of the outline where the plane cuts the aircraft.")]
         public Color sectionColor = new Color(0.13f, 0.83f, 0.93f, 1f);
         [Tooltip("Colour of the plane that shows where the cut is (alpha = how visible).")]
         public Color planeColor = new Color(0.13f, 0.83f, 0.93f, 0.06f);
