@@ -64,7 +64,7 @@ Delete `IETM Module` from the HELIOS scene, then delete `Assets/IETM`, `Assets/3
 `Assets/IETM/Scripts/Runtime/IETMApp.Player.cs` (icons: `Assets/IETM/Resources/IETM/Player`).
 
 - Opening **Operation**, **Disassembly** or **Assembly** collapses both IETM side panels (the arrows still reopen them); leaving the module restores them.
-- A music-player bar at the bottom of the 3D view: **Previous · Pause/Continue · Replay step · Next**, with the step's title, warning/caution and instruction text above the buttons, plus a progress line.
+- A music-player bar at the **bottom-right** of the 3D view (shown only while the right panel is collapsed; opening that panel hides it, since the panel shows the same steps): **Previous · Pause/Continue · Replay step · Next**, with the step's title, warning/caution and instruction text above the buttons, plus a progress line.
 - Keys: ← / → steps, **Space** = pause / continue inside these modules (gear toggle elsewhere).
 - While a part moves, its name label (same style as mouse-over) follows it and fades out shortly after it stops.
 - Settings on **IETM App → Procedure player**: collapse panels on/off, player width, label linger time.

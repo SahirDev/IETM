@@ -252,6 +252,7 @@ namespace IETM
             UpdateGearAnimation();
             model.Tick(AnimDt);
             UpdateMovingLabels();
+            UpdatePlayerVisibility();
             UpdateStatus();
             UpdateToasts();
         }

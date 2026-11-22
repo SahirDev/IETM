@@ -15,8 +15,8 @@ namespace IETM
         [Header("Procedure player")]
         [Tooltip("Collapse the publication and data module panels while Operation / Disassembly / Assembly is open.")]
         public bool collapsePanelsInProcedures = true;
-        [Tooltip("Width of the player (instruction + buttons) at the bottom of the 3D view.")]
-        [Range(360f, 900f)] public float playerWidth = 620f;
+        [Tooltip("Width of the player (instruction + buttons), bottom-right of the 3D view. Shown only while the right panel is collapsed.")]
+        [Range(360f, 900f)] public float playerWidth = 480f;
         [Tooltip("Seconds a moving part keeps its name label after it stops.")]
         [Range(0f, 3f)] public float movingLabelLinger = 0.8f;
 
@@ -110,7 +110,7 @@ namespace IETM
             var p = UIKit.Panel(view.overlay, Theme.Panel.A(0.94f), 14, "Procedure Player");
             p.Border(Theme.Border);
             player = p.rectTransform;
-            player.Anchor(new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0.5f, 0), new Vector2(0, 80), new Vector2(playerWidth, 10));
+            player.Anchor(new Vector2(1, 0), new Vector2(1, 0), new Vector2(1, 0), new Vector2(-16, 80), new Vector2(playerWidth, 10));
             p.VLayout(6, 16, 16, 12, 10, TextAnchor.UpperCenter, true, false);
             var fit = p.gameObject.AddComponent<ContentSizeFitter>(); fit.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
@@ -172,7 +172,7 @@ namespace IETM
             if (view == null) return;
             BuildPlayer();
             if (player == null) return;
-            bool show = InAnimatedProcedure;
+            bool show = PlayerShouldShow;
             if (player.gameObject.activeSelf != show) player.gameObject.SetActive(show);
             if (!show) return;
 
@@ -201,6 +201,19 @@ namespace IETM
             if (playerToggleIcon) playerToggleIcon.sprite = procPaused ? spPlay : spPause;
             if (playerToggleIcon && playerToggleIcon.transform.parent.TryGetComponent<UITooltip>(out var tip))
                 tip.text = procPaused ? "Continue  (Space)" : "Pause  (Space)";
+        }
+
+        /// <summary>In Operation / Disassembly / Assembly while the right (data module) panel is collapsed:
+        /// that panel already shows the steps, so the bar hides while it is open and comes back
+        /// once it has slid away.</summary>
+        bool PlayerShouldShow => InAnimatedProcedure && !rightOpen && rightT < 0.15f;
+
+        /// <summary>Per frame: follow the right panel (opened / collapsed with its edge arrow).</summary>
+        void UpdatePlayerVisibility()
+        {
+            if (player == null) return;
+            bool show = PlayerShouldShow;
+            if (player.gameObject.activeSelf != show) RefreshPlayer();
         }
 
         // ------------------------------------------------------------------ moving-part labels
