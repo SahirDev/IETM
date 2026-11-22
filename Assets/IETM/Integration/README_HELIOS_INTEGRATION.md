@@ -58,3 +58,14 @@ Keep editing the IETM in `Assets/IETM/Scenes/LandingGear_IETM.unity` (stand-alon
 ## Removing the IETM
 
 Delete `IETM Module` from the HELIOS scene, then delete `Assets/IETM`, `Assets/3DModels/Landing_Gear 1.glb` (+ `Materials`) and `Assets/StreamingAssets/IETM`.
+
+## Procedure player (Operation / Disassembly / Assembly)
+
+`Assets/IETM/Scripts/Runtime/IETMApp.Player.cs` (icons: `Assets/IETM/Resources/IETM/Player`).
+
+- Opening **Operation**, **Disassembly** or **Assembly** collapses both IETM side panels (the arrows still reopen them); leaving the module restores them.
+- A music-player bar at the bottom of the 3D view: **Previous · Pause/Continue · Replay step · Next**, with the step's title, warning/caution and instruction text above the buttons, plus a progress line.
+- Keys: ← / → steps, **Space** = pause / continue inside these modules (gear toggle elsewhere).
+- While a part moves, its name label (same style as mouse-over) follows it and fades out shortly after it stops.
+- Settings on **IETM App → Procedure player**: collapse panels on/off, player width, label linger time.
+- The bar is created from code when the IETM starts, so it appears in Play mode only.

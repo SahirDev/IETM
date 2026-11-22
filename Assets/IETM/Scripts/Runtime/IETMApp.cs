@@ -214,7 +214,7 @@ namespace IETM
                 vcam.InputBlocked = true;
                 model.SetHover(null);
                 UpdateGearAnimation();
-                model.Tick(Time.unscaledDeltaTime);
+                model.Tick(AnimDt);
                 UpdateToasts();
                 return;
             }
@@ -250,7 +250,8 @@ namespace IETM
             if (!typing) HandleShortcuts();
 
             UpdateGearAnimation();
-            model.Tick(Time.unscaledDeltaTime);
+            model.Tick(AnimDt);
+            UpdateMovingLabels();
             UpdateStatus();
             UpdateToasts();
         }
@@ -285,12 +286,12 @@ namespace IETM
             if (InputCompat.KeyDown(IKey.L)) ToggleLabels();
             if (InputCompat.KeyDown(IKey.E)) ToggleExplode();
             if (InputCompat.KeyDown(IKey.R)) ToggleAutoRotate();
-            if (InputCompat.KeyDown(IKey.Space)) ToggleGear();
+            if (InputCompat.KeyDown(IKey.Space)) { if (InAnimatedProcedure) TogglePause(); else ToggleGear(); }
             if (InputCompat.KeyDown(IKey.Slash)) ToggleHelp();
             if (currentModule != null && currentModule.type == "procedure")
             {
-                if (InputCompat.KeyDown(IKey.Right)) StepNext();
-                if (InputCompat.KeyDown(IKey.Left)) StepPrev();
+                if (InputCompat.KeyDown(IKey.Right)) PlayerNext();
+                if (InputCompat.KeyDown(IKey.Left)) PlayerPrev();
             }
         }
 
@@ -564,6 +565,7 @@ namespace IETM
                 if (it != null) { selectedItem = it; model.SetSelection(model.LeavesOf(it)); RefreshSelectionUI(true); }
             }
             else RefreshSelectionUI(false);
+            OnModuleOpenedForPlayer();
             PushHistory();
         }
 
@@ -578,6 +580,7 @@ namespace IETM
             var steps = currentModule.steps;
             if (steps == null || steps.Length == 0) return;
             var step = steps[procStep];
+            procPaused = false;                 // a new / replayed step always plays
 
             if (!string.IsNullOrEmpty(step.gear)) SetGear(step.gear == "retracted" ? 1 : 0);
 
@@ -648,6 +651,7 @@ namespace IETM
 
             RefreshSelectionUI(true);
             RefreshProcedureUI();
+            RefreshPlayer();
         }
 
         // ------------------------------------------------------------------ order list

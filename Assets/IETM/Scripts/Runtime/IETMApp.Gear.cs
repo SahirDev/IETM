@@ -120,6 +120,7 @@ namespace IETM
 
         void UpdateGearAnimation()
         {
+            if (procPaused) return;          // procedure player: Pause
             if (gearLoop && !gearMoving && gearAnimated)
             {
                 gearLoopWait -= Time.unscaledDeltaTime;

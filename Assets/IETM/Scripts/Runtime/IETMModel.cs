@@ -308,6 +308,23 @@ namespace IETM
             }
         }
 
+        /// <summary>True while any of these parts is still moving out / back in.</summary>
+        public bool IsMoving(IEnumerable<IPDItem> leaves)
+        {
+            foreach (var l in leaves)
+                if (removeTarget.TryGetValue(l, out var tgt) && Mathf.Abs((removeT.TryGetValue(l, out var c) ? c : 0f) - tgt) > 0.0001f) return true;
+            return false;
+        }
+
+        /// <summary>Puts these parts back where their current move starts, so the move plays again (procedure player: Replay).</summary>
+        public void RestartRemovals(IEnumerable<IPDItem> leaves)
+        {
+            bool any = false;
+            foreach (var l in leaves)
+                if (removeTarget.TryGetValue(l, out var tgt)) { removeT[l] = 1f - tgt; any = true; }
+            if (any) { ApplyOffsets(); dirty = true; }
+        }
+
         public bool IsRemoved(IPDItem leaf) => removeT.TryGetValue(leaf, out var t) && t > 0.97f;
 
         /// <summary>Removed parts stay visible, laid out next to the assembly (disassembly / assembly procedures).</summary>

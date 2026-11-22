@@ -13,6 +13,7 @@ namespace IETM
         {
             if (db == null || model == null || view == null) return;
 
+            ResetPlayer();
             CloseModals();
             HideSearchDrop();
             if (view.searchField != null) view.searchField.SetTextWithoutNotify("");
