@@ -95,6 +95,6 @@ Everything this integration adds is a real object in the scene / prefab, visible
 At Play the scripts only find and connect them (button listeners). The code still creates any of them if missing
 (stand-alone IETM scene, or after *Merge IETM Into HELIOS Scene* rebuilds the module).
 
-**Warm-up**: the IETM starts hidden while HELIOS loads (`IETM Integration > Heliosietm Bridge > Prewarm`), so its data and
+**Warm-up**: the IETM starts hidden while HELIOS loads (`IETM Integration > Helios Ietm Bridge > Prewarm`), so its data and
 lists are ready before the first click on IETM — no wait on the first open in WebGL. The landing gear model, its data
 file and all textures are scene references (loaded with the scene, nothing loaded from Resources at Play).
