@@ -30,6 +30,7 @@ namespace IETM
         public bool IsLight { get; private set; }
 
         Transform heliosRoot, ietmRoot, topBar;
+        Transform ietmTemplates;   // IETM row / card templates: lists are cloned from them, they always stay dark
         TMP_Text lightLabel;
         GameObject blueBackground, vignette;
         Camera heliosBackCam; Color heliosBackCamDark;
@@ -90,6 +91,7 @@ namespace IETM
 
             var app = FindAnyObjectByType<IETMApp>(FindObjectsInactive.Include);
             if (app != null) ietmRoot = app.transform.root;
+            if (app != null && app.view != null && app.view.templates != null) ietmTemplates = app.view.templates.transform;
 
             if (PlayerPrefs.GetInt(PrefKey, 0) == 1) SetLight(true);
             UpdateLabel();
@@ -130,13 +132,14 @@ namespace IETM
         bool Excluded(Component c)
         {
             var tr = c.transform;
-            return (topBar != null && tr.IsChildOf(topBar)) || (popup != null && tr.IsChildOf(popup));
+            return (topBar != null && tr.IsChildOf(topBar)) || (popup != null && tr.IsChildOf(popup))
+                || (ietmTemplates != null && tr.IsChildOf(ietmTemplates));
         }
 
         void Recolour(Transform root)
         {
             if (root == null) return;
-            root.GetComponentsInChildren(true, gList);
+            root.GetComponentsInChildren(false, gList);   // active only: hidden templates must keep their dark colours
             foreach (var g in gList)
             {
                 if (g == null || g is RawImage || Excluded(g)) continue;
@@ -148,7 +151,7 @@ namespace IETM
                 g.color = a;
             }
             // buttons tinted by their colour block (IETM buttons: white image, colour from normal / hover / active)
-            root.GetComponentsInChildren(true, selList);
+            root.GetComponentsInChildren(false, selList);
             foreach (var sel in selList)
             {
                 if (sel == null || sel.transition != Selectable.Transition.ColorTint || Excluded(sel)) continue;
@@ -161,7 +164,7 @@ namespace IETM
                 blocks[sel] = new CbEntry { original = cb, applied = a };
                 if (!SameBlock(cb, a)) sel.colors = a;
             }
-            root.GetComponentsInChildren(true, sList);
+            root.GetComponentsInChildren(false, sList);
             foreach (var s in sList)
             {
                 if (s == null || Excluded(s)) continue;
