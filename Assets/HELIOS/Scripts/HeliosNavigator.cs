@@ -90,6 +90,7 @@ namespace Helios
         {
             if (p == null) return;
             foreach (var x in pages) if (x != null && x.gameObject.activeSelf != (x == p)) x.gameObject.SetActive(x == p);
+            if (toolbar != null && toolbar.activeSelf != p.showToolbar) toolbar.SetActive(p.showToolbar);   // Editor preview too (Dashboard has its own view toolbar)
             if (!Application.isPlaying)
                 foreach (var mi in GetComponentsInChildren<HeliosMenuItem>(true)) mi.SetSelected(string.Equals(mi.pageId, p.pageId, StringComparison.OrdinalIgnoreCase));
         }
