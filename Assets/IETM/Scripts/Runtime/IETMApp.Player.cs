@@ -158,7 +158,7 @@ namespace IETM
             cb.disabledColor = new Color(1f, 1f, 1f, 0.35f); cb.colorMultiplier = 1.4f;
             b.colors = cb;
             b.onClick.AddListener(onClick);
-            iconImg = UIKit.Panel(bg.transform, Color.white, 0, "Icon", false);
+            iconImg = UIKit.Panel(bg.transform, accent ? Color.white : Theme.Text, 0, "Icon", false);   // follows Light mode on plain buttons
             iconImg.sprite = Resources.Load<Sprite>(icon);
             iconImg.preserveAspect = true;
             float s = size * 0.46f;

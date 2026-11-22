@@ -69,3 +69,11 @@ Delete `IETM Module` from the HELIOS scene, then delete `Assets/IETM`, `Assets/3
 - While a part moves, its name label (same style as mouse-over) follows it and fades out shortly after it stops.
 - Settings on **IETM App → Procedure player**: collapse panels on/off, player width, label linger time.
 - The bar is created from code when the IETM starts, so it appears in Play mode only.
+
+## Light / Dark mode and notifications
+
+`Assets/IETM/Integration/HeliosThemeMode.cs` (created automatically in the HELIOS scene, no setup).
+
+- **Light** button in the top bar switches the whole application (HELIOS pages, menu, cards and the IETM) to a white / grey theme; it then reads **Dark** to switch back. The choice is remembered for the next start.
+- Colours are converted from the ones already used (dark surfaces → white / light grey, light text → dark grey, accents keep their hue), so no HELIOS theme or prefab colour was changed. Dark mode restores the exact original colours. Photos, logos and white glyphs on coloured buttons stay as they are; the blue backgrounds become light grey (**Light View Background** on the *HELIOS Theme Mode* object).
+- **Bell**: the red badge is switched off in the HELIOS UI prefab (`Top Bar > Notifications > Badge` inactive). Clicking the bell shows "No new notifications" under it for 3 seconds.
