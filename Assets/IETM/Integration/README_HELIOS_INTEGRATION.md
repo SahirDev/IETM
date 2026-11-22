@@ -98,3 +98,21 @@ At Play the scripts only find and connect them (button listeners). The code stil
 **Warm-up**: the IETM starts hidden while HELIOS loads (`IETM Integration > Helios Ietm Bridge > Prewarm`), so its data and
 lists are ready before the first click on IETM — no wait on the first open in WebGL. The landing gear model, its data
 file and all textures are scene references (loaded with the scene, nothing loaded from Resources at Play).
+
+## HELIOS pages: updated Figma design (Dashboard, Sensors, Health, Asset Integrity)
+
+`Assets/HELIOS/Scripts/HeliosPagesFigma.cs` builds the four pages from the updated Figma frames; `Assets/HELIOS/Editor/HeliosFigmaPages.cs`
+puts them into `HELIOS UI.prefab` **once, by itself, the first time Unity opens the project** (Console: "pages were updated…"),
+and on demand with **Tools > HELIOS > Apply Figma Pages**. Only those four pages are replaced; the top bar, menu order, IETM page,
+Maintenance page and all other prefab edits are kept. The menu item "3D View" now reads **Dashboard** (its page id is unchanged).
+
+- **Dashboard**: floating telemetry card (Total Flight Hours, Next Service Due) top right, a vertical view toolbar on the right edge
+  (Reset | Rotate, Zoom, Pan, Full Screen | Opaque, Wireframe, Transparent) and a telemetry strip at the bottom (Aircraft Health,
+  Asset Integrity, Maintenance, Open Findings — each opens its page). The bottom camera toolbar is hidden on this page.
+- **Sensors**: header with Live badge, time stamp, pause / refresh / full screen; right panel with the 7 readings, Sensor Trends
+  (Vibration / Strain / Humidity tabs, `HeliosChartTabs`) and Sensor Health.
+- **Health**: header with Overall Health pill; scrolling right column: Overall Health gauge, Recent Alerts, System Health Overview,
+  Health Trend, Recent Events.
+- **Asset Integrity**: header with Overall Health pill; integrity gauge with counts, Critical Integrity with **View Details**
+  (opens Maintenance), Key Findings. (The old "Integrity Status" legend is not in the new design.)
+- New icons: `Assets/HELIOS/Art/Icons/opaque.png`, `wireframe.png`, `transparent.png`.
