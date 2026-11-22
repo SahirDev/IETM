@@ -1,0 +1,950 @@
+{
+ "publication": {
+  "title": "F-16 Engine - Turbine Module",
+  "subtitle": "Interactive Electronic Technical Manual",
+  "pmc": "PMC-F16ENG-K0F16-00001-00",
+  "issue": "001",
+  "issueDate": "2026-11-22",
+  "applicability": "F-16 engine turbine module scale model - Serial 001",
+  "dataStatus": "SAMPLE DATA - part numbers, CAGE codes and procedures are placeholders for the POC. Replace with OEM data."
+ },
+ "figure": {
+  "title": "Engine - Turbine Module",
+  "icn": "ICN-F16ENG-A-720000-0-K0F16-00001-A-01-1",
+  "figureNumber": "Fig. 1"
+ },
+ "items": [
+  {
+   "itemNo": "001",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-0001-01",
+   "description": "ENGINE ASSY - TURBOFAN, AFTERBURNING",
+   "indent": 1,
+   "upa": "RF",
+   "smr": "PAOOO",
+   "nodes": [],
+   "info": "Complete engine (turbine module) as installed in the aircraft: compressor, combustion and turbine sections in the outer case, with the external lines, mounts and the exhaust cone."
+  },
+  {
+   "itemNo": "010",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-1010-01",
+   "description": "CASE - OUTER, ENGINE",
+   "indent": 2,
+   "upa": "1",
+   "smr": "PAOGG",
+   "nodes": [
+    "hull_turbine_004"
+   ],
+   "info": "Outer engine case. Carries the bypass air and holds the compressor, combustor and turbine in line.",
+   "remarks": "Inspect the case flanges for cracks and fretting."
+  },
+  {
+   "itemNo": "020",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-1020-02",
+   "description": "CONE - EXHAUST, TAIL",
+   "indent": 2,
+   "upa": "1",
+   "smr": "PAOZZ",
+   "nodes": [
+    "hull_turbine"
+   ],
+   "info": "Exhaust (tail) cone at the turbine exit. Shapes the hot gas flow into the exhaust nozzle."
+  },
+  {
+   "itemNo": "030",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-71-2030-01",
+   "description": "MOUNT - ENGINE SUPPORT RING",
+   "indent": 2,
+   "upa": "1",
+   "smr": "PAOZZ",
+   "nodes": [
+    "mount_turbine_014"
+   ],
+   "info": "Support ring and brackets that carry the engine on the aircraft mounts and take the thrust load.",
+   "remarks": "Check the mount pads and bolt holes for elongation."
+  },
+  {
+   "itemNo": "040",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-73-3040-01",
+   "description": "TUBE ASSY - FUEL AND OIL, EXTERNAL",
+   "indent": 2,
+   "upa": "1",
+   "smr": "PAOZZ",
+   "nodes": [
+    "pipes_turbine_009"
+   ],
+   "info": "External fuel, oil and sense lines routed around the case to the fuel nozzles, bearings and sensors.",
+   "remarks": "Cap all openings when the lines are disconnected."
+  },
+  {
+   "itemNo": "050",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-1050-01",
+   "description": "BOLT SET - CASE FLANGE",
+   "indent": 2,
+   "upa": "AR",
+   "smr": "PAOZZ",
+   "nodes": [
+    "screws_turbine_001"
+   ],
+   "info": "Bolts and nuts that join the case flanges and hold the support ring.",
+   "remarks": "Discard self-locking nuts after removal."
+  },
+  {
+   "itemNo": "100",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-3100-00",
+   "description": "COMPRESSOR SECTION",
+   "indent": 2,
+   "upa": "REF",
+   "smr": "XBOOO",
+   "nodes": [],
+   "info": "Front of the engine: the fan, the inlet guide vanes and the compressor stages raise the air pressure before combustion."
+  },
+  {
+   "itemNo": "110",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-3110-01",
+   "description": "ROTOR - FAN, BLADED",
+   "indent": 3,
+   "upa": "1",
+   "smr": "PAOGG",
+   "nodes": [
+    "blades_turbine_003"
+   ],
+   "info": "Fan rotor: the first rotating blades at the engine inlet. Draws air in and sends part of it around the core as bypass air.",
+   "remarks": "Inspect the leading edges for foreign object damage (FOD)."
+  },
+  {
+   "itemNo": "120",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-3120-01",
+   "description": "VANE ASSY - INLET GUIDE",
+   "indent": 3,
+   "upa": "1",
+   "smr": "PAOZZ",
+   "nodes": [
+    "blades_dividers_turbine_017"
+   ],
+   "info": "Inlet guide vanes (stator): fixed vanes that turn the air onto the fan and compressor blades at the right angle."
+  },
+  {
+   "itemNo": "130",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-3130-01",
+   "description": "DISK ASSY - COMPRESSOR STAGES",
+   "indent": 3,
+   "upa": "1",
+   "smr": "PAOGG",
+   "nodes": [
+    "plates_turbine_016"
+   ],
+   "info": "Compressor disk stack: the stages that compress the core air before it enters the combustor."
+  },
+  {
+   "itemNo": "200",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-4200-00",
+   "description": "HOT SECTION",
+   "indent": 2,
+   "upa": "REF",
+   "smr": "XBOOO",
+   "nodes": [],
+   "info": "Combustion and turbine: fuel is burned in the compressed air and the hot gas drives the turbine."
+  },
+  {
+   "itemNo": "210",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-4210-01",
+   "description": "CASE - COMBUSTOR",
+   "indent": 3,
+   "upa": "1",
+   "smr": "PAOGG",
+   "nodes": [
+    "canister_turbine_011"
+   ],
+   "info": "Combustor case: pressure vessel around the combustion chamber that carries the fuel nozzles.",
+   "remarks": "Inspect for hot spots, burn-through and distortion."
+  },
+  {
+   "itemNo": "220",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-4220-01",
+   "description": "LINER - COMBUSTOR, PERFORATED",
+   "indent": 3,
+   "upa": "1",
+   "smr": "PAOZZ",
+   "nodes": [
+    "grid_turbine_007"
+   ],
+   "info": "Perforated combustor liner: holds the flame and lets cooling air in through its holes.",
+   "remarks": "Borescope: look for cracks between the cooling holes."
+  },
+  {
+   "itemNo": "230",
+   "isn": "00A",
+   "cage": "K0F16",
+   "partNumber": "ENG-72-4230-01",
+   "description": "ROTOR - TURBINE, BLADED",
+   "indent": 3,
+   "upa": "1",
+   "smr": "PAOGG",
+   "nodes": [
+    "blades_turbine_003.001"
+   ],
+   "info": "Turbine rotor stages: take energy from the hot gas to drive the compressor and the fan through the shaft.",
+   "remarks": "Borescope: look for blade tip erosion, coating loss and nicks."
+  }
+ ],
+ "modules": [
+  {
+   "id": "DM-ENG-TITLE",
+   "group": "00 Introduction",
+   "type": "description",
+   "dmc": "DMC-F16ENG-A-00-00-00-00A-001A-D",
+   "title": "Title page",
+   "infoName": "Title page",
+   "paragraphs": [
+    {
+     "heading": "F-16 Engine - Turbine Module",
+     "text": "Interactive Electronic Technical Manual (IETM) for the F-16 engine (turbine module). The manual combines descriptive data, an interactive Illustrated Parts Data (IPD) module and step-by-step procedures, all linked to the 3D model."
+    },
+    {
+     "heading": "How to use",
+     "text": "Select a data module in the publication tree. Click a part in the 3D view or a row in the parts list to cross-highlight it. Use the viewer toolbar to isolate, hide, x-ray or explode the engine. Add parts to the order list with the cart button."
+    },
+    {
+     "heading": "Safety",
+     "text": "Engine work is done with the engine on the maintenance stand, cold, drained and with the ignition disarmed. Follow the warnings and cautions in each procedure."
+    },
+    {
+     "heading": "Data status",
+     "text": "This is a proof-of-concept publication. Part numbers, CAGE codes and procedures are sample data."
+    }
+   ]
+  },
+  {
+   "id": "DM-ENG-DESC",
+   "group": "72-00 Description and operation",
+   "type": "description",
+   "dmc": "DMC-F16ENG-A-72-00-00-00A-040A-D",
+   "title": "Engine",
+   "infoName": "Description",
+   "focus": [
+    "001"
+   ],
+   "paragraphs": [
+    {
+     "heading": "General",
+     "text": "The F-16 is powered by one afterburning turbofan engine. Air flows from the inlet at the front through the compressor, the combustor and the turbine to the exhaust at the rear. Select a heading to isolate that part of the engine in the 3D view: it keeps its own colours and the rest of the engine turns transparent.",
+     "focus": [
+      "001"
+     ]
+    },
+    {
+     "heading": "Compressor section",
+     "text": "The inlet guide vanes (120) turn the air onto the fan rotor (110). The compressor stages (130) raise the pressure of the core air before combustion.",
+     "focus": [
+      "100"
+     ]
+    },
+    {
+     "heading": "Combustion",
+     "text": "The combustor case (210) holds the perforated liner (220), where fuel from the external lines (40) is burned in the compressed air.",
+     "focus": [
+      "210",
+      "220",
+      "040"
+     ]
+    },
+    {
+     "heading": "Turbine and exhaust",
+     "text": "The turbine rotor (230) takes energy from the hot gas to drive the compressor and the fan. The exhaust cone (20) guides the gas into the nozzle.",
+     "focus": [
+      "230",
+      "020"
+     ]
+    },
+    {
+     "heading": "Case and mounts",
+     "text": "The outer case (10) holds the sections in line and is joined at its flanges by the bolt set (50). The support ring (30) carries the engine and its thrust into the aircraft structure.",
+     "focus": [
+      "010",
+      "030",
+      "050"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DM-ENG-OPER",
+   "group": "72-00 Description and operation",
+   "type": "procedure",
+   "dmc": "DMC-F16ENG-A-72-00-00-00A-041A-D",
+   "title": "Engine",
+   "infoName": "Operation (gas path)",
+   "steps": [
+    {
+     "title": "Operation - overview",
+     "text": "Air enters at the front, is compressed, mixed with fuel and burned, and the hot gas drives the turbine before it leaves through the exhaust. The rotors turn on the shaft while this module is shown. Use Next to follow the air through the engine; the parts that do the work stay in colour.",
+     "focus": [
+      "001"
+     ],
+     "action": "operate",
+     "animate": "spin",
+     "spin": [
+      "110",
+      "130",
+      "230"
+     ],
+     "view": "iso"
+    },
+    {
+     "title": "1. Air enters the inlet",
+     "text": "The inlet guide vanes (120) turn the incoming air so that it meets the fan blades at the right angle.",
+     "focus": [
+      "120"
+     ],
+     "action": "operate",
+     "animate": "spin",
+     "spin": [
+      "110",
+      "130",
+      "230"
+     ]
+    },
+    {
+     "title": "2. The fan draws the air in",
+     "text": "The fan rotor (110) draws air into the engine. Part of it goes around the core as bypass air; the rest goes on to the compressor.",
+     "focus": [
+      "110"
+     ],
+     "action": "operate",
+     "animate": "spin",
+     "spin": [
+      "110",
+      "130",
+      "230"
+     ]
+    },
+    {
+     "title": "3. The compressor raises the pressure",
+     "text": "The compressor stages (130) squeeze the core air to many times the inlet pressure before it reaches the combustor.",
+     "focus": [
+      "130"
+     ],
+     "action": "operate",
+     "animate": "spin",
+     "spin": [
+      "110",
+      "130",
+      "230"
+     ]
+    },
+    {
+     "title": "4. Fuel is burned in the combustor",
+     "text": "The external lines (40) bring fuel to the nozzles in the combustor case (210). The fuel burns in the compressed air inside the perforated liner (220); cooling air flows in through its holes.",
+     "focus": [
+      "210",
+      "220",
+      "040"
+     ],
+     "action": "operate",
+     "animate": "spin",
+     "spin": [
+      "110",
+      "130",
+      "230"
+     ]
+    },
+    {
+     "title": "5. The hot gas drives the turbine",
+     "text": "The hot gas expands through the turbine rotor (230). The turbine turns the shaft that drives the compressor and the fan.",
+     "focus": [
+      "230"
+     ],
+     "action": "operate",
+     "animate": "spin",
+     "spin": [
+      "110",
+      "130",
+      "230"
+     ]
+    },
+    {
+     "title": "6. Exhaust and thrust",
+     "text": "The gas leaves past the exhaust cone (20) into the nozzle and produces thrust. The outer case (10) and the support ring (30) carry the thrust into the aircraft structure.",
+     "focus": [
+      "020",
+      "010",
+      "030"
+     ],
+     "action": "operate",
+     "animate": "spin",
+     "spin": [
+      "110",
+      "130",
+      "230"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "DM-ENG-DISASSY",
+   "group": "72-00 Maintenance",
+   "type": "procedure",
+   "dmc": "DMC-F16ENG-A-72-00-00-00A-520A-A",
+   "title": "Engine",
+   "infoName": "Disassembly",
+   "steps": [
+    {
+     "title": "Preliminary requirements",
+     "text": "Engine removed from the aircraft and installed on the engine maintenance stand. Fuel and oil drained. The removed parts are laid out around the engine in the order they come off - nothing overlaps.",
+     "warning": "WARNING: Let the engine cool down before you start. Hot section parts can cause burns.",
+     "focus": [
+      "001"
+     ],
+     "action": "highlight",
+     "view": "iso"
+    },
+    {
+     "title": "1. Remove the case flange bolts",
+     "text": "Remove the nuts and bolts from the case flanges and the support ring. Keep the bolt sets together.\n\nPart details:\n• Item 50 · Bolt Set - Case Flange · P/N ENG-72-1050-01 - Bolts and nuts that join the case flanges and hold the support ring.",
+     "focus": [
+      "050"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "2. Disconnect and remove the external lines",
+     "text": "Disconnect the fuel, oil and sense lines at their unions. Cap all openings, then take the tube assembly off.\n\nPart details:\n• Item 40 · Tube Assy - Fuel And Oil, External · P/N ENG-73-3040-01 - External fuel, oil and sense lines routed around the case to the fuel nozzles, bearings and sensors.",
+     "focus": [
+      "040"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "3. Remove the engine support ring",
+     "text": "Support the engine on the stand. Slide the support ring aft off the case and set it down.\n\nPart details:\n• Item 30 · Mount - Engine Support Ring · P/N ENG-71-2030-01 - Support ring and brackets that carry the engine on the aircraft mounts and take the thrust load.",
+     "focus": [
+      "030"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "4. Remove the outer case",
+     "text": "Slide the outer case aft off the core and set it on the case stand.\n\nPart details:\n• Item 10 · Case - Outer, Engine · P/N ENG-72-1010-01 - Outer engine case. Carries the bypass air and holds the compressor, combustor and turbine in line.",
+     "focus": [
+      "010"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "5. Remove the exhaust cone",
+     "text": "Remove the exhaust cone from the turbine exit.\n\nPart details:\n• Item 20 · Cone - Exhaust, Tail · P/N ENG-72-1020-02 - Exhaust (tail) cone at the turbine exit. Shapes the hot gas flow into the exhaust nozzle.",
+     "focus": [
+      "020"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "6. Remove the turbine rotor",
+     "text": "Pull the turbine rotor stages aft off the shaft and put them on the rotor stand.\n\nPart details:\n• Item 230 · Rotor - Turbine, Bladed · P/N ENG-72-4230-01 - Turbine rotor stages: take energy from the hot gas to drive the compressor and the fan through the shaft.",
+     "focus": [
+      "230"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "7. Remove the combustor case",
+     "text": "Slide the combustor case aft off the liner.\n\nPart details:\n• Item 210 · Case - Combustor · P/N ENG-72-4210-01 - Combustor case: pressure vessel around the combustion chamber that carries the fuel nozzles.",
+     "focus": [
+      "210"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "8. Remove the combustor liner",
+     "text": "Slide the perforated liner aft out of the combustion section.\n\nPart details:\n• Item 220 · Liner - Combustor, Perforated · P/N ENG-72-4220-01 - Perforated combustor liner: holds the flame and lets cooling air in through its holes.",
+     "focus": [
+      "220"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "9. Remove the fan rotor",
+     "text": "Remove the fan rotor from the front of the shaft.\n\nPart details:\n• Item 110 · Rotor - Fan, Bladed · P/N ENG-72-3110-01 - Fan rotor: the first rotating blades at the engine inlet. Draws air in and sends part of it around the core as bypass air.",
+     "focus": [
+      "110"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "10. Remove the inlet guide vanes",
+     "text": "Remove the inlet guide vane assembly from the front frame.\n\nPart details:\n• Item 120 · Vane Assy - Inlet Guide · P/N ENG-72-3120-01 - Inlet guide vanes (stator): fixed vanes that turn the air onto the fan and compressor blades at the right angle.",
+     "focus": [
+      "120"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "11. Remove the compressor disk assembly",
+     "text": "Pull the compressor disk stack forward off the shaft.\n\nPart details:\n• Item 130 · Disk Assy - Compressor Stages · P/N ENG-72-3130-01 - Compressor disk stack: the stages that compress the core air before it enters the combustor.",
+     "focus": [
+      "130"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "Disassembly complete",
+     "text": "All parts are off the engine and laid out. Clean and examine each part before you assemble the engine again.",
+     "focus": [
+      "001"
+     ],
+     "action": "highlight"
+    }
+   ]
+  },
+  {
+   "id": "DM-ENG-ASSY",
+   "group": "72-00 Maintenance",
+   "type": "procedure",
+   "dmc": "DMC-F16ENG-A-72-00-00-00A-720A-A",
+   "title": "Engine",
+   "infoName": "Assembly",
+   "steps": [
+    {
+     "title": "Preliminary requirements",
+     "text": "All parts cleaned, examined and serviceable, laid out around the stand. Assembly is the disassembly in reverse order.",
+     "caution": "CAUTION: Use new self-locking nuts and seals. Torque all flange bolts to the values in the torque table.",
+     "focus": [
+      "050",
+      "040",
+      "030",
+      "010",
+      "020",
+      "230",
+      "210",
+      "220",
+      "110",
+      "120",
+      "130"
+     ],
+     "action": "detach",
+     "view": "iso"
+    },
+    {
+     "title": "1. Install the compressor disk assembly",
+     "text": "Put the compressor disk assembly back in position and secure it.\n\nPart details:\n• Item 130 · Disk Assy - Compressor Stages · P/N ENG-72-3130-01 - Compressor disk stack: the stages that compress the core air before it enters the combustor.",
+     "focus": [
+      "130"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "2. Install the inlet guide vanes",
+     "text": "Put the inlet guide vanes back in position and secure it.\n\nPart details:\n• Item 120 · Vane Assy - Inlet Guide · P/N ENG-72-3120-01 - Inlet guide vanes (stator): fixed vanes that turn the air onto the fan and compressor blades at the right angle.",
+     "focus": [
+      "120"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "3. Install the fan rotor",
+     "text": "Put the fan rotor back in position and secure it.\n\nPart details:\n• Item 110 · Rotor - Fan, Bladed · P/N ENG-72-3110-01 - Fan rotor: the first rotating blades at the engine inlet. Draws air in and sends part of it around the core as bypass air.",
+     "focus": [
+      "110"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "4. Install the combustor liner",
+     "text": "Put the combustor liner back in position and secure it.\n\nPart details:\n• Item 220 · Liner - Combustor, Perforated · P/N ENG-72-4220-01 - Perforated combustor liner: holds the flame and lets cooling air in through its holes.",
+     "focus": [
+      "220"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "5. Install the combustor case",
+     "text": "Put the combustor case back in position and secure it.\n\nPart details:\n• Item 210 · Case - Combustor · P/N ENG-72-4210-01 - Combustor case: pressure vessel around the combustion chamber that carries the fuel nozzles.",
+     "focus": [
+      "210"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "6. Install the turbine rotor",
+     "text": "Put the turbine rotor back in position and secure it.\n\nPart details:\n• Item 230 · Rotor - Turbine, Bladed · P/N ENG-72-4230-01 - Turbine rotor stages: take energy from the hot gas to drive the compressor and the fan through the shaft.",
+     "focus": [
+      "230"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "7. Install the exhaust cone",
+     "text": "Put the exhaust cone back in position and secure it.\n\nPart details:\n• Item 20 · Cone - Exhaust, Tail · P/N ENG-72-1020-02 - Exhaust (tail) cone at the turbine exit. Shapes the hot gas flow into the exhaust nozzle.",
+     "focus": [
+      "020"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "8. Install the outer case",
+     "text": "Put the outer case back in position and secure it.\n\nPart details:\n• Item 10 · Case - Outer, Engine · P/N ENG-72-1010-01 - Outer engine case. Carries the bypass air and holds the compressor, combustor and turbine in line.",
+     "focus": [
+      "010"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "9. Install the engine support ring",
+     "text": "Put the engine support ring back in position and secure it.\n\nPart details:\n• Item 30 · Mount - Engine Support Ring · P/N ENG-71-2030-01 - Support ring and brackets that carry the engine on the aircraft mounts and take the thrust load.",
+     "focus": [
+      "030"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "10. Install the external lines",
+     "text": "Put the external lines back in position and secure it.\n\nPart details:\n• Item 40 · Tube Assy - Fuel And Oil, External · P/N ENG-73-3040-01 - External fuel, oil and sense lines routed around the case to the fuel nozzles, bearings and sensors.",
+     "focus": [
+      "040"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "11. Install the case flange bolts",
+     "text": "Put the case flange bolts back in position and secure it.\n\nPart details:\n• Item 50 · Bolt Set - Case Flange · P/N ENG-72-1050-01 - Bolts and nuts that join the case flanges and hold the support ring.",
+     "focus": [
+      "050"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "Assembly complete",
+     "text": "The engine is assembled. Do the borescope inspection and an engine ground run before flight.",
+     "focus": [
+      "001"
+     ],
+     "action": "highlight"
+    }
+   ]
+  },
+  {
+   "id": "DM-ENG-BSI",
+   "group": "72-00 Maintenance",
+   "type": "procedure",
+   "dmc": "DMC-F16ENG-A-72-00-00-00A-310A-A",
+   "title": "Engine",
+   "infoName": "Borescope inspection",
+   "steps": [
+    {
+     "title": "Preparation",
+     "text": "Engine cold and on the stand. Open the borescope ports and connect the borescope.",
+     "warning": "WARNING: Make sure that the ignition is disarmed and the engine cannot be motored while the borescope is inserted.",
+     "focus": [
+      "001"
+     ],
+     "action": "highlight",
+     "view": "iso"
+    },
+    {
+     "title": "Fan and inlet guide vanes",
+     "text": "Examine the fan blades (110) and the inlet guide vanes (120) for nicks, dents and foreign object damage.",
+     "focus": [
+      "110",
+      "120"
+     ],
+     "action": "isolate",
+     "view": "front"
+    },
+    {
+     "title": "Compressor stages",
+     "text": "Turn the rotor slowly by hand and examine each compressor stage (130) for blade damage and rubbing.",
+     "focus": [
+      "130"
+     ],
+     "action": "isolate",
+     "view": "iso"
+    },
+    {
+     "title": "Combustor liner",
+     "text": "Examine the perforated liner (220) for cracks between the cooling holes, burn-through and distortion.",
+     "focus": [
+      "220",
+      "210"
+     ],
+     "action": "isolate",
+     "view": "side"
+    },
+    {
+     "title": "Turbine blades",
+     "text": "Examine the turbine blades (230) for tip erosion, coating loss and cracks. Record the findings with images.",
+     "focus": [
+      "230"
+     ],
+     "action": "isolate",
+     "view": "iso"
+    },
+    {
+     "title": "Close-up",
+     "text": "Remove the borescope, install the port plugs and record the inspection in the engine log.",
+     "focus": [
+      "001"
+     ],
+     "action": "restore",
+     "view": "iso"
+    }
+   ]
+  },
+  {
+   "id": "DM-ENG-IPD",
+   "group": "72-00 Illustrated parts data",
+   "type": "ipd",
+   "dmc": "DMC-F16ENG-A-72-00-00-00A-941A-D",
+   "title": "Engine",
+   "infoName": "Illustrated parts data - IPD"
+  }
+ ],
+ "explode": [
+  {
+   "node": "screws_turbine_001",
+   "offset": [
+    0,
+    0,
+    -0.55
+   ]
+  },
+  {
+   "node": "pipes_turbine_009",
+   "offset": [
+    0,
+    0,
+    0.6
+   ]
+  },
+  {
+   "node": "mount_turbine_014",
+   "offset": [
+    0.4,
+    0.75,
+    0
+   ]
+  },
+  {
+   "node": "hull_turbine_004",
+   "offset": [
+    0,
+    0,
+    -1.25
+   ]
+  },
+  {
+   "node": "hull_turbine",
+   "offset": [
+    1.6,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_turbine_003.001",
+   "offset": [
+    1.0,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "canister_turbine_011",
+   "offset": [
+    0,
+    0,
+    1.45
+   ]
+  },
+  {
+   "node": "grid_turbine_007",
+   "offset": [
+    0.3,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_turbine_003",
+   "offset": [
+    -0.9,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_dividers_turbine_017",
+   "offset": [
+    -1.7,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "plates_turbine_016",
+   "offset": [
+    -0.45,
+    0,
+    0
+   ]
+  }
+ ],
+ "removal": [
+  {
+   "node": "screws_turbine_001",
+   "offset": [
+    -3.0,
+    0,
+    -2.2
+   ]
+  },
+  {
+   "node": "pipes_turbine_009",
+   "offset": [
+    -3.0,
+    0,
+    2.2
+   ]
+  },
+  {
+   "node": "mount_turbine_014",
+   "offset": [
+    4.2,
+    0,
+    -2.2
+   ]
+  },
+  {
+   "node": "hull_turbine_004",
+   "offset": [
+    4.6,
+    2.3,
+    0
+   ]
+  },
+  {
+   "node": "hull_turbine",
+   "offset": [
+    4.6,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_turbine_003.001",
+   "offset": [
+    2.3,
+    0,
+    2.2
+   ]
+  },
+  {
+   "node": "canister_turbine_011",
+   "offset": [
+    3.9,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "grid_turbine_007",
+   "offset": [
+    1.6,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_turbine_003",
+   "offset": [
+    -1.4,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_dividers_turbine_017",
+   "offset": [
+    -2.7,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "plates_turbine_016",
+   "offset": [
+    -0.9,
+    0,
+    0
+   ]
+  }
+ ],
+ "removalLPath": false,
+ "removalVia": [
+  {
+   "node": "screws_turbine_001",
+   "offset": [
+    -3.0,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "pipes_turbine_009",
+   "offset": [
+    -3.0,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "mount_turbine_014",
+   "offset": [
+    4.2,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "hull_turbine_004",
+   "offset": [
+    4.6,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_turbine_003.001",
+   "offset": [
+    2.3,
+    0,
+    0
+   ]
+  }
+ ]
+}

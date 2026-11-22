@@ -199,7 +199,7 @@ namespace IETM
                 ? $"<color={ac}>●</color>  Selected: <color={tx}>{selectedItem.CalloutNo}  {selectedItem.description}</color>"
                 : $"<color={ok}>●</color>  Ready";
             if (view.statusRight)
-                view.statusRight.text = $"<color={wn}>SAMPLE DATA</color>   ·   Gear: {(gearMoving ? (CurrentGear == 1 ? "Retracting…" : "Extending…") : CurrentGear == 0 ? "Extended" : "Retracted")}   ·   Hidden: {model.hidden.Count}   ·   Order lines: {cart.Count}   ·   {Mathf.RoundToInt(1f / Mathf.Max(0.0001f, Time.smoothDeltaTime))} fps   ·   Press ? for help";
+                view.statusRight.text = $"<color={wn}>SAMPLE DATA</color>   ·   {(PubHasGear ? "Gear: " + (gearMoving ? (CurrentGear == 1 ? "Retracting…" : "Extending…") : CurrentGear == 0 ? "Extended" : "Retracted") + "   ·   " : "")}Hidden: {model.hidden.Count}   ·   Order lines: {cart.Count}   ·   {Mathf.RoundToInt(1f / Mathf.Max(0.0001f, Time.smoothDeltaTime))} fps   ·   Press ? for help";
         }
 
         // ------------------------------------------------------------------ dialogs

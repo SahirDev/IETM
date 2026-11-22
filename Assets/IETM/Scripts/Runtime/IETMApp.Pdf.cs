@@ -7,7 +7,7 @@ namespace IETM
 {
     public partial class IETMApp
     {
-        public void DownloadIpdPdf() => DownloadFile(ipdPdfFile);
+        public void DownloadIpdPdf() => DownloadFile(currentPub != null && currentPub.def != null ? currentPub.def.ipdPdfFile : ipdPdfFile);
 
         /// <summary>Downloads / opens a file kept under StreamingAssets (path relative to it).</summary>
         public void DownloadFile(string relativePath)

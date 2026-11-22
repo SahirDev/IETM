@@ -114,6 +114,8 @@ namespace IETM
         public string view;
         /// <summary>extended | retracted | (empty = keep)</summary>
         public string gear;
+        /// <summary>animate = spin: IPD items whose parts turn about the model's main axis while the step is shown (engine rotors).</summary>
+        public string[] spin;
     }
 
     [Serializable]

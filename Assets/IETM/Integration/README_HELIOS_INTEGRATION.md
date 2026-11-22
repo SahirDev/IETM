@@ -114,3 +114,37 @@ Added in `HELIOS UI.prefab` (page **3D View**), visible in the Editor:
 - Sizes, positions and colours measured on the Figma frame and converted x 744/1300 (same share of the screen as in Figma).
   Icons cut from the Figma frame: `Assets/HELIOS/Art/Icons/figma_*.png`.
 - The bottom camera toolbar is off on this page (Figma has the strip there); the Total Flight Hours card moved left of the View Tools.
+
+## Engine IETM (System 71-80 > 72-00 Engine - turbine module)
+
+The IETM App now holds several **publications**. The landing gear (Data File + model on IETM App) is the default; the
+engine is listed under **IETM App > Publications** (`engine`, `Resources/IETM/engine_ietm.json`, the scene object
+`IETM Module/.../Engine` made from `Assets/Model/engine.glb`). Opening any data module of a publication switches to it:
+the other model is hidden, and the parts list, structure tree, callouts, publication tree and order list are rebuilt
+from its data. Gear features (Extended / Retracted switch, gear animation, "Gear:" in the status bar) only exist in
+the landing gear. Resetting the session (leaving the IETM page) goes back to the landing gear.
+
+Shell: the Aircraft page shows **Engine** as available; its system page lists 71-00 ... 77-00 with **72-00 Engine -
+turbine module** available ("Open IETM" opens `DM-ENG-TITLE`).
+
+Data modules (same kinds as the landing gear):
+
+| Group | Module | Type |
+|---|---|---|
+| 00 Introduction | DM-ENG-TITLE Title page | description |
+| 72-00 Description and operation | DM-ENG-DESC Description (paragraphs isolate their parts) | description |
+| | DM-ENG-OPER Operation (gas path), rotors spin (`animate: "spin"`) | procedure |
+| 72-00 Maintenance | DM-ENG-DISASSY Disassembly (11 parts laid out, no overlap) | procedure |
+| | DM-ENG-ASSY Assembly (reverse order) | procedure |
+| | DM-ENG-BSI Borescope inspection (isolate per section) | procedure |
+| 72-00 Illustrated parts data | DM-ENG-IPD IPD (14 items: case, cone, mount, lines, bolts, compressor, hot section) | ipd |
+
+All data is **SAMPLE DATA**. `Tools/make_engine_ietm.py` regenerates the JSON (items, steps and the explode / removal
+offsets, glTF space of `turbine_01_obj`: +X aft, -Z up), so edit it there and run `python3 Tools/make_engine_ietm.py`.
+A printable IPC can be set per publication (`Ipd Pdf File`, empty = none yet).
+
+**Edit-time set-up (nothing at Play):** `HeliosEngineSetup` runs once by itself when HELIOS.unity is open and the
+engine is not registered: places the engine (sized like the gear, inactive, mesh colliders baked), registers the
+publication, rebuilds the shell pages from `helios_shell.json` (no theme / layout change) and saves the scene. Run it
+again from **IETM > HELIOS Integration > Set Up Engine IETM** after changing `helios_shell.json`. At start-up the
+engine's data and parts are bound while the IETM prewarms, so opening it later is instant.

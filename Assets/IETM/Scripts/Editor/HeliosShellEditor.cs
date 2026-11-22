@@ -99,7 +99,7 @@ namespace IETM.EditorTools
             EditorSceneManager.MarkSceneDirty(app.gameObject.scene);
         }
 
-        static Sprite LoadShellSprite(string name)
+        internal static Sprite LoadShellSprite(string name)
         {
             if (string.IsNullOrEmpty(name)) return null;
             if (name == "logo") return IETMHeliosTheme.LoadSprite(IETMHeliosTheme.LogoPath);

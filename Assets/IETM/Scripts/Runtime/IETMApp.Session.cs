@@ -14,6 +14,7 @@ namespace IETM
             if (db == null || model == null || view == null) return;
 
             ResetPlayer();
+            SwitchToDefaultPublication();       // back to the landing gear (the shell opens the others from their sections)
             CloseModals();
             HideSearchDrop();
             if (view.searchField != null) view.searchField.SetTextWithoutNotify("");

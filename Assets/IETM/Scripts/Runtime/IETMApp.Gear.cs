@@ -42,7 +42,7 @@ namespace IETM
         bool gearMoving;
 
         /// <summary>0 = extended, 1 = retracted (animated model or two-model setup).</summary>
-        int CurrentGear => gearAnimated ? gearTarget : (model != null ? model.ActiveIndex : 0);
+        int CurrentGear => !PubHasGear ? 0 : gearAnimated ? gearTarget : (model != null ? model.ActiveIndex : 0);
 
         bool HasRetractedState => gearAnimated || (model != null && model.variants.Count > 1 && model.variants[1].root != null);
 
@@ -120,7 +120,7 @@ namespace IETM
 
         void UpdateGearAnimation()
         {
-            if (procPaused) return;          // procedure player: Pause
+            if (procPaused || !PubHasGear) return;          // procedure player: Pause; no gear in this publication
             if (gearLoop && !gearMoving && gearAnimated)
             {
                 gearLoopWait -= Time.unscaledDeltaTime;

@@ -98,7 +98,9 @@
       "title": "Engine",
       "subtitle": "F110-GE-129 / F100-PW-229 power plant",
       "group": "powerplant",
-      "icon": "thumb_engine"
+      "icon": "thumb_engine",
+      "available": true,
+      "meta": "6 sections · 1 available"
     },
     {
       "id": "57",
@@ -281,6 +283,78 @@
         },
         {
           "label": "29 · Hydraulic power"
+        }
+      ]
+    },
+    {
+      "id": "71",
+      "code": "71–80",
+      "title": "Engine",
+      "subtitle": "Power plant, turbine module, fuel and control, ignition, air, indicating",
+      "sections": [
+        {
+          "id": "71-00",
+          "code": "71-00-00",
+          "title": "Power plant",
+          "subtitle": "Engine mounts, cowls, drains · planned",
+          "icon": "sys_engine"
+        },
+        {
+          "id": "72-00",
+          "code": "72-00-00",
+          "title": "Engine – turbine module",
+          "subtitle": "Description, operation, disassembly, assembly, borescope, IPD",
+          "icon": "thumb_engine",
+          "available": true,
+          "modules": [
+            "DESC",
+            "OPER",
+            "PROC × 3",
+            "IPD"
+          ],
+          "module": "DM-ENG-TITLE"
+        },
+        {
+          "id": "73-00",
+          "code": "73-00-00",
+          "title": "Engine fuel and control",
+          "subtitle": "Fuel pump, main fuel control · planned",
+          "icon": "thumb_fuel"
+        },
+        {
+          "id": "74-00",
+          "code": "74-00-00",
+          "title": "Ignition",
+          "subtitle": "Exciters, igniter plugs · planned",
+          "icon": "thumb_electrical"
+        },
+        {
+          "id": "75-00",
+          "code": "75-00-00",
+          "title": "Air",
+          "subtitle": "Engine cooling and bleed air · planned",
+          "icon": "thumb_cooling"
+        },
+        {
+          "id": "77-00",
+          "code": "77-00-00",
+          "title": "Engine indicating",
+          "subtitle": "RPM, FTIT, oil pressure · planned",
+          "icon": "thumb_inspections"
+        }
+      ],
+      "related": [
+        {
+          "label": "05 · Engine inspections"
+        },
+        {
+          "label": "Fault isolation · engine"
+        },
+        {
+          "label": "12 · Engine oil servicing"
+        },
+        {
+          "label": "49 · Jet fuel starter (JFS)"
         }
       ]
     }

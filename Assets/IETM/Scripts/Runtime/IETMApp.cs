@@ -126,6 +126,8 @@ namespace IETM
                 vcam.Home(true);
             }
 
+            RegisterGearPublication();       // the landing gear is the default publication (others: Publications)
+
             var start = db.modules.FirstOrDefault(m => m.id == startModule)
                         ?? db.modules.FirstOrDefault(m => m.type == "ipd") ?? db.modules.FirstOrDefault();
             if (start != null) OpenModule(start);
@@ -214,6 +216,7 @@ namespace IETM
                 vcam.InputBlocked = true;
                 model.SetHover(null);
                 UpdateGearAnimation();
+                UpdateSpin();
                 model.Tick(AnimDt);
                 UpdateToasts();
                 return;
@@ -250,6 +253,7 @@ namespace IETM
             if (!typing) HandleShortcuts();
 
             UpdateGearAnimation();
+            UpdateSpin();
             model.Tick(AnimDt);
             UpdateMovingLabels();
             UpdatePlayerVisibility();
@@ -307,7 +311,7 @@ namespace IETM
                 case IETMCommand.OpenTitlePage: { var t = db.modules.FirstOrDefault(); if (t != null) OpenModule(t); } break;
                 case IETMCommand.OpenModule:
                     {
-                        var m = db.modules.FirstOrDefault(x => x.id == arg);
+                        var m = FindModuleAnywhere(arg);        // switches publication if the module is in another one
                         if (m != null) OpenModule(m); else Toast("Module not found: " + arg, Theme.Warn);
                     }
                     break;
@@ -502,6 +506,7 @@ namespace IETM
 
         void SetGear(int index)
         {
+            if (!PubHasGear) return;                     // engine and other publications without a gear
             if (gearAnimated) { SetGearAnimated(index); return; }
             if (index >= model.variants.Count || model.variants[index].root == null)
             {
@@ -542,6 +547,9 @@ namespace IETM
         public void OpenModule(DataModule m)
         {
             if (m == null) return;
+            if (!db.modules.Contains(m))                    // a module of another publication (history, links)
+                foreach (var st in pubStates.Values) if (st.db != null && st.db.modules.Contains(m)) { SwitchPublication(st); break; }
+            StopSpin();
             if (m.type == "document") { DownloadFile(string.IsNullOrEmpty(m.file) ? ipdPdfFile : m.file); return; }
             if (currentModule != null && currentModule.type == "procedure" && currentModule != m)
             {
@@ -582,6 +590,7 @@ namespace IETM
             if (steps == null || steps.Length == 0) return;
             var step = steps[procStep];
             procPaused = false;                 // a new / replayed step always plays
+            StopSpin();
 
             if (!string.IsNullOrEmpty(step.gear)) SetGear(step.gear == "retracted" ? 1 : 0);
 
@@ -650,6 +659,7 @@ namespace IETM
                 if (frameSet.Count > 0) FocusItems(frameSet, frameSet.Count > 6 ? 1.15f : 1.5f);
             }
 
+            StartSpin(step);                    // animate = spin: the rotors turn while the step is shown
             RefreshSelectionUI(true);
             RefreshProcedureUI();
             RefreshPlayer();

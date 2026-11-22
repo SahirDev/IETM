@@ -211,6 +211,13 @@ namespace IETM
 
         // ------------------------------------------------------------------ state helpers
 
+        /// <summary>The model nodes of a part in the shown variant (empty if not bound).</summary>
+        public IList<Transform> NodesOf(IPDItem leaf)
+        {
+            if (Active != null && leaf != null && Active.parts.TryGetValue(leaf, out var pb)) return pb.nodes;
+            return new List<Transform>();
+        }
+
         public List<IPDItem> LeavesOf(IPDItem item)
         {
             var l = new List<IPDItem>();

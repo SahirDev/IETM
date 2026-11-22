@@ -277,7 +277,7 @@ namespace IETM
 
             if (gearSegRt != null)
             {
-                bool seg = !InLayoutProcedure;
+                bool seg = !InLayoutProcedure && PubHasGear;      // no gear switch for the engine
                 if (gearSegRt.gameObject.activeSelf != seg) gearSegRt.gameObject.SetActive(seg);
             }
 
