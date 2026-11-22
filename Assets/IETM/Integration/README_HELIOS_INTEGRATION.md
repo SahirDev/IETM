@@ -99,20 +99,13 @@ At Play the scripts only find and connect them (button listeners). The code stil
 lists are ready before the first click on IETM — no wait on the first open in WebGL. The landing gear model, its data
 file and all textures are scene references (loaded with the scene, nothing loaded from Resources at Play).
 
-## HELIOS pages: updated Figma design (Dashboard, Sensors, Health, Asset Integrity)
+## 3D View page: Figma View Tools + Telemetry Strip
 
-`Assets/HELIOS/Scripts/HeliosPagesFigma.cs` builds the four pages from the updated Figma frames; `Assets/HELIOS/Editor/HeliosFigmaPages.cs`
-puts them into `HELIOS UI.prefab` **once, by itself, the first time Unity opens the project** (Console: "pages were updated…"),
-and on demand with **Tools > HELIOS > Apply Figma Pages**. Only those four pages are replaced; the top bar, menu order, IETM page,
-Maintenance page and all other prefab edits are kept. The menu item "3D View" now reads **Dashboard** (its page id is unchanged).
+Added in `HELIOS UI.prefab` (page **3D View**), visible in the Editor:
 
-- **Dashboard**: floating telemetry card (Total Flight Hours, Next Service Due) top right, a vertical view toolbar on the right edge
-  (Reset | Rotate, Zoom, Pan, Full Screen | Opaque, Wireframe, Transparent) and a telemetry strip at the bottom (Aircraft Health,
-  Asset Integrity, Maintenance, Open Findings — each opens its page). The bottom camera toolbar is hidden on this page.
-- **Sensors**: header with Live badge, time stamp, pause / refresh / full screen; right panel with the 7 readings, Sensor Trends
-  (Vibration / Strain / Humidity tabs, `HeliosChartTabs`) and Sensor Health.
-- **Health**: header with Overall Health pill; scrolling right column: Overall Health gauge, Recent Alerts, System Health Overview,
-  Health Trend, Recent Events.
-- **Asset Integrity**: header with Overall Health pill; integrity gauge with counts, Critical Integrity with **View Details**
-  (opens Maintenance), Key Findings. (The old "Integrity Status" legend is not in the new design.)
-- New icons: `Assets/HELIOS/Art/Icons/opaque.png`, `wireframe.png`, `transparent.png`.
+- **View Tools** (right edge, Figma 56 x 402): Select, Full Screen, Zoom, Reset, Pan | Opaque, Wireframe, Transparent | X-Ray.
+  Buttons call HeliosActions (CameraTool, ShowOriginalModel, ToggleWireframe, ShowHologram, ToggleHologram) — see each OnClick.
+- **Telemetry Strip** (bottom, Figma 953 x 70): Aircraft Health, Asset Integrity, Maintenance, Open Findings; each opens its page.
+- Sizes, positions and colours measured on the Figma frame and converted x 744/1300 (same share of the screen as in Figma).
+  Icons cut from the Figma frame: `Assets/HELIOS/Art/Icons/figma_*.png`.
+- The bottom camera toolbar is off on this page (Figma has the strip there); the Total Flight Hours card moved left of the View Tools.
