@@ -5,7 +5,7 @@
 //   (darkened a little for contrast on white). Photos, logos and pure-white glyphs keep their colours.
 // The original colours are remembered, so Dark mode restores them exactly. Colours set later by code (hover, selection,
 // lists rebuilt from data) are picked up and recoloured every frame while Light mode is on.
-// The choice is remembered (PlayerPrefs) for the next start.
+// The app starts in Dark mode (Remember Last Mode on the component: start in the mode used last time).
 //
 // Bell: no unread badge; clicking it shows "No new notifications" under the bell for 3 seconds.
 // The component sits on "IETM Integration" in the HELIOS scene and the popup is in the HELIOS UI prefab, so nothing is
@@ -28,6 +28,8 @@ namespace IETM
         public float notificationSeconds = 3f;
         [Tooltip("3D view background in Light mode (behind the aircraft and the landing gear).")]
         public Color lightViewBackground = new Color(0.86f, 0.88f, 0.92f, 1f);
+        [Tooltip("OFF (default): the app always starts in Dark mode. ON: it starts in the mode used last time.")]
+        public bool rememberLastMode = false;
 
         public bool IsLight { get; private set; }
 
@@ -95,7 +97,7 @@ namespace IETM
             if (app != null) ietmRoot = app.transform.root;
             if (app != null && app.view != null && app.view.templates != null) ietmTemplates = app.view.templates.transform;
 
-            if (PlayerPrefs.GetInt(PrefKey, 0) == 1) SetLight(true);
+            if (rememberLastMode && PlayerPrefs.GetInt(PrefKey, 0) == 1) SetLight(true);   // default: Dark
             UpdateLabel();
         }
 

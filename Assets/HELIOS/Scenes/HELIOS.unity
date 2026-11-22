@@ -150269,6 +150269,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::IETM.HeliosThemeMode
   notificationSeconds: 3
   lightViewBackground: {r: 0.86, g: 0.88, b: 0.92, a: 1}
+  rememberLastMode: 0
 --- !u!114 &223568048033614863
 MonoBehaviour:
   m_ObjectHideFlags: 0
