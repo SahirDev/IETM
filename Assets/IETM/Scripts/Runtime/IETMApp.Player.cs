@@ -186,8 +186,8 @@ namespace IETM
             playerStep.text = $"STEP {i + 1} OF {n}";
             playerTitle.text = s.title;
             string note = "";
-            if (!string.IsNullOrEmpty(s.warning)) note = "WARNING:  " + s.warning;
-            if (!string.IsNullOrEmpty(s.caution)) note += (note.Length > 0 ? "\n" : "") + $"<color={Theme.ToHex(Theme.Warn)}>CAUTION:  {s.caution}</color>";
+            if (!string.IsNullOrEmpty(s.warning)) note = Prefixed("WARNING", s.warning);
+            if (!string.IsNullOrEmpty(s.caution)) note += (note.Length > 0 ? "\n" : "") + $"<color={Theme.ToHex(Theme.Warn)}>{Prefixed("CAUTION", s.caution)}</color>";
             playerNote.color = !string.IsNullOrEmpty(s.warning) ? Theme.Danger : Theme.Warn;
             playerNote.text = note;
             playerNote.gameObject.SetActive(note.Length > 0);
@@ -203,6 +203,68 @@ namespace IETM
                 tip.text = procPaused ? "Continue  (Space)" : "Pause  (Space)";
         }
 
+        /// <summary>"WARNING:  text", unless the data text already starts with WARNING / CAUTION.</summary>
+        static string Prefixed(string word, string text)
+        {
+            text = text.Trim();
+            return text.StartsWith(word, System.StringComparison.OrdinalIgnoreCase) ? text : word + ":  " + text;
+        }
+
+        // ------------------------------------------------------------------ layout of the 3D view tools during procedures
+        RectTransform toolbarRt, gearSegRt;
+        Vector2 tbAnchorMin, tbAnchorMax, tbPivot, tbPos;
+
+        /// <summary>Disassembly / assembly (parts are laid out): the Extended / Retracted switch is hidden.</summary>
+        bool InLayoutProcedure
+        {
+            get
+            {
+                if (currentModule == null || currentModule.type != "procedure" || currentModule.steps == null) return false;
+                foreach (var s in currentModule.steps) if (s.action == "detach" || s.action == "install") return true;
+                return false;
+            }
+        }
+
+        /// <summary>Per frame. While the player is shown: the 3D toolbar (Fit, Isolate, Explode...) moves to the
+        /// bottom-left and the player sits in the bottom-right corner, leaving the middle of the view free.
+        /// Disassembly / assembly also hide the Extended / Retracted switch. Everything is restored afterwards.</summary>
+        void UpdateProcedureLayout()
+        {
+            if (view == null || view.overlay == null) return;
+            if (toolbarRt == null)
+            {
+                toolbarRt = view.overlay.Find("Toolbar") as RectTransform;
+                if (toolbarRt != null) { tbAnchorMin = toolbarRt.anchorMin; tbAnchorMax = toolbarRt.anchorMax; tbPivot = toolbarRt.pivot; tbPos = toolbarRt.anchoredPosition; }
+            }
+            if (gearSegRt == null && view.gearExtended != null) gearSegRt = view.gearExtended.transform.parent as RectTransform;
+
+            if (gearSegRt != null)
+            {
+                bool seg = !InLayoutProcedure;
+                if (gearSegRt.gameObject.activeSelf != seg) gearSegRt.gameObject.SetActive(seg);
+            }
+
+            bool playerOn = player != null && player.gameObject.activeSelf;
+            if (toolbarRt != null)
+            {
+                var min = playerOn ? Vector2.zero : tbAnchorMin;
+                var max = playerOn ? Vector2.zero : tbAnchorMax;
+                var piv = playerOn ? Vector2.zero : tbPivot;
+                var pos = playerOn ? new Vector2(16f, tbPos.y) : tbPos;
+                if (toolbarRt.anchorMin != min || toolbarRt.pivot != piv || toolbarRt.anchoredPosition != pos)
+                { toolbarRt.anchorMin = min; toolbarRt.anchorMax = max; toolbarRt.pivot = piv; toolbarRt.anchoredPosition = pos; }
+            }
+            if (playerOn)
+            {
+                // bottom corner when both fit side by side, otherwise just above the toolbar
+                float w = view.overlay.rect.width, y = tbPos.y;
+                if (toolbarRt != null && 16f + toolbarRt.rect.width + 16f + player.rect.width + 16f > w)
+                    y = tbPos.y + toolbarRt.rect.height + 12f;
+                var p = new Vector2(-16f, y);
+                if (player.anchoredPosition != p) player.anchoredPosition = p;
+            }
+        }
+
         /// <summary>In Operation / Disassembly / Assembly while the right (data module) panel is collapsed:
         /// that panel already shows the steps, so the bar hides while it is open and comes back
         /// once it has slid away.</summary>
@@ -211,9 +273,11 @@ namespace IETM
         /// <summary>Per frame: follow the right panel (opened / collapsed with its edge arrow).</summary>
         void UpdatePlayerVisibility()
         {
+            if (player == null && InAnimatedProcedure) RefreshPlayer();
+            UpdateProcedureLayout();
             if (player == null) return;
             bool show = PlayerShouldShow;
-            if (player.gameObject.activeSelf != show) RefreshPlayer();
+            if (player.gameObject.activeSelf != show) { RefreshPlayer(); UpdateProcedureLayout(); }
         }
 
         // ------------------------------------------------------------------ moving-part labels
@@ -224,7 +288,8 @@ namespace IETM
             if (InAnimatedProcedure && model != null && viewerCamera != null && view.overlay != null)
             {
                 var s = currentModule.steps[Mathf.Clamp(procStep, 0, currentModule.steps.Length - 1)];
-                bool moves = s.action == "detach" || s.action == "install" || s.action == "remove" || s.action == "operate";
+                // disassembly / assembly only: in Operation the names stay on mouse-over
+                bool moves = s.action == "detach" || s.action == "install" || s.action == "remove";
                 if (moves && s.focus != null)
                 {
                     foreach (var f in s.focus)
@@ -234,7 +299,7 @@ namespace IETM
                         if (it == null) continue;
                         var leaves = model.LeavesOf(it);
                         if (leaves.Count == 0) continue;
-                        bool moving = s.action == "operate" ? gearMoving : (!model.holdRemovals && model.IsMoving(leaves));
+                        bool moving = !model.holdRemovals && model.IsMoving(leaves);
                         var lab = MovingLabelAt(used);
                         if (moving) lab.lastMoving = Time.unscaledTime;
                         float age = Time.unscaledTime - lab.lastMoving;
