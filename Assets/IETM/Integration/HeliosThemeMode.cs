@@ -32,7 +32,6 @@ namespace IETM
         Transform heliosRoot, ietmRoot, topBar;
         TMP_Text lightLabel;
         GameObject blueBackground, vignette;
-        Image logo; Sprite logoDark, logoLight;
         Camera heliosBackCam; Color heliosBackCamDark;
         RawImage ietmViewBg; Texture ietmViewBgTex; Color ietmViewBgColor;
 
@@ -86,8 +85,6 @@ namespace IETM
                 if (t.name == "Blue Background" && t.parent != null && t.parent.name == "Backdrop") blueBackground = t.gameObject;
                 if (t.name == "Vignette" && t.parent != null && t.parent.name == "UI") vignette = t.gameObject;   // dark edge shade over the whole screen
             }
-            var lg = topBar.Find("Logo");
-            if (lg != null && lg.TryGetComponent(out logo)) { logoLight = logo.sprite; logoDark = Resources.Load<Sprite>("IETM/helios_logo_dark"); }
             var bc = GameObject.Find("HELIOS Background Camera");
             if (bc != null) { heliosBackCam = bc.GetComponent<Camera>(); if (heliosBackCam) heliosBackCamDark = heliosBackCam.backgroundColor; }
 
@@ -129,13 +126,20 @@ namespace IETM
             if (ietmRoot != null && ietmRoot != heliosRoot) Recolour(ietmRoot);
         }
 
+        /// <summary>The top bar keeps its dark design in both modes (and so does the bell popup under it).</summary>
+        bool Excluded(Component c)
+        {
+            var tr = c.transform;
+            return (topBar != null && tr.IsChildOf(topBar)) || (popup != null && tr.IsChildOf(popup));
+        }
+
         void Recolour(Transform root)
         {
             if (root == null) return;
             root.GetComponentsInChildren(true, gList);
             foreach (var g in gList)
             {
-                if (g == null || g is RawImage) continue;
+                if (g == null || g is RawImage || Excluded(g)) continue;
                 var c = g.color;
                 if (graphics.TryGetValue(g, out var e) && c == e.applied) continue;   // already done
                 if (Keep(g, c)) { graphics.Remove(g); continue; }
@@ -147,7 +151,7 @@ namespace IETM
             root.GetComponentsInChildren(true, selList);
             foreach (var sel in selList)
             {
-                if (sel == null || sel.transition != Selectable.Transition.ColorTint) continue;
+                if (sel == null || sel.transition != Selectable.Transition.ColorTint || Excluded(sel)) continue;
                 var cb = sel.colors;
                 if (blocks.TryGetValue(sel, out var be) && SameBlock(cb, be.applied)) continue;
                 var a = cb;
@@ -160,7 +164,7 @@ namespace IETM
             root.GetComponentsInChildren(true, sList);
             foreach (var s in sList)
             {
-                if (s == null) continue;
+                if (s == null || Excluded(s)) continue;
                 var c = s.effectColor;
                 if (graphics.TryGetValue(s, out var e) && c == e.applied) continue;
                 var a = ToLight(c);
@@ -250,7 +254,6 @@ namespace IETM
         {
             if (blueBackground != null && blueBackground.activeSelf == IsLight) blueBackground.SetActive(!IsLight);
             if (vignette != null && vignette.activeSelf == IsLight) vignette.SetActive(!IsLight);
-            if (logo != null && logoDark != null) { var sp = IsLight ? logoDark : logoLight; if (logo.sprite != sp) logo.sprite = sp; }
             if (heliosBackCam != null) heliosBackCam.backgroundColor = IsLight ? lightViewBackground : heliosBackCamDark;
 
             if (ietmViewBg == null && ietmRoot != null)
