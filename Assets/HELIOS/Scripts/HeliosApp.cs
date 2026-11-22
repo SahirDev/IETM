@@ -212,7 +212,7 @@ namespace Helios
         {
             Page = p;
             if (p == null) return;
-            holoOverride = -1; wireOverride = -1; focusParts.Clear();
+            holoOverride = -1; wireOverride = -1; focusParts.Clear(); EndTransparent();
             ApplyLook();
             if (cam != null) cam.enabled = p.showModel;
         }
@@ -324,7 +324,25 @@ namespace Helios
         public IList<Renderer> FocusedParts { get { return focusParts; } }
 
         /// <summary>Shows the model as the hologram (true) or with its own materials (false), until the page changes.</summary>
-        public void ShowHologram(bool on) { holoOverride = on ? 1 : 0; ApplyLook(); }
+        public void ShowHologram(bool on) { if (!on) EndTransparent(); holoOverride = on ? 1 : 0; ApplyLook(); }
+
+        bool transparentLook, savedSolidBody;
+        /// <summary>See-through hologram (View Tools > Transparent), whatever Hologram > Solid Body says. Any other look
+        /// (or another page) puts Solid Body back as it was.</summary>
+        public void ShowTransparent()
+        {
+            if (hologram == null) return;
+            if (!transparentLook) { savedSolidBody = hologram.solidBody; transparentLook = true; }
+            hologram.solidBody = false;
+            ShowHologram(true);
+        }
+
+        void EndTransparent()
+        {
+            if (!transparentLook) return;
+            transparentLook = false;
+            if (hologram != null) hologram.solidBody = savedSolidBody;
+        }
 
         /// <summary>Switches between the hologram and the model's own materials.</summary>
         public void ToggleHologram() { ShowHologram(!(model != null && model.HologramOn)); }

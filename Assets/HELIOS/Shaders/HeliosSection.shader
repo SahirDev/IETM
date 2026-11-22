@@ -1,7 +1,11 @@
 // HELIOS - cross-section look (Built-in render pipeline). Used only while the Cross Section tool is on: the model's
-// materials are swapped for this shader (their colour, texture, metallic and smoothness are copied), everything on the
-// positive side of _HeliosSectionPlane is cut away, and the inside faces that the cut exposes are drawn in _CapColor,
-// so the section reads as a solid slice. _HeliosSectionPlane (world space): xyz = normal, w = -dot(normal, point).
+// materials are swapped for this shader (colour, texture, normal map, metallic and smoothness are copied).
+// - Everything on the positive side of _HeliosSectionPlane is cut away.
+// - Both sides of every surface are drawn and lit from the side that faces the camera, so the model can be a surface
+//   model with panels facing either way (no face turns another colour because its normal or winding is flipped).
+// - Where the plane cuts through a surface, a band of _HeliosSectionEdge world units is drawn in _CapColor:
+//   the outline of the cross-section.
+// _HeliosSectionPlane (world space): xyz = normal, w = -dot(normal, point).
 Shader "HELIOS/Section (Built-in)"
 {
     Properties
@@ -30,36 +34,35 @@ Shader "HELIOS/Section (Built-in)"
         half _Metallic;
         half _Glossiness;
         float4 _HeliosSectionPlane;
+        float _HeliosSectionEdge;
 
         struct Input
         {
             float2 uv_MainTex;
             float3 worldPos;
-            float face : VFACE;
+            float3 viewDir;
         };
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            // cut: keep the side the normal points away from
-            clip(-(dot(IN.worldPos, _HeliosSectionPlane.xyz) + _HeliosSectionPlane.w));
-            if (IN.face < 0)
-            {
-                // inside of the shell, seen through the cut: the section face
-                o.Albedo = _CapColor.rgb * 0.35;
-                o.Emission = _CapColor.rgb * 0.65;
-                o.Metallic = 0;
-                o.Smoothness = 0.2;
-                o.Alpha = 1;
-            }
-            else
-            {
-                fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
-                o.Albedo = c.rgb;
-                o.Normal = UnpackNormal(tex2D(_BumpMap, IN.uv_MainTex));
-                o.Metallic = _Metallic;
-                o.Smoothness = _Glossiness;
-                o.Alpha = 1;
-            }
+            float d = -(dot(IN.worldPos, _HeliosSectionPlane.xyz) + _HeliosSectionPlane.w);   // distance into the kept side
+            clip(d);
+
+            fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
+            float3 n = UnpackNormal(tex2D(_BumpMap, IN.uv_MainTex));
+            // light the side that faces the camera (tangent space: viewDir and the normal are in the same space)
+            if (IN.viewDir.z < 0) n.z = -n.z;
+            o.Normal = n;
+            o.Albedo = c.rgb;
+            o.Metallic = _Metallic;
+            o.Smoothness = _Glossiness;
+            o.Alpha = 1;
+
+            // the cut outline
+            float edge = max(_HeliosSectionEdge, 1e-4);
+            float k = 1 - saturate(d / edge);
+            o.Albedo = lerp(o.Albedo, _CapColor.rgb * 0.3, k);
+            o.Emission = _CapColor.rgb * k;
         }
         ENDCG
     }

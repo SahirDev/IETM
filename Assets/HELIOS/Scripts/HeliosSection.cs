@@ -1,7 +1,8 @@
 // HELIOS - Cross Section tool (last button of the 3D View's View Tools).
 // On: the aircraft is cut by a plane across one of its axes (X = wing to wing, Y = top to bottom, Z = nose to tail).
 // The slider moves the plane through the aircraft and the cut follows it; Flip keeps the other half. The faces the cut
-// exposes are drawn in the section colour (shader HELIOS/Section), and a faint plane shows where the cut is.
+// The model is drawn from both sides (surface model), the outline of the cut is drawn in the section colour (shader
+// HELIOS/Section), and a faint plane shows where the cut is.
 // Off (or another page): the model gets its own materials back. The controls are objects in the HELIOS UI prefab.
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,7 +19,9 @@ namespace Helios
         [Tooltip("Colour of the faces the cut exposes.")]
         public Color sectionColor = new Color(0.13f, 0.83f, 0.93f, 1f);
         [Tooltip("Colour of the plane that shows where the cut is (alpha = how visible).")]
-        public Color planeColor = new Color(0.13f, 0.83f, 0.93f, 0.12f);
+        public Color planeColor = new Color(0.13f, 0.83f, 0.93f, 0.06f);
+        [Tooltip("Width of the cut outline, as a share of the aircraft's length.")]
+        [Range(0.0005f, 0.02f)] public float outlineWidth = 0.004f;
 
         [Header("Controls (in the prefab)")]
         public GameObject controls;
@@ -39,6 +42,7 @@ namespace Helios
         Transform plane;
         Material planeMat;
         static readonly int PlaneId = Shader.PropertyToID("_HeliosSectionPlane");
+        static readonly int EdgeId = Shader.PropertyToID("_HeliosSectionEdge");
 
         void Awake()
         {
@@ -104,13 +108,14 @@ namespace Helios
             Vector3 p = b.center + n * Mathf.Lerp(-half * 1.02f, half * 1.02f, position);
             Vector3 cutN = n * side;
             Shader.SetGlobalVector(PlaneId, new Vector4(cutN.x, cutN.y, cutN.z, -Vector3.Dot(cutN, p)));
+            Shader.SetGlobalFloat(EdgeId, Mathf.Max(b.size.x, Mathf.Max(b.size.y, b.size.z)) * outlineWidth);
 
             Vector3 a1 = axis == 0 ? fwd : sideDir, a2 = axis == 1 ? fwd : up;
             float s1 = Mathf.Abs(a1.x) * e.x + Mathf.Abs(a1.y) * e.y + Mathf.Abs(a1.z) * e.z;
             float s2 = Mathf.Abs(a2.x) * e.x + Mathf.Abs(a2.y) * e.y + Mathf.Abs(a2.z) * e.z;
             plane.position = p;
             plane.rotation = Quaternion.LookRotation(n, a2);
-            plane.localScale = new Vector3(s1 * 2.3f, s2 * 2.3f, 1f);
+            plane.localScale = new Vector3(s1 * 2.1f, s2 * 2.1f, 1f);
         }
 
         void SwapIn(HeliosModel model)

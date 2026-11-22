@@ -58,6 +58,8 @@ namespace Helios
         public void ShowOriginalModel() { var a = HeliosApp.Instance; if (a != null) a.ShowHologram(false); }
         /// <summary>Switches between the hologram and the model's own materials.</summary>
         public void ToggleHologram() { var a = HeliosApp.Instance; if (a != null) a.ToggleHologram(); }
+        /// <summary>Shows the model see-through (the hologram's glow look, whatever its Solid Body setting).</summary>
+        public void ShowTransparent() { var a = HeliosApp.Instance; if (a != null) a.ShowTransparent(); }
 
         /// <summary>Shows the wireframe (lines over the model's own materials) on this page.</summary>
         public void ShowWireframe() { var a = HeliosApp.Instance; if (a != null) a.ShowWireframe(true); }

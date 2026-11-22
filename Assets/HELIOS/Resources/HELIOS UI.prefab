@@ -84113,7 +84113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Helios.HeliosSection
   sectionShader: {fileID: 4800000, guid: 056d2b1e301f4599aac2ebb36073b1b0, type: 3}
   sectionColor: {r: 0.13, g: 0.83, b: 0.93, a: 1}
-  planeColor: {r: 0.13, g: 0.83, b: 0.93, a: 0.12}
+  planeColor: {r: 0.13, g: 0.83, b: 0.93, a: 0.06}
   controls: {fileID: 867923880522887089}
   slider: {fileID: 731130777691479876}
   axisSelected:
@@ -86714,7 +86714,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 4821972595020291773}
         m_TargetAssemblyTypeName: Helios.HeliosActions, Assembly-CSharp
-        m_MethodName: ShowHologram
+        m_MethodName: ShowTransparent
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
