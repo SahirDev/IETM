@@ -31,7 +31,8 @@ namespace IETM
 
         Transform heliosRoot, ietmRoot, topBar;
         TMP_Text lightLabel;
-        GameObject blueBackground;
+        GameObject blueBackground, vignette;
+        Image logo; Sprite logoDark, logoLight;
         Camera heliosBackCam; Color heliosBackCamDark;
         RawImage ietmViewBg; Texture ietmViewBgTex; Color ietmViewBgColor;
 
@@ -39,6 +40,9 @@ namespace IETM
         readonly Dictionary<Object, Entry> graphics = new Dictionary<Object, Entry>();
         readonly List<Graphic> gList = new List<Graphic>();
         readonly List<Shadow> sList = new List<Shadow>();
+        struct CbEntry { public ColorBlock original, applied; }
+        readonly Dictionary<Selectable, CbEntry> blocks = new Dictionary<Selectable, CbEntry>();
+        readonly List<Selectable> selList = new List<Selectable>();
 
         RectTransform popup; CanvasGroup popupGroup; float popupUntil;
 
@@ -78,7 +82,12 @@ namespace IETM
             }
 
             foreach (var t in heliosRoot.GetComponentsInChildren<Transform>(true))
-                if (t.name == "Blue Background" && t.parent != null && t.parent.name == "Backdrop") { blueBackground = t.gameObject; break; }
+            {
+                if (t.name == "Blue Background" && t.parent != null && t.parent.name == "Backdrop") blueBackground = t.gameObject;
+                if (t.name == "Vignette" && t.parent != null && t.parent.name == "UI") vignette = t.gameObject;   // dark edge shade over the whole screen
+            }
+            var lg = topBar.Find("Logo");
+            if (lg != null && lg.TryGetComponent(out logo)) { logoLight = logo.sprite; logoDark = Resources.Load<Sprite>("IETM/helios_logo_dark"); }
             var bc = GameObject.Find("HELIOS Background Camera");
             if (bc != null) { heliosBackCam = bc.GetComponent<Camera>(); if (heliosBackCam) heliosBackCamDark = heliosBackCam.backgroundColor; }
 
@@ -134,6 +143,20 @@ namespace IETM
                 graphics[g] = new Entry { original = c, applied = a };
                 g.color = a;
             }
+            // buttons tinted by their colour block (IETM buttons: white image, colour from normal / hover / active)
+            root.GetComponentsInChildren(true, selList);
+            foreach (var sel in selList)
+            {
+                if (sel == null || sel.transition != Selectable.Transition.ColorTint) continue;
+                var cb = sel.colors;
+                if (blocks.TryGetValue(sel, out var be) && SameBlock(cb, be.applied)) continue;
+                var a = cb;
+                a.normalColor = DarkToLight(cb.normalColor); a.highlightedColor = DarkToLight(cb.highlightedColor);
+                a.pressedColor = DarkToLight(cb.pressedColor); a.selectedColor = DarkToLight(cb.selectedColor);
+                a.disabledColor = DarkToLight(cb.disabledColor);
+                blocks[sel] = new CbEntry { original = cb, applied = a };
+                if (!SameBlock(cb, a)) sel.colors = a;
+            }
             root.GetComponentsInChildren(true, sList);
             foreach (var s in sList)
             {
@@ -154,7 +177,21 @@ namespace IETM
                 else if (kv.Key is Shadow s && s != null) { if (s.effectColor == kv.Value.applied) s.effectColor = kv.Value.original; }
             }
             graphics.Clear();
+            foreach (var kv in blocks)
+                if (kv.Key != null && SameBlock(kv.Key.colors, kv.Value.applied)) kv.Key.colors = kv.Value.original;
+            blocks.Clear();
         }
+
+        /// <summary>Colour-block tints: only dark tints change (white / light-grey default tints multiply the image colour and stay).</summary>
+        static Color DarkToLight(Color c)
+        {
+            float l = (Mathf.Max(c.r, Mathf.Max(c.g, c.b)) + Mathf.Min(c.r, Mathf.Min(c.g, c.b))) * 0.5f;
+            return l < 0.4f ? ToLight(c) : c;
+        }
+
+        static bool SameBlock(ColorBlock a, ColorBlock b) =>
+            a.normalColor == b.normalColor && a.highlightedColor == b.highlightedColor && a.pressedColor == b.pressedColor
+            && a.selectedColor == b.selectedColor && a.disabledColor == b.disabledColor;
 
         /// <summary>Photos, logos and pure-white glyphs (on coloured buttons) keep their colours.</summary>
         static bool Keep(Graphic g, Color c)
@@ -212,6 +249,8 @@ namespace IETM
         void ApplyBackgrounds()
         {
             if (blueBackground != null && blueBackground.activeSelf == IsLight) blueBackground.SetActive(!IsLight);
+            if (vignette != null && vignette.activeSelf == IsLight) vignette.SetActive(!IsLight);
+            if (logo != null && logoDark != null) { var sp = IsLight ? logoDark : logoLight; if (logo.sprite != sp) logo.sprite = sp; }
             if (heliosBackCam != null) heliosBackCam.backgroundColor = IsLight ? lightViewBackground : heliosBackCamDark;
 
             if (ietmViewBg == null && ietmRoot != null)
