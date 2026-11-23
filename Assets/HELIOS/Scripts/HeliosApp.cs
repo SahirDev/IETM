@@ -27,6 +27,9 @@ namespace Helios
         [Tooltip("Optional: points on your model for the labels. Empty = placed automatically from the model's size.")]
         public Transform humidityPoint, strainPoint, vibrationPoint;
 
+        [Tooltip("The camera that draws the backdrop behind the model (placed in the scene by Tools > HELIOS > Place Aircraft In Scene). Empty = made at Play.")]
+        public Camera backgroundCamera;
+
         [Header("UI")]
         [Tooltip("The UI in the scene. Empty = the one found in the scene, else the \"HELIOS UI\" prefab from Resources.")]
         public HeliosNavigator ui;
@@ -163,9 +166,13 @@ namespace Helios
             cam.cullingMask &= ~(1 << 5);                       // not the UI layer
             cam.nearClipPlane = 0.05f; cam.farClipPlane = 1000f;
             cam.fieldOfView = fieldOfView;
-            var bg = new GameObject("HELIOS Background Camera");
-            bg.transform.SetParent(transform, false);
-            backCam = bg.AddComponent<Camera>();
+            if (backgroundCamera != null) backCam = backgroundCamera;
+            else
+            {
+                var bg = new GameObject("HELIOS Background Camera");
+                bg.transform.SetParent(transform, false);
+                backCam = bg.AddComponent<Camera>();
+            }
             backCam.clearFlags = CameraClearFlags.SolidColor;
             backCam.backgroundColor = HeliosTheme.Current.background;
             backCam.cullingMask = 1 << 5;

@@ -207,3 +207,15 @@ editing). The count badges are updated at Play with the number of parts each row
 * chevron: expand / collapse; eye: hide / show the row's parts (hidden parts cannot be clicked; their wireframe and
   hologram hide too)
 * click a part in the 3D view: its row is selected in the tree (parents expand)
+
+## Nothing loaded at Play: aircraft, background camera, sensor focus in the scene
+
+`Assets/HELIOS/Editor/HeliosSceneSetup.cs` runs once by itself when HELIOS.unity is open (and from
+**Tools > HELIOS > Place Aircraft In Scene**):
+* the F-16 (`F_16_Updated_Metadata 4.glb`, HELIOS App > Aircraft Model) is placed in the scene under
+  **HELIOS > HELIOS Model**, centred and scaled to `HeliosModel.Size` exactly as the app did at Play, and Aircraft Model
+  points to that scene object. `HeliosModel.Build` uses a placed model as it is (no instantiate / move / scale).
+* **HELIOS Background Camera** (backdrop behind the model) is a scene object, set on HELIOS App > Background Camera.
+* **Sensor Focus** is on the UI object (was added at Play).
+The HELIOS UI, the IETM (landing gear and engine models) were already scene objects. Holograms and wireframe overlays
+are still made the first time they are switched on (only then, not at start).

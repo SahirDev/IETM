@@ -387,15 +387,35 @@ namespace Helios
         // building
         // =====================================================================
 
+        /// <summary>Name of the object that holds the aircraft once it is placed in the scene (Tools > HELIOS > Place Aircraft In Scene).</summary>
+        public const string PlacedRootName = "HELIOS Model";
+
+        /// <summary>True when the aircraft is already in the scene under "HELIOS Model", centred and scaled in the Editor:
+        /// nothing is instantiated, moved or scaled at Play.</summary>
+        public static bool IsPlaced(GameObject source)
+        {
+            return source != null && source.scene.IsValid() && source.transform.parent != null && source.transform.parent.name == PlacedRootName;
+        }
+
         public void Build(GameObject source, ModelForward forward, Transform parent)
         {
-            Root = new GameObject("HELIOS Model").transform;
-            Root.SetParent(parent, false);
             GameObject inst;
-            if (source == null) inst = Placeholder();
-            else if (source.scene.IsValid()) { inst = source; inst.SetActive(true); }         // an object already in the scene
-            else inst = Object.Instantiate(source);                                          // a prefab or model asset
-            inst.transform.SetParent(Root, true);
+            bool placed = IsPlaced(source);
+            if (placed)
+            {
+                Root = source.transform.parent;                                              // placed in the Editor: used as it is
+                inst = source; if (!inst.activeSelf) inst.SetActive(true);
+                if (!Root.gameObject.activeSelf) Root.gameObject.SetActive(true);
+            }
+            else
+            {
+                Root = new GameObject(PlacedRootName).transform;
+                Root.SetParent(parent, false);
+                if (source == null) inst = Placeholder();
+                else if (source.scene.IsValid()) { inst = source; inst.SetActive(true); }     // an object already in the scene
+                else inst = Object.Instantiate(source);                                      // a prefab or model asset (loaded at Play)
+                inst.transform.SetParent(Root, true);
+            }
 
             Forward = forward == ModelForward.MinusZ ? Vector3.back : forward == ModelForward.PlusX ? Vector3.right : forward == ModelForward.MinusX ? Vector3.left : Vector3.forward;
             Side = Vector3.Cross(Vector3.up, Forward);
@@ -403,6 +423,8 @@ namespace Helios
             originals.Clear();
             foreach (var r in inst.GetComponentsInChildren<Renderer>(true))
                 if (r is MeshRenderer || r is SkinnedMeshRenderer) originals.Add(r);
+
+            if (placed) { Bounds = WorldBounds(); return; }
 
             // centre the model on the origin and scale its longest side to Size
             var b = WorldBounds();
