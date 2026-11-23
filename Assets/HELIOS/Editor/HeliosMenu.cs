@@ -37,6 +37,9 @@ namespace Helios.EditorTools
         static void AutoBuild()
         {
             if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) return;
+            // never replace a prefab that is there: right after a pull the file may simply not be imported yet
+            // (LoadAssetAtPath = null) and building here would overwrite the project's UI with the default one
+            if (File.Exists(PrefabPath) || EditorApplication.isUpdating) return;
             if (AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath) != null) return;
             if (SessionState.GetBool(AutoKey, false)) return;
             SessionState.SetBool(AutoKey, true);

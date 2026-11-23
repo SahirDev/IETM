@@ -219,3 +219,13 @@ editing). The count badges are updated at Play with the number of parts each row
 * **Sensor Focus** is on the UI object (was added at Play).
 The HELIOS UI, the IETM (landing gear and engine models) were already scene objects. Holograms and wireframe overlays
 are still made the first time they are switched on (only then, not at start).
+
+### Old UI in the Game view? (HELIOS UI.prefab regenerated)
+`HeliosMenu` used to rebuild the default UI when it could not load `HELIOS UI.prefab` at editor start - which happens
+right after a pull, before the prefab is imported - and saved it over the project's prefab (old menu, old card, the
+Rotate / Zoom / Pan bar, no Aircraft Hierarchy / View Tools). It now never replaces an existing prefab file.
+`HeliosSceneSetup` checks the prefab when HELIOS.unity opens and offers to restore it from git
+(**Tools > HELIOS > Restore UI Prefab From Git** = `git checkout HEAD -- "Assets/HELIOS/Resources/HELIOS UI.prefab"`).
+The setup also puts the Main Camera at the app's home view (Game view = what Play shows;
+**Tools > HELIOS > Frame Aircraft In Game View**) and removes Unity's default Directional Light, which doubled the
+HELIOS light rig (the aircraft was over-lit).

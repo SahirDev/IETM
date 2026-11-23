@@ -406,6 +406,20 @@ namespace Helios
             if (ViewReset != null) ViewReset();
         }
 
+        /// <summary>The camera pose of the home view for a model's bounds (same as ResetView at Play); used in the Editor
+        /// so the Game view shows the aircraft as it opens.</summary>
+        public void HomePose(Bounds b, float aspect, out Vector3 position, out Quaternion rotation)
+        {
+            float turn = noseDirection == ModelForward.MinusZ ? 180f : noseDirection == ModelForward.PlusX ? 90f : noseDirection == ModelForward.MinusX ? -90f : 0f;
+            float radius = b.extents.magnitude * 0.82f;
+            float vfov = fieldOfView * Mathf.Deg2Rad;
+            float hfov = 2f * Mathf.Atan(Mathf.Tan(vfov / 2f) * aspect);
+            float dist = radius / Mathf.Sin(Mathf.Min(vfov, hfov) / 2f) / Mathf.Max(0.1f, startZoom);
+            var rot = Quaternion.Euler(startPitch, startYaw + turn, 0f);
+            position = b.center + rot * new Vector3(0f, 0f, -dist);
+            rotation = Quaternion.LookRotation(b.center - position, Vector3.up);
+        }
+
         float FrameDistance()
         {
             float radius = model != null ? model.Bounds.extents.magnitude * 0.82f : HeliosModel.Size * 0.5f;
