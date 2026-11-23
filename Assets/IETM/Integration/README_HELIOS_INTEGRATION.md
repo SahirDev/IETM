@@ -229,3 +229,15 @@ Rotate / Zoom / Pan bar, no Aircraft Hierarchy / View Tools). It now never repla
 The setup also puts the Main Camera at the app's home view (Game view = what Play shows;
 **Tools > HELIOS > Frame Aircraft In Game View**) and removes Unity's default Directional Light, which doubled the
 HELIOS light rig (the aircraft was over-lit).
+
+## Live UI prefab and the F16_V01 model (current set-up)
+* The project's UI is **`Assets/HELIOS/Prefabs/HELIOS UI.prefab`** (own GUID). `Assets/HELIOS/Resources/HELIOS UI.prefab`
+  is the default UI that Tools > HELIOS > Build UI writes; it is no longer used by the scene, so regenerating it can
+  never replace the project's UI again. HeliosMenu no longer builds anything automatically.
+* `HeliosSceneSetup` (runs when HELIOS.unity opens; **Tools > HELIOS > Set Up Scene**) makes the scene's UI an instance
+  of that prefab (removes any other HELIOS UI, sets HELIOS App > UI), places **`Assets/3DModels/F16_V01.glb`** under
+  HELIOS > HELIOS Model (removes the previously placed F-16), keeps the background camera / Sensor Focus, frames the
+  Main Camera, removes the duplicate Directional Light, and saves the scene.
+* The Aircraft Hierarchy is built from F16_V01 (1813 parts: Cockpit + `F16_<Region>_Region_<Side>_Part_NNNN`):
+  F-16 > Fuselage (Cockpit, Nose, Forward / Mid / Aft Fuselage, Underside), Wing (Left / Right), Empennage (Vertical /
+  Horizontal Tail). Rebuild with `python Tools/helios_ui/hierarchy_from_model.py` (edits the live prefab).

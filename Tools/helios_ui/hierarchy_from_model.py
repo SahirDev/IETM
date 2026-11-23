@@ -1,6 +1,6 @@
 """Rebuilds the HELIOS 'Aircraft Hierarchy' panel (3D View page, HELIOS UI.prefab) from the real F-16 model:
-part names in Assets/Model/F_16_Updated_Metadata 4.glb are F16_<Region>_Region_<Left|Center|Right>_Part_NNNN, so
-the tree is Fuselage (Nose / Forward / Mid / Aft Fuselage / Underside), Wing (Left / Right), Empennage (Vertical /
+part names in Assets/3DModels/F16_V01.glb are F16_<Region>_Region_<Left|Center|Right>_Part_NNNN, so
+the tree is Fuselage (Cockpit, Nose / Forward / Mid / Aft Fuselage / Underside), Wing (Left / Right), Empennage (Vertical /
 Horizontal Tail), each region split Left / Center / Right, with the real part counts.
 Each row is a HeliosTreeNode whose Part Names are the name prefixes it stands for (edit them in the Inspector).
 Rows: click = select (parts outlined, camera frames them); chevron = expand / collapse; eye = hide / show.
@@ -9,8 +9,8 @@ import json, os, re, struct, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from unity_yaml import Doc, col, f
 
-P = 'Assets/HELIOS/Resources/HELIOS UI.prefab'
-GLB = 'Assets/Model/F_16_Updated_Metadata 4.glb'
+P = 'Assets/HELIOS/Prefabs/HELIOS UI.prefab'
+GLB = 'Assets/3DModels/F16_V01.glb'
 K = 0.8125
 def k(v): return round(v * K, 2)
 
@@ -23,8 +23,8 @@ def count(prefixes): return sum(1 for n in NAMES if any(n.startswith(p) for p in
 def region(label, key, icon, sides=('Left', 'Center', 'Right')):
     kids = [(s, ['F16_%s_Region_%s_' % (key, s)], None, False, None) for s in sides if count(['F16_%s_Region_%s_' % (key, s)])]
     return (label, ['F16_%s_Region_' % key], icon, False, kids)
-TREE = ('F-16 (AF-3287)', ['F16_'], 'plane', True, [
-    ('Fuselage', [], 'fuselage', True, [region('Nose', 'Nose', 'plane'), region('Forward Fuselage', 'Forward_Fuselage', 'fuselage'),
+TREE = ('F-16 (AF-3287)', ['F16_', 'Cockpit'], 'plane', True, [
+    ('Fuselage', [], 'fuselage', True, [('Cockpit', ['Cockpit'], 'plane', False, None), region('Nose', 'Nose', 'plane'), region('Forward Fuselage', 'Forward_Fuselage', 'fuselage'),
                                         region('Mid Fuselage', 'Mid_Fuselage', 'fuselage'), region('Aft Fuselage', 'Aft_Fuselage', 'fuselage'),
                                         region('Underside', 'Underside', 'layers')]),
     ('Wing', [], 'wing', True, [('Left Wing', ['F16_Wing_Region_Left_'], 'wing', False, None),

@@ -23,7 +23,10 @@ namespace Helios.EditorTools
         const string PrefabPath = ResDir + "/HELIOS UI.prefab", ThemePath = ResDir + "/HELIOS Theme.asset", ScenePath = SceneDir + "/HELIOS.unity";
         const string AutoKey = "HELIOS.v2.AutoBuild";
 
-        static HeliosMenu() { EditorApplication.delayCall += AutoBuild; EditorApplication.delayCall += AutoShapes; }
+        // No automatic UI build: the project has its HELIOS UI.prefab (Figma UI). Building it on editor start replaced the
+        // project's prefab with the default UI whenever the prefab was not imported yet (right after a pull).
+        // Tools > HELIOS > Build UI still makes a default UI on purpose.
+        static HeliosMenu() { EditorApplication.delayCall += AutoShapes; }
 
         static T Find<T>() where T : Object
         {
