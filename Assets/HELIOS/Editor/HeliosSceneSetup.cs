@@ -124,7 +124,7 @@ namespace Helios.EditorTools
         {
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
             return !UiOk() || !ModelOk(app) || !DoubleSidedOk(app) || app.backgroundCamera == null
-                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app) || app.sceneLookVersion < 2;
+                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app) || app.sceneLookVersion < 2 || !EngineShared(app);
         }
 
         // ================================================================ set up
@@ -135,6 +135,7 @@ namespace Helios.EditorTools
             SwapUi(app);
             SwapModel(app);
             PlaceModel(app);
+            ShareEngine(app);
             MakeDoubleSided(app);
             EnsureBackgroundCamera(app);
             AttachBackdrop(app);
@@ -253,9 +254,9 @@ namespace Helios.EditorTools
             var shader = Shader.Find(DoubleSidedShader);
             if (shader == null) { Debug.LogWarning("[HELIOS] Shader " + DoubleSidedShader + " not found: materials left as they are."); return; }
             string model = SourcePath(app.aircraftModel);
-            string folder = MaterialRoot + "/" + (string.IsNullOrEmpty(model) ? app.aircraftModel.name : Path.GetFileNameWithoutExtension(model));
+            string defFolder = MaterialRoot + "/" + (string.IsNullOrEmpty(model) ? app.aircraftModel.name : Path.GetFileNameWithoutExtension(model));
             if (!AssetDatabase.IsValidFolder(MaterialRoot)) AssetDatabase.CreateFolder("Assets/HELIOS", "Materials");
-            if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder(MaterialRoot, Path.GetFileName(folder));
+            string folder = defFolder;
             var map = new Dictionary<Material, Material>();
             int parts = 0;
             foreach (var r in ModelRenderers(app))
@@ -268,6 +269,10 @@ namespace Helios.EditorTools
                     if (src == null || src.shader == shader) continue;
                     if (!map.TryGetValue(src, out var m))
                     {
+                        // one folder per source model (F16_V01, engine, ...): material names repeat between models
+                        string srcPath = AssetDatabase.GetAssetPath(src);
+                        folder = string.IsNullOrEmpty(srcPath) || !srcPath.StartsWith("Assets/") ? defFolder : MaterialRoot + "/" + Safe(Path.GetFileNameWithoutExtension(srcPath));
+                        if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder(MaterialRoot, Path.GetFileName(folder));
                         string file = folder + "/" + Safe(src.name) + ".mat";
                         m = AssetDatabase.LoadAssetAtPath<Material>(file);
                         if (m == null) { m = DoubleSidedOf(src, shader); AssetDatabase.CreateAsset(m, file); }
@@ -281,7 +286,7 @@ namespace Helios.EditorTools
                 parts++;
             }
             AssetDatabase.SaveAssets();
-            if (parts > 0) Debug.Log("[HELIOS] Double-sided materials: " + map.Count + " materials (" + folder + ") on " + parts + " parts.");
+            if (parts > 0) Debug.Log("[HELIOS] Double-sided materials: " + map.Count + " materials (" + MaterialRoot + ") on " + parts + " parts.");
         }
 
         static string Safe(string s)
@@ -352,6 +357,45 @@ namespace Helios.EditorTools
             var main = Camera.main;
             c.depth = (main != null ? main.depth : -1f) - 10f;
             app.backgroundCamera = c;
+        }
+
+        // ================================================================ the engine inside the F-16 (one model, also the IETM's)
+
+        static IETM.IETMPublication EnginePublication(out IETM.IETMApp ietm)
+        {
+            ietm = Object.FindAnyObjectByType<IETM.IETMApp>(FindObjectsInactive.Include);
+            if (ietm == null || ietm.publications == null) return null;
+            foreach (var p in ietm.publications) if (p != null && p.id == "engine" && p.model != null) return p;
+            return null;
+        }
+
+        static bool EngineShared(HeliosApp app)
+        {
+            var pub = EnginePublication(out _);
+            if (pub == null || app.aircraftModel == null || !HeliosModel.IsPlaced(app.aircraftModel)) return true;
+            return pub.Shared && pub.model.transform.IsChildOf(app.aircraftModel.transform) && pub.model.activeSelf;
+        }
+
+        /// <summary>The IETM engine, placed by hand where the F-16's engine is, becomes part of the aircraft (child of the
+        /// F-16, same place in the world): shown in the 3D view, in the Aircraft Hierarchy (Engine), selectable. Its pose in
+        /// the IETM is kept on the publication; opening the engine IETM moves this same object there and back.</summary>
+        static void ShareEngine(HeliosApp app)
+        {
+            var pub = EnginePublication(out var ietm);
+            if (pub == null || app.aircraftModel == null || !HeliosModel.IsPlaced(app.aircraftModel)) return;
+            var t = pub.model.transform;
+            if (!t.IsChildOf(app.aircraftModel.transform))
+            {
+                Undo.RecordObject(ietm, "HELIOS engine in the F-16");
+                pub.ietmParent = t.parent;
+                pub.ietmLocalPosition = t.localPosition; pub.ietmLocalRotation = t.localRotation; pub.ietmLocalScale = t.localScale;
+                Undo.SetTransformParent(t, app.aircraftModel.transform, "HELIOS engine in the F-16");     // keeps its place in the world
+                EditorUtility.SetDirty(ietm);
+                Debug.Log("[HELIOS] Engine moved into the F-16 (" + app.aircraftModel.name + "); the engine IETM uses the same object (pose under '" + pub.ietmParent.name + "' kept).");
+            }
+            else if (pub.ietmParent == null)
+                Debug.LogWarning("[HELIOS] The engine is already inside the F-16 but its IETM place is not set: set IETM App > Publications > engine > Ietm Parent (Animated Model Pivot) and the pose.");
+            if (!pub.model.activeSelf) { Undo.RecordObject(pub.model, "HELIOS engine in the F-16"); pub.model.SetActive(true); }
         }
 
         // ================================================================ brightness

@@ -29,6 +29,16 @@ namespace IETM
         public float rotorSpeed = 220f;
         [Tooltip("Printable IPC (PDF) under StreamingAssets for this publication (empty = none yet).")]
         public string ipdPdfFile;
+
+        [Header("Shared with HELIOS (the engine inside the F-16)")]
+        [Tooltip("Set: the model lives in the HELIOS aircraft (shown there, part of its hierarchy). While this publication is open " +
+                 "it is moved under this transform at the pose below, and put back in the aircraft afterwards. Empty = an IETM-only model.")]
+        public Transform ietmParent;
+        public Vector3 ietmLocalPosition;
+        public Quaternion ietmLocalRotation = Quaternion.identity;
+        public Vector3 ietmLocalScale = Vector3.one;
+
+        public bool Shared => ietmParent != null && model != null;
     }
 
     public partial class IETMApp
@@ -46,6 +56,36 @@ namespace IETM
             public readonly List<GameObject> roots = new List<GameObject>();
             public bool hasGear;
             public string startModule;
+            public Transform homeParent;                    // shared model: its place in the HELIOS aircraft
+            public Vector3 homePos; public Quaternion homeRot; public Vector3 homeScale;
+            public int homeSibling;
+            public bool Shared => def != null && def.Shared;
+        }
+
+        /// <summary>A shared model (engine in the F-16) into the IETM, at its IETM pose.</summary>
+        static void MoveIntoIetm(PubState st)
+        {
+            var t = st.def.model.transform;
+            if (t.parent != st.def.ietmParent) t.SetParent(st.def.ietmParent, false);
+            t.localPosition = st.def.ietmLocalPosition; t.localRotation = st.def.ietmLocalRotation; t.localScale = st.def.ietmLocalScale;
+            if (!st.def.model.activeSelf) st.def.model.SetActive(true);
+        }
+
+        /// <summary>A shared model back in the HELIOS aircraft, where it was.</summary>
+        static void MoveHome(PubState st)
+        {
+            if (st.homeParent == null) return;
+            var t = st.def.model.transform;
+            if (t.parent != st.homeParent) t.SetParent(st.homeParent, false);
+            t.localPosition = st.homePos; t.localRotation = st.homeRot; t.localScale = st.homeScale;
+            t.SetSiblingIndex(Mathf.Min(st.homeSibling, st.homeParent.childCount - 1));
+            if (!st.def.model.activeSelf) st.def.model.SetActive(true);
+        }
+
+        /// <summary>HELIOS leaves the IETM page: a shared model goes back into the aircraft (the IETM returns to the landing gear).</summary>
+        public void ReturnSharedModels()
+        {
+            if (currentPub != null && currentPub.Shared) SwitchToDefaultPublication();
         }
 
         PubState gearPub, currentPub;
@@ -66,7 +106,8 @@ namespace IETM
             foreach (var p in publications)
             {
                 if (p == null || p.dataFile == null) continue;
-                StateOf(p, true);
+                var st = StateOf(p, true);
+                if (st.Shared) continue;                                                // stays in the HELIOS aircraft
                 if (p.model != null && p.model.activeSelf) p.model.SetActive(false);   // shown when opened
             }
         }
@@ -107,6 +148,12 @@ namespace IETM
             string id = string.IsNullOrEmpty(p.id) ? p.dataFile.name : p.id;
             if (pubStates.TryGetValue(id, out var st) || !create) return st;
             st = new PubState { id = id, def = p, db = PeekDatabase(p), hasGear = false, startModule = p.startModule };
+            if (p.Shared)
+            {
+                var t = p.model.transform;
+                st.homeParent = t.parent; st.homePos = t.localPosition; st.homeRot = t.localRotation; st.homeScale = t.localScale;
+                st.homeSibling = t.GetSiblingIndex();
+            }
             if (p.model != null)
             {
                 bool was = p.model.activeSelf;
@@ -114,7 +161,7 @@ namespace IETM
                 st.model = new IETMModel(st.db, highlightShader, ghostShader) { selectColor = Theme.Accent, hoverColor = Theme.Warn };
                 st.model.AddVariant("Model", p.model, null, null, false);
                 st.roots.Add(p.model);
-                if (!was) p.model.SetActive(false);
+                if (!was && !p.Shared) p.model.SetActive(false);
             }
             else st.model = new IETMModel(st.db, highlightShader, ghostShader);
             pubStates[id] = st;
@@ -145,7 +192,8 @@ namespace IETM
             }
             if (view.explodeSlider != null) view.explodeSlider.SetValueWithoutNotify(0f);
             if (view.explodeValue != null) view.explodeValue.text = "0%";
-            foreach (var r in currentPub.roots) if (r != null) r.SetActive(false);
+            if (currentPub.Shared) MoveHome(currentPub);
+            else foreach (var r in currentPub.roots) if (r != null) r.SetActive(false);
 
             currentPub = to;
             db = to.db;
@@ -156,6 +204,7 @@ namespace IETM
                 if (model != null && model.Active != null && model.Active.root != null) model.Active.root.SetActive(true);
                 if (gearAnimRoot != null) gearAnimRoot.SetActive(true);
             }
+            else if (to.Shared) MoveIntoIetm(to);
             else foreach (var r in to.roots) if (r != null) r.SetActive(true);
 
             // data views of the new publication
@@ -175,9 +224,21 @@ namespace IETM
 
             if (model != null && model.Active != null)
             {
+                if (to.Shared) RefreshBounds(model.Active);
                 vcam.SetHome(model.Active.bounds);
                 vcam.Home(true);
             }
+        }
+
+        static void RefreshBounds(ModelVariant v)
+        {
+            if (v == null || v.root == null) return;
+            bool has = false;
+            foreach (var r in v.root.GetComponentsInChildren<Renderer>(true))
+            {
+                if (!has) { v.bounds = r.bounds; has = true; } else v.bounds.Encapsulate(r.bounds);
+            }
+            v.radius = Mathf.Max(0.001f, v.bounds.extents.magnitude);
         }
 
         /// <summary>Back to the landing gear (fresh IETM session).</summary>

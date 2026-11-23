@@ -300,3 +300,16 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   Mouse over a part = amber outline + tooltip "Part 0331   Nose · Left   Fuselage" (like the IETM hover tip).
   HELIOS App: Click To Select Parts, Hover Parts, Hover Colour. Tooltip object: HELIOS UI > UI > Part Tooltip (Box
   inactive until a part is under the mouse; style it in the prefab).
+
+## One engine: inside the F-16 and in the engine IETM
+* The engine you placed where the F-16's engine is (IETM Module > Landing Gear > Animated Model Pivot > Engine) is moved
+  once by the scene setup into the F-16 (child of the F16_V01 instance, same place in the world). It is part of the aircraft:
+  3D view, Transparent, wireframe, click / hover, Aircraft Hierarchy.
+* Its IETM place is kept on IETM App > Publications > engine: **Ietm Parent** (Animated Model Pivot) + Ietm Local
+  Position / Rotation / Scale (the pose you set). Opening an engine data module moves this same object there (no copy,
+  nothing loaded); going back to the landing gear, or leaving the IETM page, puts it back in the F-16 (parts reassembled).
+  It is no longer hidden while another publication is open.
+* To change its IETM pose: edit the Ietm Local values. To change where it sits in the F-16: move it under the F-16.
+* Double-sided materials are now kept per source model: Assets/HELIOS/Materials/F16_V01/ and .../engine/.
+* Aircraft Hierarchy: top level Fuselage (Nose, Forward, Mid, Aft, Underside), **Cockpit**, **Engine** (Case & Mount,
+  Compressor Section, Hot Section, 11 parts named after the engine IETM items), Wing, Empennage. 1824 parts.

@@ -39,10 +39,28 @@ def count(prefixes):
 def region(label, key, icon, sides=('Left', 'Center', 'Right')):
     kids = [(s, ['F16_%s_Region_%s_' % (key, s)], None, False, None) for s in sides if count(['F16_%s_Region_%s_' % (key, s)])]
     return (label, ['F16_%s_Region_' % key], icon, False, kids)
-TREE = ('F-16 (AF-3287)', ['F16_', 'Cockpit'], 'plane', True, [
-    ('Fuselage', [], 'fuselage', True, [('Cockpit', ['Cockpit'], 'plane', False, None), region('Nose', 'Nose', 'plane'), region('Forward Fuselage', 'Forward_Fuselage', 'fuselage'),
+# the engine (Assets/Model/engine.glb, the engine IETM's model) sits inside the F-16 (scene setup ShareEngine): its parts
+# are the engine IETM items. Names are exact node names; ! leaves out a longer name with the same start.
+de = open('Assets/Model/engine.glb', 'rb').read()
+je = json.loads(de[20:20 + struct.unpack('<I', de[12:16])[0]])
+ENGINE_NAMES = [n.get('name', '') for n in je['nodes'] if 'mesh' in n]
+NAMES += ENGINE_NAMES
+def eng(label, node, extra=()):
+    return (label, [node] + list(extra), None, False, None)
+ENGINE = ('Engine', [], 'engine', False, [
+    ('Case & Mount', [], 'engine', False, [eng('Outer Case', 'hull_turbine_004'), eng('Exhaust Cone', 'hull_turbine', ['!hull_turbine_004']),
+                                            eng('Support Ring Mount', 'mount_turbine_014'), eng('Fuel & Oil Tubes', 'pipes_turbine_009'),
+                                            eng('Case Flange Bolts', 'screws_turbine_001')]),
+    ('Compressor Section', [], 'engine', False, [eng('Fan Rotor', 'blades_turbine_003', ['!blades_turbine_003.001']),
+                                                  eng('Inlet Guide Vanes', 'blades_dividers_turbine_017'), eng('Compressor Disks', 'plates_turbine_016')]),
+    ('Hot Section', [], 'engine', False, [eng('Combustor Case', 'canister_turbine_011'), eng('Combustor Liner', 'grid_turbine_007'),
+                                           eng('Turbine Rotor', 'blades_turbine_003.001')])])
+TREE = ('F-16 (AF-3287)', ['F16_', 'Cockpit'] + sorted(set(n.split('_')[0] + '_' for n in ENGINE_NAMES)), 'plane', True, [
+    ('Fuselage', [], 'fuselage', True, [region('Nose', 'Nose', 'plane'), region('Forward Fuselage', 'Forward_Fuselage', 'fuselage'),
                                         region('Mid Fuselage', 'Mid_Fuselage', 'fuselage'), region('Aft Fuselage', 'Aft_Fuselage', 'fuselage'),
                                         region('Underside', 'Underside', 'layers')]),
+    ('Cockpit', ['Cockpit'], 'plane', False, None),
+    ENGINE,
     ('Wing', [], 'wing', True, [('Left Wing', ['F16_Wing_Region_Left_'], 'wing', False, None),
                                 ('Right Wing', ['F16_Wing_Region_Right_'], 'wing', False, None)]),
     ('Empennage', [], 'fin', True, [region('Vertical Tail', 'Vertical_Tail', 'fin'), region('Horizontal Tail', 'Horizontal_Tail', 'fin', ('Left', 'Right'))])])
@@ -53,7 +71,10 @@ def prefixes_of(node):
     out = []
     for c in kids or []: out += prefixes_of(c)
     return out
-total = count(prefixes_of(TREE))
+def node_count(node):
+    label, names, icon, exp, kids = node
+    return count(names) if names and not kids else sum(node_count(c) for c in kids or [])
+total = node_count(TREE)
 assert total == len(NAMES), (total, len(NAMES))       # every part is in the tree
 
 # ---------------------------------------------------------------- prefab: remove the old panel
@@ -110,7 +131,7 @@ ROUNDED, ROUNDED_LINE, SQUARE = 'bd47ad8e7de76dd458fc070441db5007', '5e10806c541
 ICON = {'chevron': '71da8d57c04ea4f41baca442d3de7691', 'chevrondown': 'aa42448b2779b3246812102f064cbded', 'layers': '2a41c357c28d77e4b827259b33f70e35',
         'plane': 'f7c376fc7aaa0164b902996151cc5de1', 'wing': 'e4c4dfa6d2ecf124ab49b7f063326c19', 'search': 'c7324f2bc9c849ca84a02050636a9153',
         'fuselage': '412cd4d35d6f4f15aa4e1ad63ac33aea', 'fin': 'ab937a2daa5945879b8472129ce7e265',
-        'eye': 'f2756f1cc799459585563ad87f165968', 'eyeoff': 'd2adce4a60344fe5bf79cad2c65d39c1'}
+        'eye': 'f2756f1cc799459585563ad87f165968', 'engine': '5cfc29f4914343c6a283bb41ffb2c3c7', 'eyeoff': 'd2adce4a60344fe5bf79cad2c65d39c1'}
 THEMED = '346a0a1447b7ab8b6ace9c7385c9dfe7'
 TREE_GUID, NODE_GUID = 'b71166389a9e4db787af7d5a305b8f24', 'a7dbbb5ed0b347739ddb6d31a6132e58'
 SCROLL, MASK2D = '1aa08ab6e0800fa44ae55d278d1423e3', '3312d7739989d2b4e91e6319e9a96d76'
@@ -225,7 +246,7 @@ EYE = 15          # eye icon (Figma px); its button is 24 wide
 def build(parent, node, depth):
     label, names, ico, expanded, children = node
     s = STYLE[depth]
-    n_parts = count(prefixes_of(node))
+    n_parts = count(names) if names else node_count(node)
     holder = d.go(label, parent, anchor_min=(0, 1), anchor_max=(1, 1), pivot=(0.5, 1), pos=(0, 0), size=(0, 0))
     d.layout_group(holder, True, 0, (0, 0, 0, 0), 0, True, False)
     row = d.go('Row', holder['tr'], anchor_min=(0, 1), anchor_max=(1, 1), pivot=(0.5, 1), pos=(0, 0), size=(0, k(s['h'])))

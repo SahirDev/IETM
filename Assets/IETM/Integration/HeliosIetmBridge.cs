@@ -193,6 +193,7 @@ namespace IETM.Integration
             bool was = inIetm;
             inIetm = false;
             SetMenuIconsOnly(false);
+            if (app != null && started) app.ReturnSharedModels();      // the engine goes back into the F-16 before the IETM hides
             if (ready && was) SetIetmVisible(false);
         }
 
