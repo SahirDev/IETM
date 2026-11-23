@@ -1,7 +1,8 @@
 // IETM > Layout Editor: place every part's EXPLODED and DISASSEMBLY (laid-out) position by hand, in the Scene
-// view, before Play. Choose a layout, press Edit: the gear is posed EXTENDED and every part moves to its saved
-// position. Move parts with the normal Move tool, then Save: the offsets are written back into
-// landing_gear_ietm.json ("explode" / "removal" blocks). Cancel (or entering Play) puts the model back unchanged.
+// view, before Play. Choose the publication (landing gear, engine, ...) and a layout, press Edit: the model is shown
+// (the gear posed EXTENDED) and every part moves to its saved position. Move parts with the normal Move tool, then
+// Save: the offsets are written back into that publication's JSON ("explode" / "removal" / "removalVia" blocks).
+// Cancel (or entering Play) puts the model back unchanged.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -17,7 +18,10 @@ namespace IETM.EditorTools
         enum Layout { Disassembly = 0, DisassemblyCorner = 1, Explode = 2 }
 
         Layout layout = Layout.Disassembly;
+        int pubIndex;                     // 0 = landing gear (IETM App's own model), 1.. = IETM App > Publications
         bool editing;
+        // objects shown only for the edit session (an inactive publication model, its inactive parents; the gear hidden)
+        readonly List<(GameObject go, bool active)> shown = new List<(GameObject, bool)>();
         IETMApp app;
         TextAsset json;
         Vector2 scroll;
@@ -39,18 +43,25 @@ namespace IETM.EditorTools
         void OnGUI()
         {
             if (Application.isPlaying) { EditorGUILayout.HelpBox("Stop Play mode to edit the layouts.", MessageType.Info); return; }
-            if (app == null) app = FindAnyObjectByType<IETMApp>();
+            if (app == null) app = FindAnyObjectByType<IETMApp>(FindObjectsInactive.Include);   // HELIOS: under the hidden IETM Module
             if (app == null || app.extendedModel == null) { EditorGUILayout.HelpBox("Open the IETM scene (IETM App with a model).", MessageType.Warning); return; }
 
             EditorGUILayout.HelpBox(
-                "1. Pick a layout and press Edit: the gear is shown EXTENDED with every part at its saved position.\n" +
+                "1. Pick the publication and a layout and press Edit: the model is shown (gear EXTENDED) with every part at its saved position.\n" +
                 "2. Click a part (list below or Scene view) and move it with the Move tool (W).\n" +
-                "3. Save writes the positions into landing_gear_ietm.json. Cancel restores the model.\n\n" +
+                "3. Save writes the positions into the publication's JSON. Cancel restores the model.\n\n" +
                 "Disassembly = where a part is laid out when a procedure removes it.\n" +
                 "L-path corner = tick 'L path' on the parts that should move in an L, then drag each to where its FIRST move ends (e.g. pulled straight off its pin). Unticked parts move straight.\n" +
                 "Explode = the Explode slider at 100 %.",
                 MessageType.None);
 
+            using (new EditorGUI.DisabledScope(editing))
+            {
+                var names = new List<string> { "Landing gear" };
+                foreach (var pb in app.publications) names.Add(pb == null ? "(empty)" : string.IsNullOrEmpty(pb.id) ? (pb.dataFile != null ? pb.dataFile.name : "(no data)") : pb.id);
+                pubIndex = Mathf.Clamp(pubIndex, 0, names.Count - 1);
+                pubIndex = EditorGUILayout.Popup("Publication", pubIndex, names.ToArray());
+            }
             using (new EditorGUI.DisabledScope(editing))
                 layout = (Layout)GUILayout.Toolbar((int)layout, new[] { "Disassembly layout", "L-path corner", "Explode layout" });
 
@@ -101,17 +112,28 @@ namespace IETM.EditorTools
 
         void BeginEdit()
         {
-            json = app.dataFile != null ? app.dataFile : Resources.Load<TextAsset>("IETM/landing_gear_ietm");
+            IETMPublication pub = pubIndex > 0 && pubIndex - 1 < app.publications.Count ? app.publications[pubIndex - 1] : null;
+            if (pubIndex > 0 && (pub == null || pub.dataFile == null || pub.model == null))
+            { EditorUtility.DisplayDialog("IETM", "This publication needs a Data File and a Model (IETM App > Publications).", "OK"); return; }
+            json = pub != null ? pub.dataFile : app.dataFile != null ? app.dataFile : Resources.Load<TextAsset>("IETM/landing_gear_ietm");
             if (json == null) { EditorUtility.DisplayDialog("IETM", "landing_gear_ietm.json not found.", "OK"); return; }
             var db = IETMDatabase.Load(json);
-            var root = app.extendedModel.transform;
+            var root = pub != null ? pub.model.transform : app.extendedModel.transform;
+
+            // show the model for the session (it may be inactive, e.g. the engine under a hidden IETM Module);
+            // the landing gear is hidden while another publication is edited (they share the same spot)
+            shown.Clear();
+            for (var a = root; a != null; a = a.parent)
+                if (!a.gameObject.activeSelf) { shown.Add((a.gameObject, false)); a.gameObject.SetActive(true); }
+            if (pub != null && app.extendedModel != null && app.extendedModel.activeSelf)
+            { shown.Add((app.extendedModel, true)); app.extendedModel.SetActive(false); }
 
             original.Clear(); basePos.Clear(); parts.Clear(); endPos.Clear(); lPath.Clear();
             foreach (var t in root.GetComponentsInChildren<Transform>(true)) original[t] = (t.localPosition, t.localRotation, t.localScale);
             Undo.RegisterFullObjectHierarchyUndo(root.gameObject, "IETM layout");
 
             // pose the gear EXTENDED (the layouts are designed for it)
-            if (app.gearAnimation != null)
+            if (pub == null && app.gearAnimation != null)
             {
                 var animRoot = root.gameObject;
                 var anim = root.GetComponentInChildren<Animation>(true);
@@ -173,6 +195,8 @@ namespace IETM.EditorTools
             foreach (var kv in original)
                 if (kv.Key != null) { kv.Key.localPosition = kv.Value.pos; kv.Key.localRotation = kv.Value.rot; kv.Key.localScale = kv.Value.scale; }
             original.Clear(); basePos.Clear(); parts.Clear();
+            for (int i = shown.Count - 1; i >= 0; i--) if (shown[i].go != null) shown[i].go.SetActive(shown[i].active);
+            shown.Clear();
             editing = false;
             Repaint();
         }

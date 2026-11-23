@@ -148,3 +148,12 @@ engine is not registered: places the engine (sized like the gear, inactive, mesh
 publication, rebuilds the shell pages from `helios_shell.json` (no theme / layout change) and saves the scene. Run it
 again from **IETM > HELIOS Integration > Set Up Engine IETM** after changing `helios_shell.json`. At start-up the
 engine's data and parts are bound while the IETM prewarms, so opening it later is instant.
+
+### Engine exploded view and disassembly layout (Layout Editor)
+
+**IETM > Layout Editor** has a **Publication** picker (Landing gear / engine). Pick *engine*, the tab (*Explode layout*
+= Explode slider at 100 %, *Disassembly layout* = where parts are laid out, *L-path corner*), press **Edit**: the engine
+is shown (the landing gear hidden) with every part at its saved position. Move parts with the Move tool (W), **Save**
+writes them into `engine_ietm.json`; **Cancel** restores everything (the engine goes hidden again). At Play the
+Explode slider moves every part from assembled to its saved position. `Tools/make_engine_ietm.py` keeps the saved
+layouts when it is re-run (`--reset-layout` to go back to the generated ones).

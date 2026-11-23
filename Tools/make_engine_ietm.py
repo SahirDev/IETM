@@ -162,5 +162,11 @@ data = {
 }
 import os
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Assets/IETM/Resources/IETM/engine_ietm.json')
+# layouts placed by hand in IETM > Layout Editor are kept (run with --reset-layout to go back to the ones above)
+import sys
+if os.path.exists(out) and '--reset-layout' not in sys.argv:
+    old = json.load(open(out, encoding='utf-8'))
+    for k in ('explode', 'removal', 'removalVia'):
+        if k in old: data[k] = old[k]
 json.dump(data, open(out, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
 print('wrote', out, len(items), 'items,', len(modules), 'modules,', len(dis_steps), 'disassembly steps')
