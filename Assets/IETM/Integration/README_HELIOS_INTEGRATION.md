@@ -287,3 +287,16 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * **Scene Brightness** (replaces the one-off x1.35): component `HeliosBrightness` on **HELIOS Aircraft Lights**
   (Tools > HELIOS > Scene Brightness selects it). Brightness slider = every directional light x value; Ambient slider =
   the ambient light x value. Default 1.6 / 1.6. Live in the Editor Game view and at Play.
+
+## Aircraft Hierarchy v2, part picking and hover tooltip
+* No hide / show (eye) column any more; the row labels use the space. Rows: click = select, chevron = expand.
+* Two parts are named in the model under another region than where they sit; the rows follow where they sit
+  (`Tools/helios_ui/hierarchy_from_model.py` MOVES, written into the rows' Part Names, `!name` = left out):
+  `..._Forward_Fuselage_Region_Left_Part_0331` = the radome's left half -> Nose (its right half is Nose_Right_Part_0333);
+  `..._Forward_Fuselage_Region_Right_Part_0142` = side skin from -10 to -4.7 m -> Mid Fuselage (its mirror is Mid_Left_0149).
+  Selecting Nose now outlines the whole radome. Counts: Nose 17, Forward Fuselage 54, Mid Fuselage 270.
+* 3D view, every page that shows the model: click a part = it is outlined (wireframe, even with the wireframe off), the
+  camera zooms to it and its row is selected in the hierarchy; click it again or empty space = whole aircraft.
+  Mouse over a part = amber outline + tooltip "Part 0331   Nose · Left   Fuselage" (like the IETM hover tip).
+  HELIOS App: Click To Select Parts, Hover Parts, Hover Colour. Tooltip object: HELIOS UI > UI > Part Tooltip (Box
+  inactive until a part is under the mouse; style it in the prefab).

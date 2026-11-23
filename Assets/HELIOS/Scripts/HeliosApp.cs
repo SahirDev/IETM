@@ -61,8 +61,13 @@ namespace Helios
         public List<CategoryStatus> maintenanceCriteria = DefaultCriteria(HeliosWireRule.MaintenanceStatus);
         [Tooltip("Set the type of a part when its name does not tell (e.g. drag 'Mesh_042' in and pick Engine).")]
         public List<PartOverride> partCategories = new List<PartOverride>();
-        [Tooltip("Click a part of the 3D model to select it (pages with the wireframe on).")]
+        [Tooltip("Click a part of the 3D model to select it: it is outlined (wireframe) and the camera zooms to it; " +
+                 "its row is selected in the Aircraft Hierarchy. Click it again, or empty space, for the whole aircraft.")]
         public bool clickToSelectParts = true;
+        [Tooltip("Outline the part under the mouse and show its name in a tooltip (HELIOS UI > UI > Part Tooltip), as in the IETM.")]
+        public bool hoverParts = true;
+        [Tooltip("Outline colour of the part under the mouse (the IETM's hover amber).")]
+        public Color hoverColor = new Color32(245, 158, 11, 255);
         [Tooltip("How much of the view the selected part fills when the camera zooms to it (bigger = farther away).")]
         [Range(1f, 4f)] public float selectedPartMargin = 1.8f;
 
@@ -224,7 +229,7 @@ namespace Helios
         {
             Page = p;
             if (p == null) return;
-            holoOverride = -1; wireOverride = -1; focusParts.Clear(); groupHighlight = false; EndTransparent();
+            holoOverride = -1; wireOverride = -1; focusParts.Clear(); groupHighlight = false; EndTransparent(); EndHover();
             ApplyLook();
             if (cam != null) cam.enabled = p.showModel;
         }
@@ -321,7 +326,7 @@ namespace Helios
                 if (had) { FlyHome(); if (PartSelected != null) PartSelected(null); }
                 return;
             }
-            focusParts.Clear(); focusParts.Add(part); groupHighlight = false;
+            focusParts.Clear(); focusParts.Add(part); groupHighlight = true;      // outlined even with the wireframe off
             ApplyWireframe();
             var b = part.bounds;
             float whole = model != null ? Mathf.Max(0.001f, model.Bounds.extents.magnitude) : 1f;
@@ -337,6 +342,41 @@ namespace Helios
         }
 
         bool groupHighlight;
+
+        // ---------------------------------------------------------------- hover (outline + tooltip, as in the IETM)
+
+        /// <summary>Text of the hover tooltip for a part (the Aircraft Hierarchy sets it: row names); null = from the part name.</summary>
+        public Func<Renderer, string> DescribePart;
+        public Renderer HoveredPart { get; private set; }
+        HeliosPartTooltip tip; bool tipSearched;
+        Vector2 hoverMouse = new Vector2(-1f, -1f); float hoverAt;
+
+        void UpdateHover(Vector2 mp, bool inView)
+        {
+            Renderer h = null;
+            if (hoverParts && inView && model != null && cam != null && Page != null && Page.showModel)
+            {
+                if ((mp - hoverMouse).sqrMagnitude > 4f || Time.unscaledTime - hoverAt > 0.2f)
+                {
+                    hoverMouse = mp; hoverAt = Time.unscaledTime;
+                    HoveredPart = model.PickPart(cam.ScreenPointToRay(mp));
+                }
+                h = HoveredPart;
+            }
+            else { HoveredPart = null; hoverMouse = new Vector2(-1f, -1f); }
+            if (model != null) model.SetHover(h, hoverColor);
+            if (!tipSearched) { tipSearched = true; tip = FindAnyObjectByType<HeliosPartTooltip>(FindObjectsInactive.Include); }
+            if (tip == null) return;
+            if (h == null) tip.Hide();
+            else tip.Show(DescribePart != null ? DescribePart(h) : HeliosPartTooltip.FromName(h.gameObject.name), mp);
+        }
+
+        void EndHover()
+        {
+            HoveredPart = null;
+            if (model != null) model.SetHover(null, hoverColor);
+            if (tip != null) tip.Hide();
+        }
 
         /// <summary>Selects a group of parts (a row of the Aircraft Hierarchy): they are outlined and the camera frames
         /// them. Null or empty clears the selection and goes back to the whole aircraft.</summary>
@@ -490,8 +530,9 @@ namespace Helios
             {
                 dragging = false;
                 // a left click (not a drag) picks a part
-                if (dragButton == 0 && clickToSelectParts && (mp - pressAt).sqrMagnitude < 36f && Page != null && (Page.wireframe || wireOverride == 1)) SelectPartAt(mp);
+                if (dragButton == 0 && clickToSelectParts && (mp - pressAt).sqrMagnitude < 36f && Page != null && Page.showModel) SelectPartAt(mp);
             }
+            UpdateHover(mp, view.Contains(mp) && !overUi && !dragging);
             if (dragging)
             {
                 flying = false;                                  // your own drag wins over a glide

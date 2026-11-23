@@ -10,7 +10,7 @@ namespace Helios
     public class HeliosTreeNode : MonoBehaviour
     {
         [Tooltip("The aircraft parts of this row: part (GameObject) names starting with any of these, e.g. F16_Wing_Region_Left_. " +
-                 "Empty = the parts of its child rows.")]
+                 "An entry starting with ! leaves those parts out (a part the model names in another region). Empty = the parts of its child rows.")]
         public string[] partNames = new string[0];
         [Tooltip("Container of the child rows (none for a leaf).")] public GameObject children;
         [Tooltip("Expand / collapse chevron.")] public Image chevron;
@@ -23,13 +23,26 @@ namespace Helios
         [System.NonSerialized] public bool visible = true;
         HeliosTree tree;
 
-        public bool HasOwnNames { get { if (partNames == null) return false; foreach (var s in partNames) if (!string.IsNullOrEmpty(s)) return true; return false; } }
+        public bool HasOwnNames { get { if (partNames == null) return false; foreach (var s in partNames) if (!string.IsNullOrEmpty(s) && s[0] != '!') return true; return false; } }
 
         public bool Matches(string partName)
         {
             if (partNames == null) return false;
-            foreach (var s in partNames) if (!string.IsNullOrEmpty(s) && partName.StartsWith(s, System.StringComparison.Ordinal)) return true;
+            foreach (var s in partNames)
+                if (s != null && s.Length > 1 && s[0] == '!' && partName.StartsWith(s.Substring(1), System.StringComparison.Ordinal)) return false;
+            foreach (var s in partNames) if (!string.IsNullOrEmpty(s) && s[0] != '!' && partName.StartsWith(s, System.StringComparison.Ordinal)) return true;
             return false;
+        }
+
+        /// <summary>The row's name (its Label text).</summary>
+        public string Label
+        {
+            get
+            {
+                var l = transform.Find("Label");
+                var t = l != null ? l.GetComponent<TMP_Text>() : null;
+                return t != null ? t.text : name;
+            }
         }
 
         /// <summary>The row whose Children container holds this row (null for the top row).</summary>

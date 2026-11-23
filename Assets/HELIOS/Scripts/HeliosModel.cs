@@ -248,6 +248,9 @@ namespace Helios
             return best;
         }
 
+        class MeshData { public Vector3[] v; public int[] tri; }
+        static readonly Dictionary<Mesh, MeshData> meshCache = new Dictionary<Mesh, MeshData>();      // picking runs on hover: read each mesh once
+
         // 1 = hits the mesh (d = world distance), 0 = misses it, -1 = the mesh cannot be read
         static int RayMesh(Renderer r, Ray ray, out float d)
         {
@@ -256,7 +259,9 @@ namespace Helios
             var mf = r.GetComponent<MeshFilter>();
             var mesh = mf != null ? mf.sharedMesh : null;
             if (mesh == null || !mesh.isReadable) return -1;
-            var v = mesh.vertices; var tri = mesh.triangles;
+            MeshData md;
+            if (!meshCache.TryGetValue(mesh, out md)) { md = new MeshData { v = mesh.vertices, tri = mesh.triangles }; meshCache[mesh] = md; }
+            var v = md.v; var tri = md.tri;
             if (v == null || tri == null || tri.Length < 3) return -1;
             var w2l = r.transform.worldToLocalMatrix;
             Vector3 o = w2l.MultiplyPoint3x4(ray.origin), dir = w2l.MultiplyVector(ray.direction);
@@ -292,7 +297,38 @@ namespace Helios
         public void SetWireframe(System.Func<Renderer, Color?> colourOf, WireSettings ws)
         {
             if (ws != null) wire = ws;
-            if (colourOf == null || HologramOn) { foreach (var o in overlays.Values) if (o.go != null && o.go.activeSelf) o.go.SetActive(false); return; }
+            wireOn.Clear();
+            if (colourOf == null || HologramOn)
+            {
+                foreach (var kv in overlays) if (kv.Value != null && kv.Value.go != null && kv.Value.go.activeSelf && kv.Key != hovered) kv.Value.go.SetActive(false);
+                if (hovered != null) Paint(hovered, HologramOn ? (Color?)null : hoverColor);
+                return;
+            }
+            if (!OverlayReady()) return;
+            foreach (var r in originals)
+            {
+                if (r == null) continue;
+                var c = colourOf(r);
+                if (c != null) wireOn[r] = c.Value;
+                Paint(r, r == hovered ? hoverColor : c);
+            }
+            UpdateWireframe();
+        }
+
+        readonly Dictionary<Renderer, Color> wireOn = new Dictionary<Renderer, Color>();
+        Renderer hovered; Color hoverColor = new Color32(245, 158, 11, 255);
+
+        /// <summary>The part under the mouse: outlined in the hover colour (null = none). Its own wireframe comes back after.</summary>
+        public void SetHover(Renderer r, Color colour)
+        {
+            if (r == hovered && colour == hoverColor) return;
+            var prev = hovered; hovered = r; hoverColor = colour;
+            if (prev != null && prev != r) Paint(prev, wireOn.TryGetValue(prev, out var pc) ? pc : (Color?)null);
+            if (r != null && !HologramOn && OverlayReady()) { Paint(r, colour); UpdateWireframe(); }
+        }
+
+        bool OverlayReady()
+        {
             if (!overlayTried)
             {
                 overlayTried = true;
@@ -303,23 +339,23 @@ namespace Helios
                 if (overlayOk && ln != null && ln.isSupported) overlayEdgeMat = new Material(ln) { name = "HELIOS Wireframe Edges" };
                 if (!overlayOk) Debug.LogWarning("[HELIOS] The wireframe shader is not available here: the wireframe is not shown.");
             }
-            if (!overlayOk) return;
-            if (mpb == null) mpb = new MaterialPropertyBlock();
-            foreach (var r in originals)
-            {
-                if (r == null) continue;
-                var c = colourOf(r);
-                Overlay o;
-                overlays.TryGetValue(r, out o);
-                if (c == null) { if (o != null && o.go != null && o.go.activeSelf) o.go.SetActive(false); continue; }
-                if (o == null) { o = MakeOverlay(r); overlays[r] = o; }
-                if (o == null || o.go == null) continue;
-                if (!o.go.activeSelf) o.go.SetActive(true);
-                mpb.Clear(); mpb.SetColor("_LineColor", c.Value);
-                if (o.surf != null) o.surf.SetPropertyBlock(mpb);
-                if (o.edges != null) o.edges.SetPropertyBlock(mpb);
-            }
-            UpdateWireframe();
+            if (overlayOk && mpb == null) mpb = new MaterialPropertyBlock();
+            return overlayOk;
+        }
+
+        void Paint(Renderer r, Color? c)
+        {
+            if (r == null) return;
+            Overlay o;
+            overlays.TryGetValue(r, out o);
+            if (c == null) { if (o != null && o.go != null && o.go.activeSelf) o.go.SetActive(false); return; }
+            if (!OverlayReady()) return;
+            if (o == null) { o = MakeOverlay(r); overlays[r] = o; }
+            if (o == null || o.go == null) return;
+            if (!o.go.activeSelf) o.go.SetActive(true);
+            mpb.Clear(); mpb.SetColor("_LineColor", c.Value);
+            if (o.surf != null) o.surf.SetPropertyBlock(mpb);
+            if (o.edges != null) o.edges.SetPropertyBlock(mpb);
         }
 
         Overlay MakeOverlay(Renderer r)

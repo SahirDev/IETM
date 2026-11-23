@@ -3,7 +3,10 @@ part names in Assets/3DModels/F16_V01.glb are F16_<Region>_Region_<Left|Center|R
 the tree is Fuselage (Cockpit, Nose / Forward / Mid / Aft Fuselage / Underside), Wing (Left / Right), Empennage (Vertical /
 Horizontal Tail), each region split Left / Center / Right, with the real part counts.
 Each row is a HeliosTreeNode whose Part Names are the name prefixes it stands for (edit them in the Inspector).
-Rows: click = select (parts outlined, camera frames them); chevron = expand / collapse; eye = hide / show.
+Rows: click = select (parts outlined, camera frames them); chevron = expand / collapse (no hide / show column).
+MOVES: parts the model names in another region than where they sit (the radome's left half is named Forward Fuselage,
+its right half Nose): the row of their real place lists their name, the other row leaves them out (!name).
+Also builds UI > Part Tooltip (hover tip over the 3D model).
 Panel layout / style: Figma frame 956:5442 (x 0.8125), as before. Run from the repo root."""
 import json, os, re, struct, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -18,7 +21,20 @@ def k(v): return round(v * K, 2)
 d_ = open(GLB, 'rb').read()
 j = json.loads(d_[20:20 + struct.unpack('<I', d_[12:16])[0]])
 NAMES = [n.get('name', '') for n in j['nodes'] if 'mesh' in n]
-def count(prefixes): return sum(1 for n in NAMES if any(n.startswith(p) for p in prefixes))
+MOVES = {'F16_Forward_Fuselage_Region_Left_Part_0331': 'F16_Nose_Region_Left_',           # radome, left half (right half = Nose)
+         'F16_Forward_Fuselage_Region_Right_Part_0142': 'F16_Mid_Fuselage_Region_Right_'}   # side skin -10..-4.7 (its mirror = Mid)
+assert all(m in NAMES for m in MOVES)
+def with_moves(prefixes):
+    if not prefixes: return prefixes
+    add = [n for n, t in MOVES.items() if any(t.startswith(p) for p in prefixes) and not any(n.startswith(p) for p in prefixes)]
+    out = ['!' + n for n, t in MOVES.items() if any(n.startswith(p) for p in prefixes) and not any(t.startswith(p) for p in prefixes)]
+    return list(prefixes) + add + out
+def matches(n, names):
+    if any(x[0] == '!' and n.startswith(x[1:]) for x in names): return False
+    return any(x[0] != '!' and n.startswith(x) for x in names)
+def count(prefixes):
+    names = with_moves(prefixes)
+    return sum(1 for n in NAMES if matches(n, names))
 
 def region(label, key, icon, sides=('Left', 'Center', 'Right')):
     kids = [(s, ['F16_%s_Region_%s_' % (key, s)], None, False, None) for s in sides if count(['F16_%s_Region_%s_' % (key, s)])]
@@ -45,25 +61,29 @@ d = Doc(P)
 def index(t):
     hs = list(re.finditer(r'^--- !u!(\d+) &(-?\d+)', t, re.M))
     return {m.group(2): (m.start(), hs[i + 1].start() if i + 1 < len(hs) else len(t)) for i, m in enumerate(hs)}
-D = index(d.t)
+def scan():
+    global D, name, rt, father, kids_of, go_of
+    D = index(d.t)
+    name, rt, father, kids_of = {}, {}, {}, {}
+    for k_ in D:
+        b = B(k_)
+        if b.startswith('--- !u!1 ') and 'm_Name' in b: name[k_] = re.search(r'm_Name: (.*)', b).group(1)
+        if b.startswith('--- !u!224') or b.startswith('--- !u!4 '):
+            g = re.search(r'm_GameObject: \{fileID: (-?\d+)\}', b).group(1); rt[g] = k_
+            father[k_] = re.search(r'm_Father: \{fileID: (-?\d+)', b).group(1)
+    go_of = {v: k_ for k_, v in rt.items()}
+    for k_, fa in father.items(): kids_of.setdefault(fa, []).append(k_)
 B = lambda k_: d.t[D[k_][0]:D[k_][1]]
-name, rt, father, kids_of = {}, {}, {}, {}
-for k_ in D:
-    b = B(k_)
-    if b.startswith('--- !u!1 ') and 'm_Name' in b: name[k_] = re.search(r'm_Name: (.*)', b).group(1)
-    if b.startswith('--- !u!224') or b.startswith('--- !u!4 '):
-        g = re.search(r'm_GameObject: \{fileID: (-?\d+)\}', b).group(1); rt[g] = k_
-        father[k_] = re.search(r'm_Father: \{fileID: (-?\d+)', b).group(1)
-go_of = {v: k_ for k_, v in rt.items()}
-for k_, fa in father.items(): kids_of.setdefault(fa, []).append(k_)
 def find(path):
     p = path.split('/')
     c = [r for r, fa in father.items() if fa == '0' and name.get(go_of[r]) == p[0]]
     for nm in p[1:]: c = [x for r in c for x in kids_of.get(r, []) if name.get(go_of[x]) == nm]
     return c
-PAGE_RT = find('HELIOS UI/UI/Pages/3D View')[0]
-old = find('HELIOS UI/UI/Pages/3D View/Aircraft Hierarchy')
-if old:
+def remove(path):
+    scan()
+    old = find(path)
+    if not old: return
+    parent = father[old[0]]
     dead = set()
     stack = [old[0]]
     while stack:
@@ -71,15 +91,19 @@ if old:
         dead.add(r); dead.add(g)
         dead.update(re.findall(r'component: \{fileID: (-?\d+)\}', B(g)))
         stack += kids_of.get(r, [])
-    pb = B(PAGE_RT); pb2 = pb.replace('  - {fileID: %s}\n' % old[0], '')
+    pb = B(parent); pb2 = pb.replace('  - {fileID: %s}\n' % old[0], '')
     assert pb2 != pb
-    spans = sorted([D[x] for x in dead] + [D[PAGE_RT]], key=lambda s: -s[0])
-    for s, e in spans:
-        piece = d.t[s:e]
-        d.t = d.t[:s] + (pb2 if piece == pb else '') + d.t[e:]
+    spans = sorted([D[x] for x in dead] + [D[parent]], key=lambda s: -s[0])
+    for s_, e in spans:
+        piece = d.t[s_:e]
+        d.t = d.t[:s_] + (pb2 if piece == pb else '') + d.t[e:]
     d.ids = set(re.findall(r'^--- !u!\d+ &(-?\d+)', d.t, re.M))
-    print('removed old panel:', len(dead), 'docs')
-D = index(d.t)
+    print('removed', path, len(dead), 'docs')
+remove('HELIOS UI/UI/Pages/3D View/Aircraft Hierarchy')
+remove('HELIOS UI/UI/Part Tooltip')
+scan()
+PAGE_RT = find('HELIOS UI/UI/Pages/3D View')[0]
+UI_RT = find('HELIOS UI/UI')[0]
 
 # ---------------------------------------------------------------- styling helpers (HELIOS theme roles)
 ROUNDED, ROUNDED_LINE, SQUARE = 'bd47ad8e7de76dd458fc070441db5007', '5e10806c54123544cb7cf367a35f1b02', '877cdca0fe09b29418ae0d92cfa4eee7'
@@ -219,13 +243,10 @@ def build(parent, node, depth):
     if depth == 3:
         tick = d.go('Tick', row['tr'], anchor_min=(0, 0.5), anchor_max=(0, 0.5), pivot=(0, 0.5), pos=(k(36.5), 0), size=(k(46), 1))
         image(tick, SQUARE, (1, 1, 1, 0.1)); themed(tick, 13, 0.1)
-    right = k(s['br'] + s['bw'] + 4 + 24 + 4)
+    right = k(s['br'] + s['bw'] + 6)
     lab = d.go('Label', row['tr'], anchor_min=(0, 0), anchor_max=(1, 1), pivot=(0, 0.5), pos=(k(s['lx']), 0), size=(-k(s['lx']) - right, 0))
     tmp(lab, label, s['fs'], 10 if depth <= 2 else 11, bold=s['bold'])
-    eb = d.go('Eye', row['tr'], anchor_min=(1, 0.5), anchor_max=(1, 0.5), pivot=(1, 0.5), pos=(-k(s['br'] + s['bw'] + 4), 0), size=(k(24), k(s['h'])))
-    ehit = image(eb, None, (0, 0, 0, 0), raycast=True)
-    eo, eye_img = icon_obj(eb['tr'], 'eye', 0, k(EYE), 11, anchor=(0.5, 0.5))
-    d.tooltip(eb, 'Hide / show')
+    eye_img = 0
     badge = d.go('Count', row['tr'], anchor_min=(1, 0.5), anchor_max=(1, 0.5), pivot=(1, 0.5), pos=(-k(s['br']), 0), size=(k(s['bw']), k(s['bh'])))
     rounded(badge, 5, 23 if depth == 0 else 4, k(s['bh']) / 2)
     bt = d.go('Text', badge['tr'], anchor_min=(0, 0), anchor_max=(1, 1), pos=(0, 0), size=(0, 0))
@@ -238,18 +259,28 @@ def build(parent, node, depth):
             gl = d.go('Guide', kids_go['tr'], anchor_min=(0, 0), anchor_max=(0, 1), pivot=(0.5, 0.5), pos=(k(s['cx'] + s['cs'] / 2), 0), size=(1, -k(8)))
             image(gl, SQUARE, (1, 1, 1, 0.1)); themed(gl, 13, 0.1); ignore_layout(gl)
         for c in children: build(kids_go['tr'], c, depth + 1)
-    names_yaml = 'partNames: []\n' if not names else 'partNames:\n' + ''.join('  - %s\n' % nm for nm in names)
+    names = with_moves(names)
+    names_yaml = 'partNames: []\n' if not names else 'partNames:\n' + ''.join('  - %s\n' % (("'%s'" % nm) if nm.startswith('!') else nm) for nm in names)
     nc = d.mono(row, NODE_GUID, 'Assembly-CSharp::Helios.HeliosTreeNode',
                 '  %s  children: {fileID: %s}\n  chevron: {fileID: %s}\n  selectedMark: {fileID: %s}\n  eye: {fileID: %s}\n  count: {fileID: %s}\n  expanded: %s\n'
                 % (names_yaml, kids_go['go'] if kids_go else 0, chev_img, sel['go'], eye_img, count_tmp, f(bool(expanded and children))))
     button(row, hov_img, [call(nc, 'OnClick')])
-    button(eb, ehit, [call(nc, 'OnEye')], tint=False)
     if chev_btn: button(chev_btn[0], chev_btn[1], [call(nc, 'OnChevron')], tint=False)
 
 build(content['tr'], TREE, 0)
 d.mono(panel, TREE_GUID, 'Assembly-CSharp::Helios.HeliosTree',
        '  chevronRight: {fileID: 21300000, guid: %s, type: 3}\n  chevronDown: {fileID: 21300000, guid: %s, type: 3}\n'
-       '  eyeOpen: {fileID: 21300000, guid: %s, type: 3}\n  eyeClosed: {fileID: 21300000, guid: %s, type: 3}\n  selected: {fileID: 0}\n  liveCounts: 1\n'
-       % (ICON['chevron'], ICON['chevrondown'], ICON['eye'], ICON['eyeoff']))
+       '  eyeOpen: {fileID: 0}\n  eyeClosed: {fileID: 0}\n  selected: {fileID: 0}\n  liveCounts: 1\n'
+       % (ICON['chevron'], ICON['chevrondown']))
+# ---------------------------------------------------------------- hover tooltip over the 3D model (HeliosPartTooltip)
+TIP_GUID = '59b4da8067144ec590ae8f0a54571979'
+tipa = stretch('Part Tooltip', UI_RT)
+box = d.go('Box', tipa['tr'], anchor_min=(0.5, 0.5), anchor_max=(0.5, 0.5), pivot=(0, 0), pos=(0, 0), size=(180, 26), active=False)
+rounded(box, 3, 20, 7)
+bt = d.go('Text', box['tr'], anchor_min=(0, 0), anchor_max=(1, 1), pos=(0, 0), size=(-20, 0))
+tip_text = tmp(bt, 'Part 0000   Nose \xb7 Left   Fuselage', 11, 10, halign=1)
+d.mono(tipa, TIP_GUID, 'Assembly-CSharp::Helios.HeliosPartTooltip',
+       '  box: {fileID: %s}\n  text: {fileID: %s}\n  offset: {x: 16, y: 14}\n  padding: 10\n  height: 26\n' % (box['tr'], tip_text))
+
 d.save()
 print('built:', len(d.new), 'objects;', len(NAMES), 'parts in the tree')

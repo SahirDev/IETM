@@ -3,8 +3,8 @@
 // At Play the rows are bound to the aircraft's parts by name (HeliosTreeNode.partNames = name prefixes):
 //   row click     -> the row's parts are outlined and the camera frames them (again = back to the whole aircraft)
 //   chevron       -> expand / collapse
-//   eye button    -> hide / show the row's parts (children rows follow)
 //   part clicked in the 3D view -> its row is selected in the tree
+//   part under the mouse in the 3D view -> tooltip with its row names (HeliosApp.DescribePart)
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -47,7 +47,7 @@ namespace Helios
                 if (app == null) app = FindAnyObjectByType<HeliosApp>();
                 yield return null;
             }
-            if (app != null) { app.PartSelected -= OnPartPicked; app.PartSelected += OnPartPicked; }
+            if (app != null) { app.PartSelected -= OnPartPicked; app.PartSelected += OnPartPicked; app.DescribePart = Describe; }
             Bind();
         }
 
@@ -112,6 +112,25 @@ namespace Helios
         {
             if (!Bound || app == null) return;
             foreach (var n in nodes) { app.SetPartsVisible(n.parts, true); n.visible = true; n.RefreshEye(); }
+        }
+
+        /// <summary>Tooltip text: part number, its row (e.g. "Nose · Left"), and the group above (e.g. Fuselage).</summary>
+        public string Describe(Renderer part)
+        {
+            if (part == null) return null;
+            HeliosTreeNode best = null;
+            foreach (var n in nodes) if (n.parts.Contains(part) && (best == null || n.parts.Count < best.parts.Count)) best = n;
+            string nm = part.gameObject.name;
+            int pi = nm.LastIndexOf("_Part_");
+            string number = pi >= 0 ? "Part " + nm.Substring(pi + 6) : nm;
+            if (best == null || best.ParentNode == null) return HeliosPartTooltip.FromName(nm);
+            string where = best.Label, group = null;
+            var up = best.ParentNode;
+            bool side = where == "Left" || where == "Right" || where == "Center";
+            if (side && up != null && up.ParentNode != null) { where = up.Label + " \u00b7 " + where; up = up.ParentNode; }
+            if (up != null && up.ParentNode != null) group = up.Label;
+            if (pi < 0) { number = where; where = ""; }
+            return HeliosPartTooltip.Format(number, where, group);
         }
 
         void OnPartPicked(Renderer part)
