@@ -994,7 +994,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: PDF
+  m_Text: Part Catalog
 --- !u!222 &20179612
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2529,7 +2529,7 @@ GameObject:
   - component: {fileID: 38443785}
   - component: {fileID: 38443784}
   m_Layer: 5
-  m_Name: Tag PDF
+  m_Name: Tag Part Catalog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2568,9 +2568,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
-  m_MinWidth: 41
+  m_MinWidth: 81.31
   m_MinHeight: 20
-  m_PreferredWidth: 41
+  m_PreferredWidth: 81.31
   m_PreferredHeight: 20
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -48163,7 +48163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e22e8d19d184140b2e23705b9e5afc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IETM.UITooltip
-  text: Download the Illustrated Parts Catalog (PDF)
+  text: Download the Illustrated Parts Catalog
 --- !u!114 &552926637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48177,9 +48177,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
-  m_MinWidth: 72
+  m_MinWidth: 126
   m_MinHeight: 30
-  m_PreferredWidth: 72
+  m_PreferredWidth: 126
   m_PreferredHeight: 30
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -49032,7 +49032,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -10, y: 0}
-  m_SizeDelta: {x: 250, y: 32}
+  m_SizeDelta: {x: 304, y: 32}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &565387688
 MonoBehaviour:
@@ -93129,7 +93129,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: PDF
+  m_Text: Part Catalog
 --- !u!222 &1161290684
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -93975,7 +93975,7 @@ GameObject:
   - component: {fileID: 1171073778}
   - component: {fileID: 1171073777}
   m_Layer: 5
-  m_Name: "Btn Printable IPC (PDF) \xB7 32-20-00 Fig 1"
+  m_Name: "Btn Part Catalog \xB7 32-20-00 Fig 1"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -94017,7 +94017,7 @@ MonoBehaviour:
   action: 6
   argument: IETM/32-20-00_Fig1_IPC.pdf
   group: 
-  label: "Printable IPC (PDF) \xB7 32-20-00 Fig 1"
+  label: "Part Catalog \xB7 32-20-00 Fig 1"
 --- !u!114 &1171073778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100953,7 +100953,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "Printable IPC (PDF) \xB7 32-20-00 Fig 1"
+  m_Text: "Part Catalog \xB7 32-20-00 Fig 1"
 --- !u!222 &1252444508
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -105733,7 +105733,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 14, y: -32}
-  m_SizeDelta: {x: -270, y: 18}
+  m_SizeDelta: {x: -324, y: 18}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1332142091
 CanvasRenderer:
@@ -110004,7 +110004,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 14, y: -8}
-  m_SizeDelta: {x: -270, y: 22}
+  m_SizeDelta: {x: -324, y: 22}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &1397964797
 CanvasRenderer:

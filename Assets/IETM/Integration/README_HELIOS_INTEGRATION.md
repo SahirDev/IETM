@@ -174,3 +174,8 @@ printable-IPC button (IETM App > Publications > engine > Ipd Pdf File) and the s
 `python Tools/ipc_pdf/engine/build_engine_pdf.py` (numpy, opencv-python, pillow, reportlab) - re-run it after moving
 parts in the Layout Editor so the exploded sheet follows. Detail layouts and views are at the end of `engine_figs.py`.
 After editing `helios_shell.json`, run IETM > HELIOS Integration > Set Up Engine IETM to rebuild the shell pages.
+
+**"Part Catalog" wording.** The printable IPC files stay PDF; the UI calls them "Part Catalog": the IPD header button
+(126 px; button row 304 px, figure title / ICN inset -324), the title page card button "Download Part Catalog", the
+shell tag chip and Related links ("Part Catalog · 32-20-00 Fig 1" / "72-00-00 Fig 1") and the engine's publication tree
+entry ("Part Catalog - 72-00-00 Fig 1", tag IPC). The IPD header (figure title and ICN) now follows the open publication.

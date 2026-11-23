@@ -57,7 +57,7 @@ namespace IETM
         [Tooltip("Pause (s) after the camera arrives, before the part starts to move.")]
         [Range(0f, 2f)] public float pauseBeforeMove = 0.3f;
         float cameraWaitUntil, cameraSettledAt = -1f;
-        [Tooltip("Printable IPC (PDF) under Assets/StreamingAssets, opened by the 'PDF' button in the IPD figure card.")]
+        [Tooltip("Printable IPC (PDF) under Assets/StreamingAssets, opened by the 'Part Catalog' button in the IPD figure card.")]
         public string ipdPdfFile = "IETM/32-20-00_Fig1_IPC.pdf";
         [Tooltip("Show the item-number callouts when the IETM starts (toggle with the Callouts button or L).")]
         public bool calloutsOnAtStart = false;

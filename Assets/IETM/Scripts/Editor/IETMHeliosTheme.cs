@@ -241,9 +241,9 @@ namespace IETM.EditorTools
             {
                 var fb = (RectTransform)reset.transform.parent;
                 IETMUIBuilder.AddPdfButton(fb);
-                if (fb.sizeDelta.x < 250) fb.sizeDelta = new Vector2(250, fb.sizeDelta.y);
+                if (fb.sizeDelta.x < 304) fb.sizeDelta = new Vector2(304, fb.sizeDelta.y);
                 foreach (var t in new Graphic[] { v.figureTitle, v.figureIcn })
-                    if (t != null && t.rectTransform.sizeDelta.x > -270) t.rectTransform.sizeDelta = new Vector2(-270, t.rectTransform.sizeDelta.y);
+                    if (t != null && t.rectTransform.sizeDelta.x > -324) t.rectTransform.sizeDelta = new Vector2(-324, t.rectTransform.sizeDelta.y);
             }
 
             // header subtitle no longer runs into the buttons

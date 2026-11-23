@@ -89,7 +89,7 @@ namespace IETM
         public string heading;
         public string text;
         public string[] focus;
-        [Tooltip("Optional file under StreamingAssets (e.g. IETM/32-20-00_Fig1_IPC.pdf) opened by the card's button.")]
+        [Tooltip("Optional file under StreamingAssets (e.g. IETM/32-20-00_Fig1_IPC.pdf, the Part Catalog) opened by the card's button.")]
         public string link;
         public string linkLabel;
     }

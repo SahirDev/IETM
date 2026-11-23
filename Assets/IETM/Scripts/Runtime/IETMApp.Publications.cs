@@ -165,6 +165,8 @@ namespace IETM
             callouts.Clear(); calloutsBuilt = false;
             if (view.publicationTitle != null && db.publication != null && !string.IsNullOrEmpty(db.publication.title))
                 view.publicationTitle.text = "<b>" + db.publication.title + "</b>";
+            if (view.figureTitle != null && db.figure != null) view.figureTitle.text = $"<b>{db.figure.figureNumber}  {db.figure.title}</b>";
+            if (view.figureIcn != null && db.figure != null) view.figureIcn.text = db.figure.icn;
             BuildTable();
             RefreshStructureTree();
             RefreshCart();

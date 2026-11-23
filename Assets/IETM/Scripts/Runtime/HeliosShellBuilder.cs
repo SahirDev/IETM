@@ -449,7 +449,7 @@ namespace IETM
                 mr.HLayout(6, 0, 0, 0, 0, TextAnchor.MiddleLeft, false, false);
                 foreach (var m in modules)
                 {
-                    Color col = m.StartsWith("DESC") ? Theme.Ok : m.StartsWith("PDF") ? Theme.Warn : Theme.Accent2;
+                    Color col = m.StartsWith("DESC") ? Theme.Ok : (m.StartsWith("PDF") || m.StartsWith("Part Catalog")) ? Theme.Warn : Theme.Accent2;
                     Tag(mr, m, col, col.A(0.16f), Clear, 10, 20);
                 }
             }

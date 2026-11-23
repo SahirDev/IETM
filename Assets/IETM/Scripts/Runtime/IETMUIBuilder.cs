@@ -204,10 +204,10 @@ namespace IETM
             v.procedureView.SetActive(false);
         }
 
-        /// <summary>"PDF" button that downloads the printable IPC (also added to existing scenes by Apply HELIOS Theme).</summary>
+        /// <summary>"Part Catalog" button that downloads the printable IPC (also added to existing scenes by Apply HELIOS Theme).</summary>
         public static IETMButton AddPdfButton(Transform figureButtons)
         {
-            return UIKit.Button(figureButtons, "PDF", IETMCommand.IpdDownloadPdf, BtnStyle.Accent, 12, 72, 30, "Download the Illustrated Parts Catalog (PDF)");
+            return UIKit.Button(figureButtons, "Part Catalog", IETMCommand.IpdDownloadPdf, BtnStyle.Accent, 12, 126, 30, "Download the Illustrated Parts Catalog");
         }
 
         /// <summary>X-Ray and Callouts toggles in the VIEW bar (top right of the viewer).</summary>
@@ -240,11 +240,11 @@ namespace IETM
             fig.rectTransform.Anchor(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), Vector2.zero, new Vector2(0, 58));
             fig.Border(Theme.Accent2.A(0.4f));
             v.figureTitle = UIKit.Label(fig.transform, $"<b>{db.figure.figureNumber}  {db.figure.title}</b>", 15, Theme.Text, TextAnchor.MiddleLeft, FontStyle.Normal, "Figure Title");
-            v.figureTitle.rectTransform.Anchor(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(14, -8), new Vector2(-270, 22));
+            v.figureTitle.rectTransform.Anchor(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(14, -8), new Vector2(-324, 22));
             v.figureIcn = UIKit.Label(fig.transform, db.figure.icn, 11, Theme.Muted, TextAnchor.MiddleLeft, FontStyle.Normal, "ICN");
-            v.figureIcn.rectTransform.Anchor(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(14, -32), new Vector2(-270, 18));
+            v.figureIcn.rectTransform.Anchor(new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 1), new Vector2(14, -32), new Vector2(-324, 18));
             var fb = UIKit.Rect("Buttons", fig.transform);
-            fb.Anchor(new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-10, 0), new Vector2(250, 32));
+            fb.Anchor(new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(1, 0.5f), new Vector2(-10, 0), new Vector2(304, 32));
             fb.HLayout(6, 0, 0, 0, 0, TextAnchor.MiddleRight, false, true);
             UIKit.Button(fb, "Show all", IETMCommand.IpdSelectAll, BtnStyle.Solid, 12, 80, 30, "Select the whole figure");
             UIKit.Button(fb, "Reset", IETMCommand.IpdReset, BtnStyle.Solid, 12, 70, 30, "Reset the view and visibility");
@@ -815,7 +815,7 @@ namespace IETM
             {
                 case "ipd": tag = "IPD"; c = Theme.Accent; break;
                 case "procedure": tag = "PROC"; c = Theme.Accent2; break;
-                case "document": tag = "PDF"; c = Theme.Warn; break;
+                case "document": tag = "IPC"; c = Theme.Warn; break;
                 default: tag = "DESC"; c = Theme.Ok; break;
             }
             r.Get<Image>("bg").color = active ? UIKit.OpaqueOver(Theme.Accent.A(0.22f), Theme.Panel) : new Color(0, 0, 0, 0);
