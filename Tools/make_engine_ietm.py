@@ -52,36 +52,36 @@ def detail(no):
     i = by[no]
     return '• Item %s · %s · P/N %s - %s' % (no.lstrip('0') or '0', i['description'].title().replace(' - ', ' - '), i['partNumber'], i['info'])
 
-# disassembly order: outside in, aft parts aft, front parts forward. (title, item, how, removal end, removal via)
+# disassembly order (as set by the user); assembly is the reverse. (title, item, how)
 DIS = [
-    ('Remove the case flange bolts', '050', 'Remove the nuts and bolts from the case flanges and the support ring. Keep the bolt sets together.', (-3.0, 0, -2.2), (-3.0, 0, 0)),
-    ('Disconnect and remove the external lines', '040', 'Disconnect the fuel, oil and sense lines at their unions. Cap all openings, then take the tube assembly off.', (-3.0, 0, 2.2), (-3.0, 0, 0)),
-    ('Remove the engine support ring', '030', 'Support the engine on the stand. Slide the support ring aft off the case and set it down.', (4.2, 0, -2.2), (4.2, 0, 0)),
-    ('Remove the outer case', '010', 'Slide the outer case aft off the core and set it on the case stand.', (4.6, 2.3, 0), (4.6, 0, 0)),
-    ('Remove the exhaust cone', '020', 'Remove the exhaust cone from the turbine exit.', (4.6, 0, 0), None),
-    ('Remove the turbine rotor', '230', 'Pull the turbine rotor stages aft off the shaft and put them on the rotor stand.', (2.3, 0, 2.2), (2.3, 0, 0)),
-    ('Remove the combustor case', '210', 'Slide the combustor case aft off the liner.', (3.9, 0, 0), None),
-    ('Remove the combustor liner', '220', 'Slide the perforated liner aft out of the combustion section.', (1.6, 0, 0), None),
-    ('Remove the fan rotor', '110', 'Remove the fan rotor from the front of the shaft.', (-1.4, 0, 0), None),
-    ('Remove the inlet guide vanes', '120', 'Remove the inlet guide vane assembly from the front frame.', (-2.7, 0, 0), None),
-    ('Remove the compressor disk assembly', '130', 'Pull the compressor disk stack forward off the shaft.', (-0.9, 0, 0), None),
+    ('Remove the exhaust cone', '020', 'Remove the exhaust cone (tail cone) from the turbine exit.'),
+    ('Remove the case flange bolts', '050', 'Remove the nuts and bolts from the case flanges and the support ring. Keep the bolt sets together.'),
+    ('Remove the compressor disk assembly', '130', 'Remove the compressor disk stack and put it on the rotor stand.'),
+    ('Disconnect and remove the external lines', '040', 'Disconnect the fuel, oil and sense lines at their unions. Cap all openings, then take the tube assembly off.'),
+    ('Remove the engine support ring', '030', 'Support the engine on the stand, then remove the support ring.'),
+    ('Remove the combustor liner', '220', 'Remove the perforated combustor liner.'),
+    ('Remove the combustor case', '210', 'Remove the combustor case.'),
+    ('Remove the turbine rotor', '230', 'Remove the turbine rotor stages from the shaft and put them on the rotor stand.'),
+    ('Remove the fan rotor', '110', 'Remove the fan rotor from the front of the shaft.'),
+    ('Remove the inlet guide vanes', '120', 'Remove the inlet guide vane assembly.'),
+    ('Remove the outer case', '010', 'The outer case is the last part left. Lift it off the stand. It stays in place in the layout: the other parts are laid out around it.'),
 ]
 
-removal = [{'node': N[no], 'offset': list(end)} for _, no, _, end, _ in DIS]
-removal_via = [{'node': N[no], 'offset': list(via)} for _, no, _, _, via in DIS if via]
-# exploded view (slider): a gentle spread along the engine axis and out from the core
-explode = [
-    {'node': N['050'], 'offset': [0, 0, -0.55]}, {'node': N['040'], 'offset': [0, 0, 0.6]}, {'node': N['030'], 'offset': [0.4, 0.75, 0]},
-    {'node': N['010'], 'offset': [0, 0, -1.25]}, {'node': N['020'], 'offset': [1.6, 0, 0]}, {'node': N['230'], 'offset': [1.0, 0, 0]},
-    {'node': N['210'], 'offset': [0, 0, 1.45]}, {'node': N['220'], 'offset': [0.3, 0, 0]}, {'node': N['110'], 'offset': [-0.9, 0, 0]},
-    {'node': N['120'], 'offset': [-1.7, 0, 0]}, {'node': N['130'], 'offset': [-0.45, 0, 0]},
-]
+# Layout: the disassembly positions placed by the user in IETM > Layout Editor (kept in engine_ietm.json). The exploded
+# view uses the SAME positions; parts move straight (no L-path corners). A part without a position stays in place.
+import os
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Assets/IETM/Resources/IETM/engine_ietm.json')
+saved = json.load(open(out, encoding='utf-8')).get('removal', []) if os.path.exists(out) else []
+by_node = {r['node']: r['offset'] for r in saved if r.get('offset')}
+removal = [{'node': N[no], 'offset': by_node.get(N[no], [0, 0, 0])} for _, no, _ in DIS]
+explode = [dict(r) for r in removal]
+removal_via = []
 
 dis_steps = [{'title': 'Preliminary requirements',
-              'text': 'Engine removed from the aircraft and installed on the engine maintenance stand. Fuel and oil drained. The removed parts are laid out around the engine in the order they come off - nothing overlaps.',
+              'text': 'Engine removed from the aircraft and installed on the engine maintenance stand. Fuel and oil drained. The removed parts are laid out in the order they come off.',
               'warning': 'WARNING: Let the engine cool down before you start. Hot section parts can cause burns.',
               'focus': ['001'], 'action': 'highlight', 'view': 'iso'}]
-for k, (title, no, how, _, _) in enumerate(DIS):
+for k, (title, no, how) in enumerate(DIS):
     dis_steps.append({'title': '%d. %s' % (k + 1, title), 'text': how + '\n\nPart details:\n' + detail(no), 'focus': [no], 'action': 'detach'})
 dis_steps.append({'title': 'Disassembly complete', 'text': 'All parts are off the engine and laid out. Clean and examine each part before you assemble the engine again.',
                   'focus': ['001'], 'action': 'highlight'})
@@ -89,8 +89,8 @@ dis_steps.append({'title': 'Disassembly complete', 'text': 'All parts are off th
 asm_steps = [{'title': 'Preliminary requirements',
               'text': 'All parts cleaned, examined and serviceable, laid out around the stand. Assembly is the disassembly in reverse order.',
               'caution': 'CAUTION: Use new self-locking nuts and seals. Torque all flange bolts to the values in the torque table.',
-              'focus': [no for _, no, _, _, _ in DIS], 'action': 'detach', 'view': 'iso'}]
-for k, (title, no, how, _, _) in enumerate(reversed(DIS)):
+              'focus': [no for _, no, _ in DIS], 'action': 'detach', 'view': 'iso'}]
+for k, (title, no, how) in enumerate(reversed(DIS)):
     name = title.replace('Remove the ', '').replace('Disconnect and remove the ', '')
     asm_steps.append({'title': '%d. Install the %s' % (k + 1, name), 'text': 'Put the %s back in position and secure it.\n\nPart details:\n%s' % (name, detail(no)),
                       'focus': [no], 'action': 'install'})
@@ -160,13 +160,5 @@ data = {
     'figure': {'title': 'Engine - Turbine Module', 'icn': 'ICN-F16ENG-A-720000-0-K0F16-00001-A-01-1', 'figureNumber': 'Fig. 1'},
     'items': items, 'modules': modules, 'explode': explode, 'removal': removal, 'removalLPath': False, 'removalVia': removal_via,
 }
-import os
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Assets/IETM/Resources/IETM/engine_ietm.json')
-# layouts placed by hand in IETM > Layout Editor are kept (run with --reset-layout to go back to the ones above)
-import sys
-if os.path.exists(out) and '--reset-layout' not in sys.argv:
-    old = json.load(open(out, encoding='utf-8'))
-    for k in ('explode', 'removal', 'removalVia'):
-        if k in old: data[k] = old[k]
 json.dump(data, open(out, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
 print('wrote', out, len(items), 'items,', len(modules), 'modules,', len(dis_steps), 'disassembly steps')

@@ -614,6 +614,15 @@ namespace IETM
             }
             foreach (var l in db.Leaves()) model.SetRemoved(l, removed.Contains(l));
 
+            // disassembly / assembly: parts go exactly to their laid-out positions (no explode added on top;
+            // the engine's exploded view uses the same positions)
+            if (InLayoutProcedure && model.explode > 0.001f)
+            {
+                if (view.explodeSlider) view.explodeSlider.SetValueWithoutNotify(0f);
+                if (view.explodeValue != null) view.explodeValue.text = "0%";
+                model.SetExplode(0f);
+            }
+
             // operation: loop the gear animation while the step is shown
             gearLoop = step.animate == "cycle";
             if (step.animate == "retract") SetGear(1);

@@ -52,7 +52,7 @@ namespace IETM.EditorTools
                 "3. Save writes the positions into the publication's JSON. Cancel restores the model.\n\n" +
                 "Disassembly = where a part is laid out when a procedure removes it.\n" +
                 "L-path corner = tick 'L path' on the parts that should move in an L, then drag each to where its FIRST move ends (e.g. pulled straight off its pin). Unticked parts move straight.\n" +
-                "Explode = the Explode slider at 100 %.",
+                "Explode = the Explode slider at 100 %. Engine: saving the Disassembly layout also sets the exploded view to it.",
                 MessageType.None);
 
             using (new EditorGUI.DisabledScope(editing))
@@ -222,6 +222,8 @@ namespace IETM.EditorTools
             string text = File.ReadAllText(path);
             string key = layout == Layout.Disassembly ? "removal" : layout == Layout.DisassemblyCorner ? "removalVia" : "explode";
             text = ReplaceArray(text, key, sb.ToString());
+            // engine (and other publications): the exploded view is the disassembly layout, saved together
+            if (pubIndex > 0 && layout == Layout.Disassembly) text = ReplaceArray(text, "explode", sb.ToString());
             File.WriteAllText(path, text);
             AssetDatabase.ImportAsset(path);
             Debug.Log($"[IETM] Saved the {layout} layout to {path}.");

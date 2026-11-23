@@ -157,3 +157,11 @@ is shown (the landing gear hidden) with every part at its saved position. Move p
 writes them into `engine_ietm.json`; **Cancel** restores everything (the engine goes hidden again). At Play the
 Explode slider moves every part from assembled to its saved position. `Tools/make_engine_ietm.py` keeps the saved
 layouts when it is re-run (`--reset-layout` to go back to the generated ones).
+
+**Engine layout = explode view.** The engine's exploded view (Explode slider at 100 %) uses the same positions as the
+disassembly layout: saving the *Disassembly layout* for the engine in the Layout Editor writes both. Parts move
+straight (no L-path corners). Disassembly order: exhaust cone (hull_turbine), bolts (screws_turbine_001), compressor
+disks (plates_turbine_016), external lines (pipes_turbine_009), support ring (mount_turbine_014), liner
+(grid_turbine_007), combustor case (canister_turbine_011), turbine rotor (blades_turbine_003.001), fan
+(blades_turbine_003), inlet guide vanes (blades_dividers_turbine_017), outer case (hull_turbine_004, stays in place);
+assembly is the reverse. The Explode slider is reset when a disassembly / assembly step runs.

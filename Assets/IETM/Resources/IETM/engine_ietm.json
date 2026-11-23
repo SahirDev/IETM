@@ -416,7 +416,7 @@
    "steps": [
     {
      "title": "Preliminary requirements",
-     "text": "Engine removed from the aircraft and installed on the engine maintenance stand. Fuel and oil drained. The removed parts are laid out around the engine in the order they come off - nothing overlaps.",
+     "text": "Engine removed from the aircraft and installed on the engine maintenance stand. Fuel and oil drained. The removed parts are laid out in the order they come off.",
      "warning": "WARNING: Let the engine cool down before you start. Hot section parts can cause burns.",
      "focus": [
       "001"
@@ -425,7 +425,15 @@
      "view": "iso"
     },
     {
-     "title": "1. Remove the case flange bolts",
+     "title": "1. Remove the exhaust cone",
+     "text": "Remove the exhaust cone (tail cone) from the turbine exit.\n\nPart details:\n• Item 20 · Cone - Exhaust, Tail · P/N ENG-72-1020-02 - Exhaust (tail) cone at the turbine exit. Shapes the hot gas flow into the exhaust nozzle.",
+     "focus": [
+      "020"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "2. Remove the case flange bolts",
      "text": "Remove the nuts and bolts from the case flanges and the support ring. Keep the bolt sets together.\n\nPart details:\n• Item 50 · Bolt Set - Case Flange · P/N ENG-72-1050-01 - Bolts and nuts that join the case flanges and hold the support ring.",
      "focus": [
       "050"
@@ -433,7 +441,15 @@
      "action": "detach"
     },
     {
-     "title": "2. Disconnect and remove the external lines",
+     "title": "3. Remove the compressor disk assembly",
+     "text": "Remove the compressor disk stack and put it on the rotor stand.\n\nPart details:\n• Item 130 · Disk Assy - Compressor Stages · P/N ENG-72-3130-01 - Compressor disk stack: the stages that compress the core air before it enters the combustor.",
+     "focus": [
+      "130"
+     ],
+     "action": "detach"
+    },
+    {
+     "title": "4. Disconnect and remove the external lines",
      "text": "Disconnect the fuel, oil and sense lines at their unions. Cap all openings, then take the tube assembly off.\n\nPart details:\n• Item 40 · Tube Assy - Fuel And Oil, External · P/N ENG-73-3040-01 - External fuel, oil and sense lines routed around the case to the fuel nozzles, bearings and sensors.",
      "focus": [
       "040"
@@ -441,50 +457,34 @@
      "action": "detach"
     },
     {
-     "title": "3. Remove the engine support ring",
-     "text": "Support the engine on the stand. Slide the support ring aft off the case and set it down.\n\nPart details:\n• Item 30 · Mount - Engine Support Ring · P/N ENG-71-2030-01 - Support ring and brackets that carry the engine on the aircraft mounts and take the thrust load.",
+     "title": "5. Remove the engine support ring",
+     "text": "Support the engine on the stand, then remove the support ring.\n\nPart details:\n• Item 30 · Mount - Engine Support Ring · P/N ENG-71-2030-01 - Support ring and brackets that carry the engine on the aircraft mounts and take the thrust load.",
      "focus": [
       "030"
      ],
      "action": "detach"
     },
     {
-     "title": "4. Remove the outer case",
-     "text": "Slide the outer case aft off the core and set it on the case stand.\n\nPart details:\n• Item 10 · Case - Outer, Engine · P/N ENG-72-1010-01 - Outer engine case. Carries the bypass air and holds the compressor, combustor and turbine in line.",
+     "title": "6. Remove the combustor liner",
+     "text": "Remove the perforated combustor liner.\n\nPart details:\n• Item 220 · Liner - Combustor, Perforated · P/N ENG-72-4220-01 - Perforated combustor liner: holds the flame and lets cooling air in through its holes.",
      "focus": [
-      "010"
-     ],
-     "action": "detach"
-    },
-    {
-     "title": "5. Remove the exhaust cone",
-     "text": "Remove the exhaust cone from the turbine exit.\n\nPart details:\n• Item 20 · Cone - Exhaust, Tail · P/N ENG-72-1020-02 - Exhaust (tail) cone at the turbine exit. Shapes the hot gas flow into the exhaust nozzle.",
-     "focus": [
-      "020"
-     ],
-     "action": "detach"
-    },
-    {
-     "title": "6. Remove the turbine rotor",
-     "text": "Pull the turbine rotor stages aft off the shaft and put them on the rotor stand.\n\nPart details:\n• Item 230 · Rotor - Turbine, Bladed · P/N ENG-72-4230-01 - Turbine rotor stages: take energy from the hot gas to drive the compressor and the fan through the shaft.",
-     "focus": [
-      "230"
+      "220"
      ],
      "action": "detach"
     },
     {
      "title": "7. Remove the combustor case",
-     "text": "Slide the combustor case aft off the liner.\n\nPart details:\n• Item 210 · Case - Combustor · P/N ENG-72-4210-01 - Combustor case: pressure vessel around the combustion chamber that carries the fuel nozzles.",
+     "text": "Remove the combustor case.\n\nPart details:\n• Item 210 · Case - Combustor · P/N ENG-72-4210-01 - Combustor case: pressure vessel around the combustion chamber that carries the fuel nozzles.",
      "focus": [
       "210"
      ],
      "action": "detach"
     },
     {
-     "title": "8. Remove the combustor liner",
-     "text": "Slide the perforated liner aft out of the combustion section.\n\nPart details:\n• Item 220 · Liner - Combustor, Perforated · P/N ENG-72-4220-01 - Perforated combustor liner: holds the flame and lets cooling air in through its holes.",
+     "title": "8. Remove the turbine rotor",
+     "text": "Remove the turbine rotor stages from the shaft and put them on the rotor stand.\n\nPart details:\n• Item 230 · Rotor - Turbine, Bladed · P/N ENG-72-4230-01 - Turbine rotor stages: take energy from the hot gas to drive the compressor and the fan through the shaft.",
      "focus": [
-      "220"
+      "230"
      ],
      "action": "detach"
     },
@@ -498,17 +498,17 @@
     },
     {
      "title": "10. Remove the inlet guide vanes",
-     "text": "Remove the inlet guide vane assembly from the front frame.\n\nPart details:\n• Item 120 · Vane Assy - Inlet Guide · P/N ENG-72-3120-01 - Inlet guide vanes (stator): fixed vanes that turn the air onto the fan and compressor blades at the right angle.",
+     "text": "Remove the inlet guide vane assembly.\n\nPart details:\n• Item 120 · Vane Assy - Inlet Guide · P/N ENG-72-3120-01 - Inlet guide vanes (stator): fixed vanes that turn the air onto the fan and compressor blades at the right angle.",
      "focus": [
       "120"
      ],
      "action": "detach"
     },
     {
-     "title": "11. Remove the compressor disk assembly",
-     "text": "Pull the compressor disk stack forward off the shaft.\n\nPart details:\n• Item 130 · Disk Assy - Compressor Stages · P/N ENG-72-3130-01 - Compressor disk stack: the stages that compress the core air before it enters the combustor.",
+     "title": "11. Remove the outer case",
+     "text": "The outer case is the last part left. Lift it off the stand. It stays in place in the layout: the other parts are laid out around it.\n\nPart details:\n• Item 10 · Case - Outer, Engine · P/N ENG-72-1010-01 - Outer engine case. Carries the bypass air and holds the compressor, combustor and turbine in line.",
      "focus": [
-      "130"
+      "010"
      ],
      "action": "detach"
     },
@@ -535,26 +535,26 @@
      "text": "All parts cleaned, examined and serviceable, laid out around the stand. Assembly is the disassembly in reverse order.",
      "caution": "CAUTION: Use new self-locking nuts and seals. Torque all flange bolts to the values in the torque table.",
      "focus": [
+      "020",
       "050",
+      "130",
       "040",
       "030",
-      "010",
-      "020",
-      "230",
-      "210",
       "220",
+      "210",
+      "230",
       "110",
       "120",
-      "130"
+      "010"
      ],
      "action": "detach",
      "view": "iso"
     },
     {
-     "title": "1. Install the compressor disk assembly",
-     "text": "Put the compressor disk assembly back in position and secure it.\n\nPart details:\n• Item 130 · Disk Assy - Compressor Stages · P/N ENG-72-3130-01 - Compressor disk stack: the stages that compress the core air before it enters the combustor.",
+     "title": "1. Install the outer case",
+     "text": "Put the outer case back in position and secure it.\n\nPart details:\n• Item 10 · Case - Outer, Engine · P/N ENG-72-1010-01 - Outer engine case. Carries the bypass air and holds the compressor, combustor and turbine in line.",
      "focus": [
-      "130"
+      "010"
      ],
      "action": "install"
     },
@@ -575,10 +575,10 @@
      "action": "install"
     },
     {
-     "title": "4. Install the combustor liner",
-     "text": "Put the combustor liner back in position and secure it.\n\nPart details:\n• Item 220 · Liner - Combustor, Perforated · P/N ENG-72-4220-01 - Perforated combustor liner: holds the flame and lets cooling air in through its holes.",
+     "title": "4. Install the turbine rotor",
+     "text": "Put the turbine rotor back in position and secure it.\n\nPart details:\n• Item 230 · Rotor - Turbine, Bladed · P/N ENG-72-4230-01 - Turbine rotor stages: take energy from the hot gas to drive the compressor and the fan through the shaft.",
      "focus": [
-      "220"
+      "230"
      ],
      "action": "install"
     },
@@ -591,31 +591,15 @@
      "action": "install"
     },
     {
-     "title": "6. Install the turbine rotor",
-     "text": "Put the turbine rotor back in position and secure it.\n\nPart details:\n• Item 230 · Rotor - Turbine, Bladed · P/N ENG-72-4230-01 - Turbine rotor stages: take energy from the hot gas to drive the compressor and the fan through the shaft.",
+     "title": "6. Install the combustor liner",
+     "text": "Put the combustor liner back in position and secure it.\n\nPart details:\n• Item 220 · Liner - Combustor, Perforated · P/N ENG-72-4220-01 - Perforated combustor liner: holds the flame and lets cooling air in through its holes.",
      "focus": [
-      "230"
+      "220"
      ],
      "action": "install"
     },
     {
-     "title": "7. Install the exhaust cone",
-     "text": "Put the exhaust cone back in position and secure it.\n\nPart details:\n• Item 20 · Cone - Exhaust, Tail · P/N ENG-72-1020-02 - Exhaust (tail) cone at the turbine exit. Shapes the hot gas flow into the exhaust nozzle.",
-     "focus": [
-      "020"
-     ],
-     "action": "install"
-    },
-    {
-     "title": "8. Install the outer case",
-     "text": "Put the outer case back in position and secure it.\n\nPart details:\n• Item 10 · Case - Outer, Engine · P/N ENG-72-1010-01 - Outer engine case. Carries the bypass air and holds the compressor, combustor and turbine in line.",
-     "focus": [
-      "010"
-     ],
-     "action": "install"
-    },
-    {
-     "title": "9. Install the engine support ring",
+     "title": "7. Install the engine support ring",
      "text": "Put the engine support ring back in position and secure it.\n\nPart details:\n• Item 30 · Mount - Engine Support Ring · P/N ENG-71-2030-01 - Support ring and brackets that carry the engine on the aircraft mounts and take the thrust load.",
      "focus": [
       "030"
@@ -623,7 +607,7 @@
      "action": "install"
     },
     {
-     "title": "10. Install the external lines",
+     "title": "8. Install the external lines",
      "text": "Put the external lines back in position and secure it.\n\nPart details:\n• Item 40 · Tube Assy - Fuel And Oil, External · P/N ENG-73-3040-01 - External fuel, oil and sense lines routed around the case to the fuel nozzles, bearings and sensors.",
      "focus": [
       "040"
@@ -631,10 +615,26 @@
      "action": "install"
     },
     {
-     "title": "11. Install the case flange bolts",
+     "title": "9. Install the compressor disk assembly",
+     "text": "Put the compressor disk assembly back in position and secure it.\n\nPart details:\n• Item 130 · Disk Assy - Compressor Stages · P/N ENG-72-3130-01 - Compressor disk stack: the stages that compress the core air before it enters the combustor.",
+     "focus": [
+      "130"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "10. Install the case flange bolts",
      "text": "Put the case flange bolts back in position and secure it.\n\nPart details:\n• Item 50 · Bolt Set - Case Flange · P/N ENG-72-1050-01 - Bolts and nuts that join the case flanges and hold the support ring.",
      "focus": [
       "050"
+     ],
+     "action": "install"
+    },
+    {
+     "title": "11. Install the exhaust cone",
+     "text": "Put the exhaust cone back in position and secure it.\n\nPart details:\n• Item 20 · Cone - Exhaust, Tail · P/N ENG-72-1020-02 - Exhaust (tail) cone at the turbine exit. Shapes the hot gas flow into the exhaust nozzle.",
+     "focus": [
+      "020"
      ],
      "action": "install"
     },
@@ -726,81 +726,17 @@
  ],
  "explode": [
   {
-   "node": "screws_turbine_001",
-   "offset": [
-    0,
-    0,
-    -0.55
-   ]
-  },
-  {
-   "node": "pipes_turbine_009",
-   "offset": [
-    0,
-    0,
-    0.6
-   ]
-  },
-  {
-   "node": "mount_turbine_014",
-   "offset": [
-    0.4,
-    0.75,
-    0
-   ]
-  },
-  {
-   "node": "hull_turbine_004",
-   "offset": [
-    0,
-    0,
-    -1.25
-   ]
-  },
-  {
    "node": "hull_turbine",
    "offset": [
-    1.6,
+    3.87658,
     0,
     0
    ]
   },
   {
-   "node": "blades_turbine_003.001",
+   "node": "screws_turbine_001",
    "offset": [
-    1.0,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "canister_turbine_011",
-   "offset": [
-    0,
-    0,
-    1.45
-   ]
-  },
-  {
-   "node": "grid_turbine_007",
-   "offset": [
-    0.3,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "blades_turbine_003",
-   "offset": [
-    -0.9,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "blades_dividers_turbine_017",
-   "offset": [
-    -1.7,
+    -14.68976,
     0,
     0
    ]
@@ -808,30 +744,7 @@
   {
    "node": "plates_turbine_016",
    "offset": [
-    -0.45,
-    0,
-    0
-   ]
-  }
- ],
- "removal": [
-    { "node": "blades_dividers_turbine_017", "offset": [-1.4065, 0, 0] },
-    { "node": "blades_turbine_003", "offset": [-2.6116, 0, 0] },
-    { "node": "blades_turbine_003.001", "offset": [3.14095, 0, 0] },
-    { "node": "canister_turbine_011", "offset": [0, -0.00065, 3.38082] },
-    { "node": "grid_turbine_007", "offset": [0, 0.00002, -2.8388] },
-    { "node": "hull_turbine", "offset": [3.87658, 0, 0] },
-    { "node": "mount_turbine_014", "offset": [-7.36555, 0, 0] },
-    { "node": "pipes_turbine_009", "offset": [-11.29986, 0, 0] },
-    { "node": "plates_turbine_016", "offset": [-12.43308, 0, 0] },
-    { "node": "screws_turbine_001", "offset": [-14.68976, 0, 0] }
-  ],
- "removalLPath": false,
- "removalVia": [
-  {
-   "node": "screws_turbine_001",
-   "offset": [
-    -3.0,
+    -12.43308,
     0,
     0
    ]
@@ -839,7 +752,7 @@
   {
    "node": "pipes_turbine_009",
    "offset": [
-    -3.0,
+    -11.29986,
     0,
     0
    ]
@@ -847,7 +760,47 @@
   {
    "node": "mount_turbine_014",
    "offset": [
-    4.2,
+    -7.36555,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "grid_turbine_007",
+   "offset": [
+    0,
+    2e-05,
+    -2.8388
+   ]
+  },
+  {
+   "node": "canister_turbine_011",
+   "offset": [
+    0,
+    -0.00065,
+    3.38082
+   ]
+  },
+  {
+   "node": "blades_turbine_003.001",
+   "offset": [
+    3.14095,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_turbine_003",
+   "offset": [
+    -2.6116,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_dividers_turbine_017",
+   "offset": [
+    -1.4065,
     0,
     0
    ]
@@ -855,18 +808,102 @@
   {
    "node": "hull_turbine_004",
    "offset": [
-    4.6,
+    0,
+    0,
+    0
+   ]
+  }
+ ],
+ "removal": [
+  {
+   "node": "hull_turbine",
+   "offset": [
+    3.87658,
     0,
     0
    ]
   },
   {
+   "node": "screws_turbine_001",
+   "offset": [
+    -14.68976,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "plates_turbine_016",
+   "offset": [
+    -12.43308,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "pipes_turbine_009",
+   "offset": [
+    -11.29986,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "mount_turbine_014",
+   "offset": [
+    -7.36555,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "grid_turbine_007",
+   "offset": [
+    0,
+    2e-05,
+    -2.8388
+   ]
+  },
+  {
+   "node": "canister_turbine_011",
+   "offset": [
+    0,
+    -0.00065,
+    3.38082
+   ]
+  },
+  {
    "node": "blades_turbine_003.001",
    "offset": [
-    2.3,
+    3.14095,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_turbine_003",
+   "offset": [
+    -2.6116,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "blades_dividers_turbine_017",
+   "offset": [
+    -1.4065,
+    0,
+    0
+   ]
+  },
+  {
+   "node": "hull_turbine_004",
+   "offset": [
+    0,
     0,
     0
    ]
   }
- ]
+ ],
+ "removalLPath": false,
+ "removalVia": []
 }
