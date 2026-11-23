@@ -241,3 +241,11 @@ HELIOS light rig (the aircraft was over-lit).
 * The Aircraft Hierarchy is built from F16_V01 (1813 parts: Cockpit + `F16_<Region>_Region_<Side>_Part_NNNN`):
   F-16 > Fuselage (Cockpit, Nose, Forward / Mid / Aft Fuselage, Underside), Wing (Left / Right), Empennage (Vertical /
   Horizontal Tail). Rebuild with `python Tools/helios_ui/hierarchy_from_model.py` (edits the live prefab).
+
+### IETM in the Editor (no Play)
+The HELIOS navigator's **Edit Page** (HELIOS UI > UI > HeliosNavigator) is the page shown while editing. With Edit Page
+= **IETM**, the IETM Module is shown and fitted into the HELIOS content area (right of the menu, below the top bar)
+exactly as at Play, and the HELIOS aircraft is hidden; on any other Edit Page the IETM Module is hidden (it used to
+stay active and draw its own HELIOS shell - menu, card, dock - faintly behind the HELIOS UI).
+`HeliosIetmEditorPreview` (Editor) + `HeliosIetmBridge.EditorPreview`; the scene setup re-applies the Edit Page
+when the scene opens.

@@ -34,6 +34,9 @@ namespace Helios.EditorTools
             if (!scene.IsValid() || scene.path != ScenePath) return;
             var app = Object.FindAnyObjectByType<HeliosApp>(FindObjectsInactive.Include);
             if (app != null && NeedsSetup(app)) Run(app, true);
+            // the Edit Page drives what is shown while editing (the IETM only on the IETM page)
+            var nav = app != null && app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
+            if (nav != null) nav.ShowEditPage();
         }
 
         [MenuItem("Tools/HELIOS/Set Up Scene (UI, F-16, nothing loaded at Play)", false, 6)]
@@ -222,7 +225,7 @@ namespace Helios.EditorTools
         static bool CameraAtHome(HeliosApp app)
         {
             var cam = Camera.main;
-            if (cam == null || app.aircraftModel == null || !HeliosModel.IsPlaced(app.aircraftModel)) return true;
+            if (cam == null || app.aircraftModel == null || !HeliosModel.IsPlaced(app.aircraftModel) || !app.aircraftModel.activeInHierarchy) return true;   // hidden (IETM page preview)
             var b = ModelBounds(app.aircraftModel);
             if (!b.HasValue) return true;
             app.HomePose(b.Value, 16f / 9f, out var pos, out var rot);
@@ -232,7 +235,7 @@ namespace Helios.EditorTools
         static void PoseMainCamera(HeliosApp app)
         {
             var cam = Camera.main;
-            if (cam == null || app.aircraftModel == null) return;
+            if (cam == null || app.aircraftModel == null || !app.aircraftModel.activeInHierarchy) return;
             var b = ModelBounds(app.aircraftModel);
             if (!b.HasValue) return;
             Undo.RecordObject(cam.transform, "HELIOS scene setup"); Undo.RecordObject(cam, "HELIOS scene setup");

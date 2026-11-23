@@ -366,6 +366,44 @@ namespace IETM.Integration
             else { ResumeHost(); hostAmbient.Apply(); }
         }
 
+        // ------------------------------------------------------------------ Editor preview (no Play)
+
+        /// <summary>Editor: the HELIOS navigator shows a page while editing (its Edit Page). On the IETM page the IETM
+        /// Module is shown and fitted into the HELIOS content area (as at Play) and the HELIOS aircraft is hidden;
+        /// on any other page the IETM Module is hidden (it used to draw its own shell behind the HELIOS UI).</summary>
+        public void EditorPreview(HeliosNavigator n, HeliosPage p)
+        {
+            if (Application.isPlaying || n == null) return;
+            module = FindModule();
+            if (module == null) return;
+            bool on = p != null && string.Equals(p.pageId, ietmPageId, StringComparison.OrdinalIgnoreCase);
+            var helios = FindAnyObjectByType<HeliosApp>(FindObjectsInactive.Include);
+            var aircraft = helios != null && helios.aircraftModel != null && HeliosModel.IsPlaced(helios.aircraftModel) ? helios.aircraftModel.transform.parent.gameObject : null;
+            if (!on)
+            {
+                if (module.activeSelf) module.SetActive(false);
+                if (aircraft != null && !aircraft.activeSelf) aircraft.SetActive(true);
+                return;
+            }
+            nav = n;
+            hostCanvas = nav.GetComponentInParent<Canvas>(true);
+            if (hostCanvas != null) hostCanvas = hostCanvas.rootCanvas;
+            hostTopBar = nav.transform.Find("Top Bar") as RectTransform;
+            hostMenu = nav.transform.Find("Menu") as RectTransform;
+            if (!module.activeSelf) module.SetActive(true);
+            if (aircraft != null && aircraft.activeSelf) aircraft.SetActive(false);      // the landing gear sits where the aircraft is
+            app = module.GetComponentInChildren<IETMApp>(true);
+            shell = module.GetComponentInChildren<HeliosShell>(true);
+            ietmCanvas = app != null && app.view != null ? app.view.canvas : null;
+            if (ietmCanvas != null)
+            {
+                ietmCanvas.enabled = true;
+                if (hostCanvas != null) ietmCanvas.sortingOrder = hostCanvas.sortingOrder - 1;
+            }
+            Canvas.ForceUpdateCanvases();
+            ApplyLayout();
+        }
+
         // ------------------------------------------------------------------ pause / resume the HELIOS 3D side
 
         void PauseHost()
@@ -448,7 +486,8 @@ namespace IETM.Integration
 
             float leftPx = gapPx, topPx = gapPx;
             if (hostMenu != null && hostMenu.gameObject.activeInHierarchy) leftPx = ScreenRect(hostMenu).xMax + gapPx;
-            if (hostTopBar != null && hostTopBar.gameObject.activeInHierarchy) topPx = Screen.height - ScreenRect(hostTopBar).yMin + gapPx;
+            float screenH = hostCanvas != null && hostCanvas.pixelRect.height > 1f ? hostCanvas.pixelRect.height : Screen.height;   // Play and Editor
+            if (hostTopBar != null && hostTopBar.gameObject.activeInHierarchy) topPx = screenH - ScreenRect(hostTopBar).yMin + gapPx;
 
             float L = leftPx / s, T = topPx / s, G = gapPx / s;
             float crumbH = HeliosShellBuilder.CrumbH;

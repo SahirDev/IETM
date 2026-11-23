@@ -29,6 +29,13 @@ namespace Helios
         public HeliosPageEvent onPageOpened = new HeliosPageEvent();
 
         public HeliosPage Current { get; private set; }
+
+        /// <summary>Editor only: raised when a page is shown in the Scene / Game view while editing (Edit Page), so
+        /// other systems can preview themselves on it (the IETM on the IETM page).</summary>
+        public static event Action<HeliosNavigator, HeliosPage> EditorPageShown;
+
+        /// <summary>Editor: shows the Edit Page again (and lets the previews follow).</summary>
+        public void ShowEditPage() { if (!Application.isPlaying) ShowOnly(Find(editPage)); }
         CanvasScaler scaler;
 
         void Awake() { RepairData(); }
@@ -92,7 +99,10 @@ namespace Helios
             foreach (var x in pages) if (x != null && x.gameObject.activeSelf != (x == p)) x.gameObject.SetActive(x == p);
             if (toolbar != null && toolbar.activeSelf != p.showToolbar) toolbar.SetActive(p.showToolbar);   // Editor preview too (Dashboard has its own view toolbar)
             if (!Application.isPlaying)
+            {
                 foreach (var mi in GetComponentsInChildren<HeliosMenuItem>(true)) mi.SetSelected(string.Equals(mi.pageId, p.pageId, StringComparison.OrdinalIgnoreCase));
+                if (EditorPageShown != null) EditorPageShown(this, p);
+            }
         }
     }
 }
