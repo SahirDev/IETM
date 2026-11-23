@@ -179,3 +179,18 @@ After editing `helios_shell.json`, run IETM > HELIOS Integration > Set Up Engine
 (126 px; button row 304 px, figure title / ICN inset -324), the title page card button "Download Part Catalog", the
 shell tag chip and Related links ("Part Catalog · 32-20-00 Fig 1" / "72-00-00 Fig 1") and the engine's publication tree
 entry ("Part Catalog - 72-00-00 Fig 1", tag IPC). The IPD header (figure title and ICN) now follows the open publication.
+
+## 3D View page: Aircraft Hierarchy, card and tool strip (Figma 956:5442)
+
+All sizes are Figma x 0.8125 (the HELIOS canvas scale, same as the top bar and the menu). Built in
+`HELIOS UI.prefab` by `Tools/helios_ui/hierarchy_panel.py` (edit time, nothing created at Play):
+* **Menu > Shadow off**: its 9-slice seam drew a thin line on both sides of the menu at the 3D View item.
+* **Flight Hours card** (Total Flight Hours / Next Service Due): Figma 200 x 131 -> 162.5 wide, rows 35.75, tile 30,
+  label 10 / value 15. Cards moved to 61.75 from the right edge.
+* **View Tools** strip: Figma 56 x 402, 38 px buttons -> 45.5 x 326.6, buttons 30.9 (icons scaled with them),
+  8.1 from the right edge; the Cross Section controls follow the Cross Section button.
+* **Aircraft Hierarchy** panel right of the menu (Figma 266 wide -> 216): header (stack icon, title, serial, search
+  button), scrolling tree F-16 (AF-3287) > Airframe (Fuselage > Nose ... Tail Cone, Wing Assembly, Empennage, Landing
+  Gear), Propulsion (Engine L / R), Avionics, Electrical, Environmental, with chevrons, icons, count badges, guide lines
+  and the selected row (Fuselage). `HeliosTree` / `HeliosTreeNode`: a click selects the row and expands / collapses
+  its children. Theme roles on every element, so light / dark mode applies.
