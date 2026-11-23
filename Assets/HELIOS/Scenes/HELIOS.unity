@@ -98667,7 +98667,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: F-16 Digital Twin
+  m_Text: "HELIOS – Asset Integrity Digital Twin"
 --- !u!222 &1400743386
 CanvasRenderer:
   m_ObjectHideFlags: 0

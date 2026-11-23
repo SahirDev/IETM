@@ -8,7 +8,7 @@ namespace Helios
     public static class HeliosData
     {
         // ---------- top bar ----------
-        public const string Brand = "HELIOS", AppTitle = "F-16 Digital Twin", TailNo = "AF-3287";
+        public const string Brand = "HELIOS", AppTitle = "HELIOS – Asset Integrity Digital Twin", TailNo = "AF-3287";
         public const string UserName = "K. Williams", UserRole = "Inspector", UserInitials = "KW";
 
         // ---------- menu ----------

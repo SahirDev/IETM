@@ -116,7 +116,7 @@ blocks of landing_gear_ietm.json; Cancel restores the model.
 
 The IETM can run inside the HELIOS application layout (same as the HELIOS Figma main screen):
 
-* **Top bar:** HELIOS logo, "F-16 Digital Twin", tail number, Overview / Maintenance / Analytics / Reports, user.
+* **Top bar:** HELIOS logo, "HELIOS – Asset Integrity Digital Twin", tail number, Overview / Maintenance / Analytics / Reports, user.
 * **Side menu:** 3D View, **IETM**, Sensors, Asset Integrity, Health, Maintenance, Settings.
 * **Flow:** 3D View (placeholder of the HELIOS 3D view) → **IETM** → *Aircraft page* (F-16C · AF-3287, 15 system
   cards with filters) → **32 Landing gear** → *System page* (sections 32-10 … 32-60, related links incl. the IPC PDF)

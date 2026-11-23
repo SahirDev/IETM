@@ -125,7 +125,7 @@ namespace Helios
             Text(Fill(RT("Letter", logo), 0, 0, 0, 0), "H", 15, true, HeliosRole.Background, TextAlignmentOptions.Center, false);
             var chars = Dt.Brand.ToUpperInvariant().ToCharArray();
             Text(At(RT("Wordmark", bar), 42f, 0f, 112f, TopH), string.Join(" ", System.Array.ConvertAll(chars, c => c.ToString())), 17, true, HeliosRole.Text, TextAlignmentOptions.MidlineLeft, false);
-            Text(At(RT("Title", bar), 155f, 0f, 120f, TopH), Dt.AppTitle, 13, true, HeliosRole.Text, TextAlignmentOptions.MidlineLeft, false);
+            Text(At(RT("Title", bar), 155f, 0f, 320f, TopH), Dt.AppTitle, 13, true, HeliosRole.Text, TextAlignmentOptions.MidlineLeft, false);
 
             var tail = At(RT("Tail No", bar), 262f, 6f, 118f, 24f);
             Hover(tail, Panel(tail, HeliosRole.Tile, 1f, HeliosRole.PanelLine, 1f, 6f, false, true));
