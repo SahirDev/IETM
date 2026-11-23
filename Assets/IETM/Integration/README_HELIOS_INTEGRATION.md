@@ -266,3 +266,9 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   Play's ResetView starts from the same angle, so the Game view before Play = the first frame at Play.
 * **Tools > HELIOS > Isometric Camera View (Editor + Play)** sets 135 / 30 and frames the camera again at any time.
   Change the angle on HELIOS App (Camera > Start Yaw / Start Pitch) and run **Frame Aircraft In Game View** to use another.
+
+## Backdrop behind the aircraft in the Editor
+* The Backdrop canvas (HELIOS UI > Backdrop) is saved as Screen Space - Overlay; overlay canvases draw over every camera,
+  so before Play it covered the aircraft (sort order -100 does not change that). At Play HeliosApp attached it to the
+  background camera. The scene setup now does the same at edit time: Render Mode = Screen Space - Camera, Render Camera =
+  HELIOS Background Camera, Plane Distance = Backdrop.distance (50), layer UI. The Game view before Play = Play.

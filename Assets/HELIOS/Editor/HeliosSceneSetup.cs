@@ -124,7 +124,7 @@ namespace Helios.EditorTools
         {
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
             return !UiOk() || !ModelOk(app) || !DoubleSidedOk(app) || app.backgroundCamera == null
-                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null;
+                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app);
         }
 
         // ================================================================ set up
@@ -137,6 +137,7 @@ namespace Helios.EditorTools
             PlaceModel(app);
             MakeDoubleSided(app);
             EnsureBackgroundCamera(app);
+            AttachBackdrop(app);
             PoseMainCamera(app);
             RemoveDuplicateLight();
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
@@ -350,6 +351,37 @@ namespace Helios.EditorTools
             var main = Camera.main;
             c.depth = (main != null ? main.depth : -1f) - 10f;
             app.backgroundCamera = c;
+        }
+
+        // ================================================================ backdrop
+
+        static HeliosBackdrop FindBackdrop(HeliosApp app)
+        {
+            var bd = app.ui != null ? app.ui.transform.root.GetComponentInChildren<HeliosBackdrop>(true) : null;
+            return bd != null ? bd : Object.FindAnyObjectByType<HeliosBackdrop>(FindObjectsInactive.Include);
+        }
+
+        /// <summary>A Screen Space - Overlay backdrop is drawn over every camera, so it hid the aircraft in the Editor;
+        /// drawn by the background camera (as at Play) it sits behind the aircraft.</summary>
+        static bool BackdropOk(HeliosApp app)
+        {
+            var bd = FindBackdrop(app);
+            if (bd == null || app.backgroundCamera == null) return true;
+            var c = bd.GetComponent<Canvas>();
+            return c == null || (c.renderMode == RenderMode.ScreenSpaceCamera && c.worldCamera == app.backgroundCamera);
+        }
+
+        static void AttachBackdrop(HeliosApp app)
+        {
+            var bd = FindBackdrop(app);
+            if (bd == null || app.backgroundCamera == null) return;
+            var c = bd.GetComponent<Canvas>();
+            if (c == null) return;
+            Undo.RecordObject(c, "HELIOS scene setup"); Undo.RecordObject(bd.gameObject, "HELIOS scene setup");
+            bd.Attach(app.backgroundCamera);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(c);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(bd.gameObject);
+            Debug.Log("[HELIOS] Backdrop drawn by the HELIOS Background Camera (behind the aircraft) in the Editor too.");
         }
 
         // ================================================================ camera, lights
