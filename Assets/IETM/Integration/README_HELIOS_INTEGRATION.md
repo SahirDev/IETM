@@ -249,3 +249,11 @@ exactly as at Play, and the HELIOS aircraft is hidden; on any other Edit Page th
 stay active and draw its own HELIOS shell - menu, card, dock - faintly behind the HELIOS UI).
 `HeliosIetmEditorPreview` (Editor) + `HeliosIetmBridge.EditorPreview`; the scene setup re-applies the Edit Page
 when the scene opens.
+
+### Double-sided aircraft in every mode
+The F-16 is a surface model (single panels, normals facing either way). `HeliosSceneSetup` gives every part a
+double-sided copy of its material (shader **HELIOS/Double Sided Lit (Built-in)**: both sides drawn, lit from the side
+facing the camera; colour, texture, normal map, metallic, smoothness, emission and alpha cut-off copied from the glTF
+material), saved in `Assets/HELIOS/Materials/<model>/` and assigned in the scene at edit time. The normal view, the
+Wireframe overlay (drawn over these materials) and the Cross Section (copies them) all use it. The hologram /
+Transparent look draws both sides alike (the "Inside Surfaces" dimming of back faces is gone).

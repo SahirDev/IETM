@@ -7,6 +7,8 @@
 //      as the app would do at Play (Aircraft Model points to it, so Play uses it as it is). Any other placed model is removed.
 //   3. Background camera (backdrop) and Sensor Focus are scene objects; the Main Camera is at the home view (the
 //      Game view shows what Play shows); Unity's default Directional Light (doubles the HELIOS light rig) is removed.
+using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -87,7 +89,7 @@ namespace Helios.EditorTools
         static bool NeedsSetup(HeliosApp app)
         {
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
-            return !UiOk() || !ModelOk(app) || app.backgroundCamera == null
+            return !UiOk() || !ModelOk(app) || !DoubleSidedOk(app) || app.backgroundCamera == null
                    || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null;
         }
 
@@ -99,6 +101,7 @@ namespace Helios.EditorTools
             SwapUi(app);
             SwapModel(app);
             PlaceModel(app);
+            MakeDoubleSided(app);
             EnsureBackgroundCamera(app);
             PoseMainCamera(app);
             RemoveDuplicateLight();
@@ -186,6 +189,101 @@ namespace Helios.EditorTools
             app.aircraftModel = inst;
             Debug.Log("[HELIOS] Aircraft placed in the scene: " + inst.name + " (HELIOS > " + HeliosModel.PlacedRootName + "). Nothing is loaded at Play.");
         }
+
+        // ================================================================ double-sided materials
+
+        public const string DoubleSidedShader = "HELIOS/Double Sided Lit (Built-in)";
+        const string MaterialRoot = "Assets/HELIOS/Materials";
+
+        static IEnumerable<Renderer> ModelRenderers(HeliosApp app)
+        {
+            if (app.aircraftModel == null || !HeliosModel.IsPlaced(app.aircraftModel)) yield break;
+            foreach (var r in app.aircraftModel.GetComponentsInChildren<Renderer>(true))
+                if (r is MeshRenderer || r is SkinnedMeshRenderer) yield return r;
+        }
+
+        static bool DoubleSidedOk(HeliosApp app)
+        {
+            if (Shader.Find(DoubleSidedShader) == null) return true;
+            foreach (var r in ModelRenderers(app))
+                foreach (var m in r.sharedMaterials) if (m != null && m.shader.name != DoubleSidedShader) return false;
+            return true;
+        }
+
+        /// <summary>Every part of the aircraft gets a double-sided copy of its material (saved under
+        /// Assets/HELIOS/Materials/&lt;model&gt;): both sides drawn and lit from the camera side, in every mode.</summary>
+        static void MakeDoubleSided(HeliosApp app)
+        {
+            var shader = Shader.Find(DoubleSidedShader);
+            if (shader == null) { Debug.LogWarning("[HELIOS] Shader " + DoubleSidedShader + " not found: materials left as they are."); return; }
+            string model = SourcePath(app.aircraftModel);
+            string folder = MaterialRoot + "/" + (string.IsNullOrEmpty(model) ? app.aircraftModel.name : Path.GetFileNameWithoutExtension(model));
+            if (!AssetDatabase.IsValidFolder(MaterialRoot)) AssetDatabase.CreateFolder("Assets/HELIOS", "Materials");
+            if (!AssetDatabase.IsValidFolder(folder)) AssetDatabase.CreateFolder(MaterialRoot, Path.GetFileName(folder));
+            var map = new Dictionary<Material, Material>();
+            int parts = 0;
+            foreach (var r in ModelRenderers(app))
+            {
+                var mats = r.sharedMaterials;
+                bool changed = false;
+                for (int i = 0; i < mats.Length; i++)
+                {
+                    var src = mats[i];
+                    if (src == null || src.shader == shader) continue;
+                    if (!map.TryGetValue(src, out var m))
+                    {
+                        string file = folder + "/" + Safe(src.name) + ".mat";
+                        m = AssetDatabase.LoadAssetAtPath<Material>(file);
+                        if (m == null) { m = DoubleSidedOf(src, shader); AssetDatabase.CreateAsset(m, file); }
+                        map[src] = m;
+                    }
+                    mats[i] = m; changed = true;
+                }
+                if (!changed) continue;
+                Undo.RecordObject(r, "HELIOS double-sided materials");
+                r.sharedMaterials = mats;
+                parts++;
+            }
+            AssetDatabase.SaveAssets();
+            if (parts > 0) Debug.Log("[HELIOS] Double-sided materials: " + map.Count + " materials (" + folder + ") on " + parts + " parts.");
+        }
+
+        static string Safe(string s)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars()) s = s.Replace(c, '_');
+            return string.IsNullOrEmpty(s) ? "Material" : s;
+        }
+
+        static Material DoubleSidedOf(Material src, Shader shader)
+        {
+            var m = new Material(shader) { name = src.name };
+            string tex = FirstTexture(src, "baseColorTexture", "_BaseMap", "_MainTex");
+            if (tex != null)
+            {
+                m.SetTexture("_MainTex", src.GetTexture(tex));
+                m.SetTextureScale("_MainTex", src.GetTextureScale(tex));
+                m.SetTextureOffset("_MainTex", src.GetTextureOffset(tex));
+            }
+            string nrm = FirstTexture(src, "normalTexture", "_BumpMap");
+            if (nrm != null) m.SetTexture("_BumpMap", src.GetTexture(nrm));
+            string col = First(src, "baseColorFactor", "_BaseColor", "_Color");
+            if (col != null) m.SetColor("_Color", src.GetColor(col));
+            string met = First(src, "metallicFactor", "_Metallic");
+            if (met != null) m.SetFloat("_Metallic", src.GetFloat(met));
+            if (src.HasProperty("roughnessFactor")) m.SetFloat("_Glossiness", 1f - src.GetFloat("roughnessFactor"));
+            else { string sm = First(src, "_Smoothness", "_Glossiness"); if (sm != null) m.SetFloat("_Glossiness", src.GetFloat(sm)); }
+            string emc = First(src, "emissiveFactor", "_EmissionColor");
+            if (emc != null) m.SetColor("_EmissionColor", src.GetColor(emc));
+            string emt = FirstTexture(src, "emissiveTexture", "_EmissionMap");
+            if (emt != null) m.SetTexture("_EmissionMap", src.GetTexture(emt));
+            bool cutout = src.IsKeywordEnabled("_ALPHATEST_ON") || src.GetTag("RenderType", false) == "TransparentCutout";
+            string cut = First(src, "alphaCutoff", "_Cutoff");
+            m.SetFloat("_Cutoff", cutout && cut != null ? src.GetFloat(cut) : 0f);
+            return m;
+        }
+
+        static string First(Material m, params string[] names) { foreach (var n in names) if (m.HasProperty(n)) return n; return null; }
+        static string FirstTexture(Material m, params string[] names) { foreach (var n in names) if (m.HasProperty(n) && m.GetTexture(n) != null) return n; return null; }
 
         static Bounds? ModelBounds(GameObject go)
         {

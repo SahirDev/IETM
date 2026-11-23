@@ -101,7 +101,7 @@ namespace Helios
         [Range(1f, 90f)] public float edgeAngle = 30f;
         [Range(0f, 3f)] public float edgeBrightness = 1.1f;
         [Range(0f, 4f)] public float zoneGlow = 1.6f;
-        [Tooltip("How bright the far side of the aircraft shows through.")]
+        [Tooltip("Not used any more: both sides of every surface are drawn alike (surface model).")]
         [Range(0f, 1f)] public float insideSurfaces = 0.4f;
         [Tooltip("The built-in zones: engine, wing root, avionics bay, hydraulics (add your own with HELIOS > Hologram Zone).")]
         public bool builtInZones = true;

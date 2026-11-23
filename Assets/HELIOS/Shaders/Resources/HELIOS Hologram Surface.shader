@@ -87,7 +87,7 @@ Shader "HELIOS/Hologram Surface"
                 float3 lc = ZoneColor(i.wpos, _LineColor.rgb, inZone);
                 float3 body = lerp(_FillColor.rgb * _FillColor.a, _FillColor.rgb, _Solid);    // solid: the full body colour, nothing shows through
                 float3 col = body + lc * (rim + grid) + lc * inZone * _ZoneGlow * (0.25 + 0.75 * rim + 0.4 * grid);
-                col *= _Intensity * (facing > 0 ? 1.0 : _BackFace);
+                col *= _Intensity;                                       // both sides alike (surface model)
                 return fixed4(col, 1);
             }
             ENDCG
