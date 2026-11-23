@@ -284,3 +284,6 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * Brightness: the scene setup makes the aircraft light rig x1.35 and the ambient light x1.4 once
   (HELIOS App `sceneLookVersion` = 1 marks it done). Fine-tune in Window > Rendering > Lighting > Environment and on
   HELIOS Aircraft Lights.
+* **Scene Brightness** (replaces the one-off x1.35): component `HeliosBrightness` on **HELIOS Aircraft Lights**
+  (Tools > HELIOS > Scene Brightness selects it). Brightness slider = every directional light x value; Ambient slider =
+  the ambient light x value. Default 1.6 / 1.6. Live in the Editor Game view and at Play.

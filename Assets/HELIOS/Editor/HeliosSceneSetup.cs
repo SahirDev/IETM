@@ -124,7 +124,7 @@ namespace Helios.EditorTools
         {
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
             return !UiOk() || !ModelOk(app) || !DoubleSidedOk(app) || app.backgroundCamera == null
-                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app) || app.sceneLookVersion < 1;
+                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app) || app.sceneLookVersion < 2;
         }
 
         // ================================================================ set up
@@ -356,31 +356,45 @@ namespace Helios.EditorTools
 
         // ================================================================ brightness
 
-        const float LightBoost = 1.35f, AmbientBoost = 1.4f;
-
-        /// <summary>Once per scene: the aircraft light rig and the ambient light 35-40 % brighter (the scene looked too dark).</summary>
-        static void Brighten(HeliosApp app)
+        [MenuItem("Tools/HELIOS/Scene Brightness", false, 9)]
+        static void BrightnessMenu()
         {
-            if (app.sceneLookVersion >= 1) return;
-            int n = 0;
-            foreach (var l in Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            {
-                if (l.type != LightType.Directional) continue;
-                Undo.RecordObject(l, "HELIOS brightness");
-                l.intensity = Mathf.Min(l.intensity * LightBoost, 3f);
-                n++;
-            }
-            Undo.RecordObject(app, "HELIOS brightness");
-            RenderSettings.ambientSkyColor = Boost(RenderSettings.ambientSkyColor);
-            RenderSettings.ambientEquatorColor = Boost(RenderSettings.ambientEquatorColor);
-            RenderSettings.ambientGroundColor = Boost(RenderSettings.ambientGroundColor);
-            RenderSettings.ambientLight = Boost(RenderSettings.ambientLight);
-            app.sceneLookVersion = 1;
-            EditorUtility.SetDirty(app);
-            Debug.Log("[HELIOS] Brighter scene: " + n + " lights x" + LightBoost + ", ambient x" + AmbientBoost + " (Window > Rendering > Lighting > Environment).");
+            var app = Object.FindAnyObjectByType<HeliosApp>(FindObjectsInactive.Include);
+            if (app == null) return;
+            var hb = Object.FindAnyObjectByType<HeliosBrightness>(FindObjectsInactive.Include);
+            if (hb == null) { app.sceneLookVersion = 0; Brighten(app); EditorSceneManager.MarkSceneDirty(app.gameObject.scene); hb = Object.FindAnyObjectByType<HeliosBrightness>(FindObjectsInactive.Include); }
+            if (hb != null) { Selection.activeObject = hb.gameObject; EditorGUIUtility.PingObject(hb.gameObject); }
         }
 
-        static Color Boost(Color c) { return new Color(Mathf.Min(c.r * AmbientBoost, 1f), Mathf.Min(c.g * AmbientBoost, 1f), Mathf.Min(c.b * AmbientBoost, 1f), c.a); }
+        const float OldLightBoost = 1.35f, OldAmbientBoost = 1.4f;
+
+        /// <summary>A HeliosBrightness on HELIOS Aircraft Lights: Brightness / Ambient sliders over the lights' designed
+        /// intensities and the scene's ambient colours (the earlier one-off x1.35 / x1.4 is taken out of the base).</summary>
+        static void Brighten(HeliosApp app)
+        {
+            if (app.sceneLookVersion >= 2 && Object.FindAnyObjectByType<HeliosBrightness>(FindObjectsInactive.Include) != null) return;
+            bool boosted = app.sceneLookVersion == 1;
+            var host = GameObject.Find("HELIOS Aircraft Lights");
+            if (host == null) host = app.gameObject;
+            var hb = host.GetComponent<HeliosBrightness>();
+            if (hb == null) hb = Undo.AddComponent<HeliosBrightness>(host);
+            Undo.RecordObject(hb, "HELIOS brightness");
+            hb.lights.Clear();
+            foreach (var l in Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (l.type == LightType.Directional && l.gameObject.scene == app.gameObject.scene)
+                    hb.lights.Add(new HeliosBrightness.LightBase { light = l, intensity = boosted ? l.intensity / OldLightBoost : l.intensity });
+            float k = boosted ? 1f / OldAmbientBoost : 1f;
+            hb.baseSky = RenderSettings.ambientSkyColor * k; hb.baseEquator = RenderSettings.ambientEquatorColor * k;
+            hb.baseGround = RenderSettings.ambientGroundColor * k; hb.baseFlat = RenderSettings.ambientLight * k;
+            hb.baseSky.a = hb.baseEquator.a = hb.baseGround.a = hb.baseFlat.a = 1f;
+            hb.brightness = 1.6f; hb.ambient = 1.6f;
+            hb.Apply();
+            EditorUtility.SetDirty(hb);
+            Undo.RecordObject(app, "HELIOS brightness");
+            app.sceneLookVersion = 2;
+            EditorUtility.SetDirty(app);
+            Debug.Log("[HELIOS] Scene Brightness on '" + host.name + "': " + hb.lights.Count + " lights, Brightness 1.6, Ambient 1.6 (change the sliders there).");
+        }
 
         // ================================================================ backdrop
 
