@@ -124,7 +124,7 @@ namespace Helios.EditorTools
         {
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
             return !UiOk() || !ModelOk(app) || !DoubleSidedOk(app) || app.backgroundCamera == null
-                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app);
+                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app) || app.sceneLookVersion < 1;
         }
 
         // ================================================================ set up
@@ -138,6 +138,7 @@ namespace Helios.EditorTools
             MakeDoubleSided(app);
             EnsureBackgroundCamera(app);
             AttachBackdrop(app);
+            Brighten(app);
             PoseMainCamera(app);
             RemoveDuplicateLight();
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
@@ -352,6 +353,34 @@ namespace Helios.EditorTools
             c.depth = (main != null ? main.depth : -1f) - 10f;
             app.backgroundCamera = c;
         }
+
+        // ================================================================ brightness
+
+        const float LightBoost = 1.35f, AmbientBoost = 1.4f;
+
+        /// <summary>Once per scene: the aircraft light rig and the ambient light 35-40 % brighter (the scene looked too dark).</summary>
+        static void Brighten(HeliosApp app)
+        {
+            if (app.sceneLookVersion >= 1) return;
+            int n = 0;
+            foreach (var l in Object.FindObjectsByType<Light>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            {
+                if (l.type != LightType.Directional) continue;
+                Undo.RecordObject(l, "HELIOS brightness");
+                l.intensity = Mathf.Min(l.intensity * LightBoost, 3f);
+                n++;
+            }
+            Undo.RecordObject(app, "HELIOS brightness");
+            RenderSettings.ambientSkyColor = Boost(RenderSettings.ambientSkyColor);
+            RenderSettings.ambientEquatorColor = Boost(RenderSettings.ambientEquatorColor);
+            RenderSettings.ambientGroundColor = Boost(RenderSettings.ambientGroundColor);
+            RenderSettings.ambientLight = Boost(RenderSettings.ambientLight);
+            app.sceneLookVersion = 1;
+            EditorUtility.SetDirty(app);
+            Debug.Log("[HELIOS] Brighter scene: " + n + " lights x" + LightBoost + ", ambient x" + AmbientBoost + " (Window > Rendering > Lighting > Environment).");
+        }
+
+        static Color Boost(Color c) { return new Color(Mathf.Min(c.r * AmbientBoost, 1f), Mathf.Min(c.g * AmbientBoost, 1f), Mathf.Min(c.b * AmbientBoost, 1f), c.a); }
 
         // ================================================================ backdrop
 

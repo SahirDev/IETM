@@ -272,3 +272,15 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   so before Play it covered the aircraft (sort order -100 does not change that). At Play HeliosApp attached it to the
   background camera. The scene setup now does the same at edit time: Render Mode = Screen Space - Camera, Render Camera =
   HELIOS Background Camera, Plane Distance = Backdrop.distance (50), layer UI. The Game view before Play = Play.
+
+## Transparent look (View Tools > Transparent) and scene brightness
+* Transparent is no longer the cyan hologram. Each part keeps its own colour/texture and is drawn with
+  `HELIOS/Ghost` (Assets/HELIOS/Shaders/Resources/HELIOS Ghost.shader): soft see-through glass, faint where a face looks
+  at you and stronger at the edges, so the cockpit, engine and stores show through; matte (low shine); no wireframe;
+  both sides drawn. The see-through copies of the ~13 F-16 materials are made the first time Transparent is pressed and
+  re-used; the parts' own materials are put back on Solid, Hologram, another page, or a second press of Transparent.
+* Tune it on HELIOS App > **Transparent**: Tint, Keep Colour (0 = grey), Face Opacity, Edge Opacity, Edge Sharpness,
+  Brightness, Shine.
+* Brightness: the scene setup makes the aircraft light rig x1.35 and the ambient light x1.4 once
+  (HELIOS App `sceneLookVersion` = 1 marks it done). Fine-tune in Window > Rendering > Lighting > Environment and on
+  HELIOS Aircraft Lights.

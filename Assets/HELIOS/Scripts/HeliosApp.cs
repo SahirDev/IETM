@@ -43,6 +43,11 @@ namespace Helios
         [Tooltip("Health page zones: structure (wing root), engine, avionics bay, hydraulics.")]
         public Color[] healthZoneColors = { new Color32(34, 197, 94, 255), new Color32(59, 130, 246, 255), new Color32(251, 146, 60, 255), new Color32(34, 197, 94, 255) };
 
+        [HideInInspector] public int sceneLookVersion;     // set by the Editor scene setup (1 = brighter light rig + ambient)
+
+        [Header("Transparent (View Tools > Transparent): see-through glass, no wireframe")]
+        public GhostSettings transparent = new GhostSettings();
+
         [Header("Hologram (the blueprint look)")]
         public HoloSettings hologram = new HoloSettings();
 
@@ -365,24 +370,23 @@ namespace Helios
         public IList<Renderer> FocusedParts { get { return focusParts; } }
 
         /// <summary>Shows the model as the hologram (true) or with its own materials (false), until the page changes.</summary>
-        public void ShowHologram(bool on) { if (!on) EndTransparent(); holoOverride = on ? 1 : 0; ApplyLook(); }
+        public void ShowHologram(bool on) { EndTransparent(); holoOverride = on ? 1 : 0; ApplyLook(); }
 
-        bool transparentLook, savedSolidBody;
-        /// <summary>See-through hologram (View Tools > Transparent), whatever Hologram > Solid Body says. Any other look
-        /// (or another page) puts Solid Body back as it was.</summary>
+        /// <summary>View Tools > Transparent: the model's own materials as soft see-through glass (HELIOS/Ghost; settings on
+        /// HELIOS App > Transparent), no hologram and no wireframe. Another look, Solid, or another page ends it;
+        /// pressing Transparent again goes back to Solid.</summary>
         public void ShowTransparent()
         {
-            if (hologram == null) return;
-            if (!transparentLook) { savedSolidBody = hologram.solidBody; transparentLook = true; }
-            hologram.solidBody = false;
-            ShowHologram(true);
+            if (model == null) return;
+            if (model.GhostOn) { ShowHologram(false); return; }
+            holoOverride = 0; wireOverride = 0;
+            ApplyLook();
+            model.SetGhost(true, transparent);
         }
 
         void EndTransparent()
         {
-            if (!transparentLook) return;
-            transparentLook = false;
-            if (hologram != null) hologram.solidBody = savedSolidBody;
+            if (model != null && model.GhostOn) model.SetGhost(false, transparent);
         }
 
         /// <summary>Switches between the hologram and the model's own materials.</summary>
@@ -535,13 +539,15 @@ namespace Helios
         {
             if (!Enum.IsDefined(typeof(ModelForward), noseDirection)) noseDirection = ModelForward.PlusZ;
             if (float.IsNaN(fieldOfView) || fieldOfView < 15f || fieldOfView > 60f) fieldOfView = 28f;
-            if (float.IsNaN(startYaw)) startYaw = 120f;
-            if (float.IsNaN(startPitch)) startPitch = 18f;
+            if (float.IsNaN(startYaw)) startYaw = 135f;
+            if (float.IsNaN(startPitch)) startPitch = 30f;
             startPitch = Mathf.Clamp(startPitch, -80f, 80f);
             if (float.IsNaN(startZoom) || startZoom < 0.5f || startZoom > 2f) startZoom = 1f;
             if (integrityColors == null || integrityColors.Length != 3) integrityColors = new Color[] { new Color32(34, 197, 94, 255), new Color32(245, 158, 11, 255), new Color32(239, 68, 68, 255) };
             if (maintenanceColors == null || maintenanceColors.Length != 3) maintenanceColors = new Color[] { new Color32(34, 211, 238, 255), new Color32(34, 197, 94, 255), new Color32(251, 146, 60, 255) };
             if (startPage < 0) startPage = 0;
+            if (transparent == null) transparent = new GhostSettings();
+            transparent.Repair();
             if (hologram == null) hologram = new HoloSettings();
             hologram.Repair();
             if (healthZoneColors == null || healthZoneColors.Length != 4) healthZoneColors = new Color[] { new Color32(34, 197, 94, 255), new Color32(59, 130, 246, 255), new Color32(251, 146, 60, 255), new Color32(34, 197, 94, 255) };                                                     // v1 setting, kept
@@ -552,7 +558,7 @@ namespace Helios
             if (maintenanceCriteria == null) maintenanceCriteria = DefaultCriteria(HeliosWireRule.MaintenanceStatus);
             if (partCategories == null) partCategories = new List<PartOverride>();
             if (float.IsNaN(selectedPartMargin) || selectedPartMargin < 1f || selectedPartMargin > 4f) selectedPartMargin = 1.8f;
-            if (settingsVersion < 2) { startYaw = 120f; startPitch = 18f; startZoom = 1f; }        // fields new in v2
+            if (settingsVersion < 2) { startYaw = 135f; startPitch = 30f; startZoom = 1f; }        // fields new in v2
             settingsVersion = SettingsVersion;
         }
 

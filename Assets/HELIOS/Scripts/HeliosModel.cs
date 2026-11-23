@@ -74,6 +74,30 @@ namespace Helios
         static float Fix(float v, float d) { return float.IsNaN(v) || float.IsInfinity(v) ? d : v; }
     }
 
+    /// <summary>The Transparent look (View Tools > Transparent): see-through glass in the parts' own colours, no wireframe.</summary>
+    [System.Serializable]
+    public class GhostSettings
+    {
+        [Tooltip("Multiplies the parts' colours (light grey-blue = the glass look).")]
+        public Color tint = new Color(0.82f, 0.85f, 0.9f, 1f);
+        [Tooltip("0 = all grey, 1 = the parts' own colours.")]
+        [Range(0f, 1f)] public float keepColour = 0.55f;
+        [Tooltip("How visible faces looking at you are (low = you see inside).")]
+        [Range(0f, 1f)] public float faceOpacity = 0.2f;
+        [Tooltip("How visible faces turning away are (the outline of every part).")]
+        [Range(0f, 1f)] public float edgeOpacity = 0.75f;
+        [Range(0.5f, 8f)] public float edgeSharpness = 2.2f;
+        [Range(0f, 3f)] public float brightness = 1.25f;
+        [Tooltip("Highlights; low = matte.")]
+        [Range(0f, 1f)] public float shine = 0.08f;
+
+        public void Repair()
+        {
+            if (float.IsNaN(faceOpacity) || float.IsNaN(edgeOpacity) || float.IsNaN(brightness)) { faceOpacity = 0.2f; edgeOpacity = 0.75f; brightness = 1.25f; }
+            if (tint.a <= 0f) tint = new Color(0.82f, 0.85f, 0.9f, 1f);
+        }
+    }
+
     /// <summary>Which edges the hologram draws: none, only where the surface bends (clean outlines), or every triangle edge.</summary>
     public enum HoloEdges { None = 0, Creases = 1, AllEdges = 2 }
 
@@ -517,6 +541,66 @@ namespace Helios
         // =====================================================================
         // the look
         // =====================================================================
+
+        // =====================================================================
+        // the Transparent look (HELIOS/Ghost): the parts' materials swapped for see-through copies, put back after
+        // =====================================================================
+
+        readonly Dictionary<Renderer, Material[]> ghostSaved = new Dictionary<Renderer, Material[]>();
+        readonly Dictionary<Material, Material> ghostMats = new Dictionary<Material, Material>();
+        public bool GhostOn { get { return ghostSaved.Count > 0; } }
+
+        public void SetGhost(bool on, GhostSettings gs)
+        {
+            if (!on)
+            {
+                foreach (var kv in ghostSaved) if (kv.Key != null) kv.Key.sharedMaterials = kv.Value;
+                ghostSaved.Clear();
+                return;
+            }
+            var shader = Shader.Find("HELIOS/Ghost");
+            if (shader == null) { Debug.LogWarning("[HELIOS] Shader HELIOS/Ghost not found: Transparent look not shown."); return; }
+            if (gs == null) gs = new GhostSettings();
+            foreach (var m in ghostMats.Values) if (m != null) Style(m, gs);
+            foreach (var r in originals)
+            {
+                if (r == null || ghostSaved.ContainsKey(r)) continue;
+                var src = r.sharedMaterials;
+                var mats = new Material[src.Length];
+                for (int i = 0; i < src.Length; i++) mats[i] = GhostOf(src[i], shader, gs);
+                ghostSaved[r] = src;
+                r.sharedMaterials = mats;
+            }
+        }
+
+        Material GhostOf(Material src, Shader shader, GhostSettings gs)
+        {
+            var key = src;
+            if (key != null && ghostMats.TryGetValue(key, out var done) && done != null) return done;
+            var m = new Material(shader) { name = (src != null ? src.name : "Part") + " (Transparent)" };
+            if (src != null)
+            {
+                foreach (var t in new[] { "_MainTex", "baseColorTexture", "_BaseMap" })
+                    if (src.HasProperty(t) && src.GetTexture(t) != null)
+                    { m.SetTexture("_MainTex", src.GetTexture(t)); m.SetTextureScale("_MainTex", src.GetTextureScale(t)); m.SetTextureOffset("_MainTex", src.GetTextureOffset(t)); break; }
+                foreach (var c in new[] { "_Color", "baseColorFactor", "_BaseColor" })
+                    if (src.HasProperty(c)) { m.SetColor("_Color", src.GetColor(c)); break; }
+                float cut = 0f;
+                if (src.HasProperty("_Cutoff") && (src.IsKeywordEnabled("_ALPHATEST_ON") || src.shader == null || src.shader.name.StartsWith("HELIOS"))) cut = src.GetFloat("_Cutoff");
+                else if (src.HasProperty("alphaCutoff") && src.IsKeywordEnabled("_ALPHATEST_ON")) cut = src.GetFloat("alphaCutoff");
+                m.SetFloat("_Cutoff", cut);
+                ghostMats[src] = m;
+            }
+            Style(m, gs);
+            return m;
+        }
+
+        static void Style(Material m, GhostSettings gs)
+        {
+            m.SetColor("_Tint", gs.tint); m.SetFloat("_KeepColour", gs.keepColour);
+            m.SetFloat("_Alpha", gs.faceOpacity); m.SetFloat("_EdgeAlpha", gs.edgeOpacity);
+            m.SetFloat("_FresnelPower", gs.edgeSharpness); m.SetFloat("_Brightness", gs.brightness); m.SetFloat("_Specular", gs.shine);
+        }
 
         public void SetLook(ModelLook l)
         {
