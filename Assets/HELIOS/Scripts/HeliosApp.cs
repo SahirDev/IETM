@@ -63,8 +63,8 @@ namespace Helios
 
         [Header("Camera")]
         [Range(15f, 60f)] public float fieldOfView = 28f;
-        [Tooltip("Start angle around the model (degrees) and above it.")]
-        public float startYaw = 120f, startPitch = 18f;
+        [Tooltip("Start angle around the model (degrees) and above it. 135 / 30 = isometric view from the front-left quarter (Editor Game view and Play).")]
+        public float startYaw = 135f, startPitch = 30f;
         [Range(0.5f, 2f)] public float startZoom = 1f;
 
         // ---------- kept from v1 (no longer used; the UI is now the prefab) ----------

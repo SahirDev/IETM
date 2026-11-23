@@ -257,3 +257,12 @@ facing the camera; colour, texture, normal map, metallic, smoothness, emission a
 material), saved in `Assets/HELIOS/Materials/<model>/` and assigned in the scene at edit time. The normal view, the
 Wireframe overlay (drawn over these materials) and the Cross Section (copies them) all use it. The hologram /
 Transparent look draws both sides alike (the "Inside Surfaces" dimming of back faces is gone).
+
+## Isometric start view (Editor Game view and Play)
+* HeliosApp `startYaw` / `startPitch` = **135 / 30**: an isometric view of the F-16 from the front-left quarter (nose +Z).
+  Scenes still on the old 120 / 18 are moved to 135 / 30 once when HELIOS.unity opens; a value you set yourself is kept.
+* When the scene opens, the setup first shows the Edit Page (so an IETM preview never leaves the aircraft hidden), then
+  frames the Main Camera on the aircraft at that angle if its position, rotation or field of view differ, and saves.
+  Play's ResetView starts from the same angle, so the Game view before Play = the first frame at Play.
+* **Tools > HELIOS > Isometric Camera View (Editor + Play)** sets 135 / 30 and frames the camera again at any time.
+  Change the angle on HELIOS App (Camera > Start Yaw / Start Pitch) and run **Frame Aircraft In Game View** to use another.

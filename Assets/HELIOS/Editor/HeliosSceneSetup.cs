@@ -35,10 +35,44 @@ namespace Helios.EditorTools
             var scene = EditorSceneManager.GetActiveScene();
             if (!scene.IsValid() || scene.path != ScenePath) return;
             var app = Object.FindAnyObjectByType<HeliosApp>(FindObjectsInactive.Include);
-            if (app != null && NeedsSetup(app)) Run(app, true);
-            // the Edit Page drives what is shown while editing (the IETM only on the IETM page)
+            // the Edit Page drives what is shown while editing (the IETM only on the IETM page); shown first so the
+            // aircraft is visible (not left hidden by an IETM preview) before the camera is checked and framed
             var nav = app != null && app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
             if (nav != null) nav.ShowEditPage();
+            if (app != null)
+            {
+                MigrateToIsometric(app);
+                if (NeedsSetup(app)) Run(app, true);
+            }
+            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+        }
+
+        public const float IsoYaw = 135f, IsoPitch = 30f;
+
+        /// <summary>The old start angle (120 / 18) becomes the isometric one once; a value you set yourself is kept.</summary>
+        static void MigrateToIsometric(HeliosApp app)
+        {
+            if (!Mathf.Approximately(app.startYaw, 120f) || !Mathf.Approximately(app.startPitch, 18f)) return;
+            Undo.RecordObject(app, "HELIOS isometric view");
+            app.startYaw = IsoYaw; app.startPitch = IsoPitch;
+            EditorUtility.SetDirty(app);
+        }
+
+        [MenuItem("Tools/HELIOS/Isometric Camera View (Editor + Play)", false, 7)]
+        static void IsometricMenu()
+        {
+            var app = Object.FindAnyObjectByType<HeliosApp>(FindObjectsInactive.Include);
+            if (app == null) { EditorUtility.DisplayDialog("HELIOS", "No HELIOS App in the scene.", "OK"); return; }
+            var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
+            if (nav != null) nav.ShowEditPage();
+            Undo.RecordObject(app, "HELIOS isometric view");
+            app.startYaw = IsoYaw; app.startPitch = IsoPitch;
+            EditorUtility.SetDirty(app);
+            PoseMainCamera(app);
+            EditorSceneManager.MarkSceneDirty(app.gameObject.scene);
+            EditorSceneManager.SaveScene(app.gameObject.scene);
+            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            Debug.Log("[HELIOS] Isometric view: Main Camera framed on the F-16 (yaw " + IsoYaw + ", pitch " + IsoPitch + "); Play starts from the same view.");
         }
 
         [MenuItem("Tools/HELIOS/Set Up Scene (UI, F-16, nothing loaded at Play)", false, 6)]
@@ -327,7 +361,8 @@ namespace Helios.EditorTools
             var b = ModelBounds(app.aircraftModel);
             if (!b.HasValue) return true;
             app.HomePose(b.Value, 16f / 9f, out var pos, out var rot);
-            return (cam.transform.position - pos).sqrMagnitude < 0.01f && cam.clearFlags == CameraClearFlags.Depth;
+            return (cam.transform.position - pos).sqrMagnitude < 0.01f && Quaternion.Angle(cam.transform.rotation, rot) < 0.5f
+                   && Mathf.Approximately(cam.fieldOfView, app.fieldOfView) && cam.clearFlags == CameraClearFlags.Depth;
         }
 
         static void PoseMainCamera(HeliosApp app)
@@ -343,6 +378,8 @@ namespace Helios.EditorTools
             cam.clearFlags = CameraClearFlags.Depth;            // the background camera draws the backdrop (as at Play)
             cam.cullingMask &= ~(1 << 5);                       // not the UI layer
             cam.nearClipPlane = 0.05f; cam.farClipPlane = 1000f;
+            cam.orthographic = false;
+            Debug.Log("[HELIOS] Main Camera framed on the aircraft (yaw " + app.startYaw + ", pitch " + app.startPitch + ").");
         }
 
         static GameObject DuplicateLight()
