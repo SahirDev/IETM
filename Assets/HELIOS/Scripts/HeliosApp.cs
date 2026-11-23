@@ -212,7 +212,7 @@ namespace Helios
         {
             Page = p;
             if (p == null) return;
-            holoOverride = -1; wireOverride = -1; focusParts.Clear(); EndTransparent();
+            holoOverride = -1; wireOverride = -1; focusParts.Clear(); groupHighlight = false; EndTransparent();
             ApplyLook();
             if (cam != null) cam.enabled = p.showModel;
         }
@@ -253,7 +253,14 @@ namespace Helios
         public void ApplyWireframe()
         {
             if (model == null) return;
-            if (!WireframeOn) { model.SetWireframe(null, wireframe); return; }
+            var focusSet = new HashSet<Renderer>(focusParts);
+            if (!WireframeOn)
+            {
+                // parts selected in the Aircraft Hierarchy are outlined even with the wireframe off
+                if (groupHighlight && focusSet.Count > 0) model.SetWireframe(r => focusSet.Contains(r) ? wireframe.highlight : (Color?)null, wireframe);
+                else model.SetWireframe(null, wireframe);
+                return;
+            }
             var rule = Page != null ? Page.wireRule : HeliosWireRule.AllParts;
             List<CategoryStatus> table = rule == HeliosWireRule.HealthStatus ? healthCriteria : rule == HeliosWireRule.IntegrityStatus ? integrityCriteria
                 : rule == HeliosWireRule.MaintenanceStatus ? maintenanceCriteria : null;
@@ -261,7 +268,7 @@ namespace Helios
             bool selectedOnly = rule == HeliosWireRule.ClickedSensor || (Page != null && Page.onSelectedPartOnly && wireOverride != 1);
             model.SetWireframe(r =>
             {
-                if (selectedOnly && !focusParts.Contains(r)) return null;
+                if (selectedOnly && !focusSet.Contains(r)) return null;
                 if (rule == HeliosWireRule.AllParts || rule == HeliosWireRule.ClickedSensor) return ws.highlight;
                 var cat = model.CategoryOf(r, partCategories);
                 var st = WireStatus.None;
@@ -302,7 +309,7 @@ namespace Helios
                 if (had) { FlyHome(); if (PartSelected != null) PartSelected(null); }
                 return;
             }
-            focusParts.Clear(); focusParts.Add(part);
+            focusParts.Clear(); focusParts.Add(part); groupHighlight = false;
             ApplyWireframe();
             var b = part.bounds;
             float whole = model != null ? Mathf.Max(0.001f, model.Bounds.extents.magnitude) : 1f;
@@ -315,6 +322,33 @@ namespace Helios
         {
             if (model == null || cam == null) return;
             SelectPart(model.PickPart(cam.ScreenPointToRay(screenPoint)));
+        }
+
+        bool groupHighlight;
+
+        /// <summary>Selects a group of parts (a row of the Aircraft Hierarchy): they are outlined and the camera frames
+        /// them. Null or empty clears the selection and goes back to the whole aircraft.</summary>
+        public void SelectParts(IList<Renderer> parts, bool fly = true)
+        {
+            focusParts.Clear();
+            if (parts != null) foreach (var r in parts) if (r != null && r.gameObject.activeInHierarchy) focusParts.Add(r);
+            groupHighlight = focusParts.Count > 0;
+            ApplyWireframe();
+            if (!fly) return;
+            if (focusParts.Count == 0) { FlyHome(); return; }
+            var b = focusParts[0].bounds;
+            foreach (var r in focusParts) b.Encapsulate(r.bounds);
+            float whole = model != null ? Mathf.Max(0.001f, model.Bounds.extents.magnitude) : 1f;
+            FlyTo(b.center, Mathf.Clamp(b.extents.magnitude / whole * selectedPartMargin, 0.05f, 1.2f));
+        }
+
+        /// <summary>Shows or hides parts (Aircraft Hierarchy eye button). Hidden parts cannot be clicked and their
+        /// wireframe / hologram (children of the part) hide with them.</summary>
+        public void SetPartsVisible(IEnumerable<Renderer> parts, bool visible)
+        {
+            if (parts == null) return;
+            foreach (var r in parts) if (r != null && r.gameObject.activeSelf != visible) r.gameObject.SetActive(visible);
+            if (!visible && focusParts.RemoveAll(r => r == null || !r.gameObject.activeInHierarchy) > 0) ApplyWireframe();
         }
 
         /// <summary>Clears the clicked-sensor part.</summary>

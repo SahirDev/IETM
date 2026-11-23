@@ -189,8 +189,21 @@ All sizes are Figma x 0.8125 (the HELIOS canvas scale, same as the top bar and t
   label 10 / value 15. Cards moved to 61.75 from the right edge.
 * **View Tools** strip: Figma 56 x 402, 38 px buttons -> 45.5 x 326.6, buttons 30.9 (icons scaled with them),
   8.1 from the right edge; the Cross Section controls follow the Cross Section button.
-* **Aircraft Hierarchy** panel right of the menu (Figma 266 wide -> 216): header (stack icon, title, serial, search
-  button), scrolling tree F-16 (AF-3287) > Airframe (Fuselage > Nose ... Tail Cone, Wing Assembly, Empennage, Landing
-  Gear), Propulsion (Engine L / R), Avionics, Electrical, Environmental, with chevrons, icons, count badges, guide lines
-  and the selected row (Fuselage). `HeliosTree` / `HeliosTreeNode`: a click selects the row and expands / collapses
-  its children. Theme roles on every element, so light / dark mode applies.
+* **Aircraft Hierarchy** panel right of the menu (Figma 266 wide -> 216), built from the real F-16 model by
+  `Tools/helios_ui/hierarchy_from_model.py`. Part names in `F_16_Updated_Metadata 4.glb` are
+  `F16_<Region>_Region_<Left|Center|Right>_Part_NNNN`, so the tree is F-16 (2112 parts) > Fuselage (Nose, Forward /
+  Mid / Aft Fuselage, Underside) / Wing (Left, Right) / Empennage (Vertical, Horizontal Tail), regions split Left /
+  Center / Right, with the real part counts.
+
+### Editing the Aircraft Hierarchy (Editor)
+The rows are normal objects in `HELIOS UI.prefab` (UI > Pages > 3D View > Aircraft Hierarchy > Tree > Content):
+rename a row with its **Label** text, reorder / duplicate rows, and set which parts a row stands for on its
+**Row > HeliosTreeNode > Part Names** (part name prefixes, e.g. `F16_Wing_Region_Left_`; empty = its child rows'
+parts). **Expanded** = children shown when the page opens (switch the **Children** object on to see them while
+editing). The count badges are updated at Play with the number of parts each row found.
+
+### Using it (Play)
+* click a row: its parts are outlined and the camera frames them; click it again (or the F-16 row) = whole aircraft
+* chevron: expand / collapse; eye: hide / show the row's parts (hidden parts cannot be clicked; their wireframe and
+  hologram hide too)
+* click a part in the 3D view: its row is selected in the tree (parents expand)
