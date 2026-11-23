@@ -1,20 +1,22 @@
-"""Engine IPC PDF (72-00-00 Fig 1): title page, exploded illustration with item callouts, parts list.
-Data: Assets/IETM/Resources/IETM/engine_ietm.json. Illustration: engine_fig1.png (the exploded view captured in the
-IETM, background whitened) + engine_fig1_labels.json (item, anchor ax/ay on the part, label lx/ly; image pixels).
+"""Engine IPC PDF (72-00-00 Fig 1), laid out like the landing gear IPC: title page, five illustration sheets
+(assembly, exploded view, details A-C; rendered from engine.glb by engine_figs.py) and the parts list.
 Run: python Tools/ipc_pdf/engine/build_engine_pdf.py   ->  Assets/StreamingAssets/IETM/72-00-00_Fig1_IPC.pdf"""
-import json, os
+import json, os, sys, subprocess, tempfile
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.pdfgen import canvas
 from reportlab.lib.colors import black, HexColor
 from reportlab.lib.utils import ImageReader
+from PIL import Image
+import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 D = json.load(open(os.path.join(REPO, 'Assets/IETM/Resources/IETM/engine_ietm.json'), encoding='utf-8'))
 pub, fig, items = D['publication'], D['figure'], D['items']
-IMG = os.path.join(HERE, 'engine_fig1.png')
-LABELS = json.load(open(os.path.join(HERE, 'engine_fig1_labels.json')))
 OUT = os.path.join(REPO, 'Assets/StreamingAssets/IETM/72-00-00_Fig1_IPC.pdf')
+WORK = os.path.join(tempfile.gettempdir(), 'engine_ipc')
+subprocess.check_call([sys.executable, os.path.join(HERE, 'engine_figs.py'), WORK])
+FIGS = json.load(open(os.path.join(WORK, 'figs.json')))
 
 CH, FIGNO, DATE, SHORT = '72-00-00', '1', 'Nov 23/26', 'F-16 ENGINE'
 M = 36
@@ -41,33 +43,38 @@ def frame(title_right='ILLUSTRATED PARTS CATALOG'):
     c.setFillColor(black)
     return W, H
 
-def figure(x, y, w, h, labels=True):
-    """Draws the illustration fitted in the box (x, y, w, h), with the item callouts."""
-    img = ImageReader(IMG); iw, ih = img.getSize()
+def sheet_image(f):
+    """Crops a sheet to its drawing + labels; returns (image path, labels in the cropped pixels, size)."""
+    im = Image.open(f['image']).convert('L'); a = np.array(im) < 250
+    ys, xs = np.nonzero(a)
+    lx = [L['lx'] for L in f['labels']]; ly = [L['ly'] for L in f['labels']]
+    x0 = int(max(0, min([xs.min()] + lx) - 40)); x1 = int(min(im.width, max([xs.max()] + lx) + 40))
+    y0 = int(max(0, min([ys.min()] + ly) - 25)); y1 = int(min(im.height, max([ys.max()] + ly) + 25))
+    crop = f['image'].replace('.png', '_c.png'); im.crop((x0, y0, x1, y1)).save(crop)
+    labels = [dict(L, ax=L['ax'] - x0, lx=L['lx'] - x0, ay=L['ay'] - y0, ly=L['ly'] - y0) for L in f['labels']]
+    return crop, labels, (x1 - x0, y1 - y0)
+
+def draw_sheet(f, x, y, w, h, labels=True):
+    img, L_, (iw, ih) = sheet_image(f)
     s = min(w / iw, h / ih); ox = x + (w - iw * s) / 2; oy = y + (h - ih * s) / 2
-    c.drawImage(img, ox, oy, iw * s, ih * s, mask='auto')
+    c.drawImage(ImageReader(img), ox, oy, iw * s, ih * s)
     if not labels: return
     P = lambda px, py: (ox + px * s, oy + (ih - py) * s)
     c.setLineWidth(0.5)
-    for L in LABELS:
+    for L in L_:
         ax, ay = P(L['ax'], L['ay']); lx, ly = P(L['lx'], L['ly'])
         c.setFont('Helvetica-Bold', 9); tw = c.stringWidth(L['item'], 'Helvetica-Bold', 9)
         vx, vy = ax - lx, ay - ly; dl = max(1e-6, (vx * vx + vy * vy) ** 0.5)
         ex = lx + vx / dl * (tw / 2 + 2); ey = ly + vy / dl * 6
         c.line(ax, ay, ex, ey); c.circle(ax, ay, 1.2, fill=1)
-    drawn = set()
-    for L in LABELS:                       # one number per label position (a part may have several leaders)
-        key = (L['item'], L['lx'], L['ly'])
-        if key in drawn: continue
-        drawn.add(key); lx, ly = P(L['lx'], L['ly'])
-        c.setFont('Helvetica-Bold', 9); c.drawCentredString(lx, ly - 3, L['item'])
+        c.drawCentredString(lx, ly - 3, L['item'])
 
 # ---- title page
 W, H = frame('TITLE PAGE')
 c.setFont('Helvetica-Bold', 24); c.drawCentredString(W / 2, H - 190, 'F-16 ENGINE - TURBINE MODULE')
 c.setFont('Helvetica', 16); c.drawCentredString(W / 2, H - 218, 'ILLUSTRATED PARTS CATALOG')
 c.setFont('Helvetica', 11); c.drawCentredString(W / 2, H - 246, f'Chapter {CH}  ·  Figure {FIGNO}')
-figure(M + 10, H - 520, W - 2 * M - 20, 230, labels=False)
+draw_sheet(FIGS[0][1], M + 10, H - 560, W - 2 * M - 20, 290, labels=False)
 rows = [('Publication code', pub['pmc']), ('Issue', f"{pub['issue']}  ({pub['issueDate']})"),
         ('Applicability', pub['applicability']), ('Figure ICN', fig['icn'])]
 y = 200
@@ -77,24 +84,15 @@ c.setFillColor(HexColor('#B45309')); c.setFont('Helvetica-Bold', 8.5)
 c.drawCentredString(W / 2, 110, pub['dataStatus'][:110]); c.setFillColor(black)
 c.showPage()
 
-# ---- illustration sheet (landscape: the exploded view is long)
+# ---- illustration sheets (landscape: the engine is long)
 c.setPageSize(landscape(letter))
-W, H = frame()
-figure(M, M + 70, W - 2 * M, H - 2 * M - 84)
-# item key (bottom right, below the long parts row)
-key = [it for it in items if it['nodes']]
-kw, kx = 250, W - M - 250
-ky = M + 80 + 12 * (len(key) + 1)
-c.setFillColor(HexColor('#F4F6FA')); c.setStrokeColor(HexColor('#C9CED8')); c.setLineWidth(0.5)
-c.rect(kx - 8, M + 82, kw + 8, 12 * (len(key) + 1) + 10, fill=1)
-c.setFillColor(black); c.setFont('Helvetica-Bold', 7.5); c.drawString(kx, ky, 'ITEM    NOMENCLATURE')
-for k, it in enumerate(key):
-    c.setFont('Helvetica-Bold', 7.5); c.drawRightString(kx + 16, ky - 12 * (k + 1), it['itemNo'].lstrip('0'))
-    c.setFont('Helvetica', 7.5); c.drawString(kx + 30, ky - 12 * (k + 1), it['description'][:48])
-c.setStrokeColor(black)
-c.setFont('Helvetica-Bold', 10); c.drawCentredString(W / 2, M + 52, fig['title'].upper() + ' - EXPLODED VIEW')
-c.setFont('Helvetica', 9); c.drawCentredString(W / 2, M + 40, f'Figure {FIGNO} (Sheet 1 of 1)')
-c.showPage()
+NS = len(FIGS)
+for i, (name, f) in enumerate(FIGS):
+    W, H = frame()
+    draw_sheet(f, M, M + 70, W - 2 * M, H - 2 * M - 84)
+    c.setFont('Helvetica-Bold', 10); c.drawCentredString(W / 2, M + 52, fig['title'].upper())
+    c.setFont('Helvetica', 9); c.drawCentredString(W / 2, M + 40, f'Figure {FIGNO} (Sheet {i + 1} of {NS})  -  {name.upper()}')
+    c.showPage()
 
 # ---- parts list
 c.setPageSize(letter)

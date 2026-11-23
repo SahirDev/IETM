@@ -138,8 +138,8 @@ modules = [
          {'heading': 'F-16 Engine - Turbine Module', 'text': 'Interactive Electronic Technical Manual (IETM) for the F-16 engine (turbine module). The manual combines descriptive data, an interactive Illustrated Parts Data (IPD) module and step-by-step procedures, all linked to the 3D model.'},
          {'heading': 'How to use', 'text': 'Select a data module in the publication tree. Click a part in the 3D view or a row in the parts list to cross-highlight it. Use the viewer toolbar to isolate, hide, x-ray or explode the engine. Add parts to the order list with the cart button.'},
          {'heading': 'Safety', 'text': 'Engine work is done with the engine on the maintenance stand, cold, drained and with the ignition disarmed. Follow the warnings and cautions in each procedure.'},
-         {'heading': 'Printable IPC', 'text': 'Illustrated Parts Catalog 72-00-00 Figure 1: exploded view with item callouts and the parts list, as a PDF for printing.',
-          'link': 'IETM/72-00-00_Fig1_IPC.pdf', 'linkLabel': 'Download IPC (PDF)'},
+         {'heading': 'Printable Illustrated Parts Catalog', 'text': '72-00-00 Figure 1 - title page, assembly, exploded view, three detail sheets and the full parts list (7 pages, PDF).',
+          'link': 'IETM/72-00-00_Fig1_IPC.pdf', 'linkLabel': 'Download PDF'},
          {'heading': 'Data status', 'text': 'This is a proof-of-concept publication. Part numbers, CAGE codes and procedures are sample data.'}]},
     {'id': 'DM-ENG-DESC', 'group': G1, 'type': 'description', 'dmc': 'DMC-F16ENG-A-72-00-00-00A-040A-D', 'title': 'Engine', 'infoName': 'Description', 'focus': ['001'],
      'paragraphs': [

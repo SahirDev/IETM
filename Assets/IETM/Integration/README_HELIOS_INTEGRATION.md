@@ -166,9 +166,11 @@ disks (plates_turbine_016), external lines (pipes_turbine_009), support ring (mo
 (blades_turbine_003), inlet guide vanes (blades_dividers_turbine_017), outer case (hull_turbine_004, stays in place);
 assembly is the reverse. The Explode slider is reset when a disassembly / assembly step runs.
 
-**Engine printable IPC (PDF).** `Assets/StreamingAssets/IETM/72-00-00_Fig1_IPC.pdf`: title page, the exploded view with
-item callouts and an item key (landscape), and the parts list. Opened from the engine title page card, the IPD's
+**Engine printable IPC (PDF).** `Assets/StreamingAssets/IETM/72-00-00_Fig1_IPC.pdf`, laid out like the landing gear
+IPC (7 pages): title page, Figure 1 sheets 1-5 (assembly, exploded view = the IETM explode / disassembly layout,
+Detail A compressor, Detail B combustion and turbine, Detail C case, mounts and external lines; line-art rendered from
+`engine.glb`, callouts placed automatically) and the parts list. Opened from the engine title page card, the IPD's
 printable-IPC button (IETM App > Publications > engine > Ipd Pdf File) and the shell's Related list. Rebuild with
-`python Tools/ipc_pdf/engine/build_engine_pdf.py` (illustration `engine_fig1.png` + callout positions
-`engine_fig1_labels.json` in pixels; replace the image with a new capture of the exploded view if the layout changes).
+`python Tools/ipc_pdf/engine/build_engine_pdf.py` (numpy, opencv-python, pillow, reportlab) - re-run it after moving
+parts in the Layout Editor so the exploded sheet follows. Detail layouts and views are at the end of `engine_figs.py`.
 After editing `helios_shell.json`, run IETM > HELIOS Integration > Set Up Engine IETM to rebuild the shell pages.
