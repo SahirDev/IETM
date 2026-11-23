@@ -235,6 +235,12 @@
      "text": "Engine work is done with the engine on the maintenance stand, cold, drained and with the ignition disarmed. Follow the warnings and cautions in each procedure."
     },
     {
+     "heading": "Printable IPC",
+     "text": "Illustrated Parts Catalog 72-00-00 Figure 1: exploded view with item callouts and the parts list, as a PDF for printing.",
+     "link": "IETM/72-00-00_Fig1_IPC.pdf",
+     "linkLabel": "Download IPC (PDF)"
+    },
+    {
      "heading": "Data status",
      "text": "This is a proof-of-concept publication. Part numbers, CAGE codes and procedures are sample data."
     }

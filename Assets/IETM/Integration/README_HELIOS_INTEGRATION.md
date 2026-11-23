@@ -165,3 +165,10 @@ disks (plates_turbine_016), external lines (pipes_turbine_009), support ring (mo
 (grid_turbine_007), combustor case (canister_turbine_011), turbine rotor (blades_turbine_003.001), fan
 (blades_turbine_003), inlet guide vanes (blades_dividers_turbine_017), outer case (hull_turbine_004, stays in place);
 assembly is the reverse. The Explode slider is reset when a disassembly / assembly step runs.
+
+**Engine printable IPC (PDF).** `Assets/StreamingAssets/IETM/72-00-00_Fig1_IPC.pdf`: title page, the exploded view with
+item callouts and an item key (landscape), and the parts list. Opened from the engine title page card, the IPD's
+printable-IPC button (IETM App > Publications > engine > Ipd Pdf File) and the shell's Related list. Rebuild with
+`python Tools/ipc_pdf/engine/build_engine_pdf.py` (illustration `engine_fig1.png` + callout positions
+`engine_fig1_labels.json` in pixels; replace the image with a new capture of the exploded view if the layout changes).
+After editing `helios_shell.json`, run IETM > HELIOS Integration > Set Up Engine IETM to rebuild the shell pages.

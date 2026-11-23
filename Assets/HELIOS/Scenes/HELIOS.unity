@@ -65285,7 +65285,7 @@ MonoBehaviour:
     model: {fileID: 71644401}
     startModule: DM-ENG-TITLE
     rotorSpeed: 220
-    ipdPdfFile: 
+    ipdPdfFile: IETM/72-00-00_Fig1_IPC.pdf
   view: {fileID: 17515226}
   extendedModel: {fileID: 837487458}
   retractedModel: {fileID: 0}

@@ -310,7 +310,8 @@
             "DESC",
             "OPER",
             "PROC × 3",
-            "IPD"
+            "IPD",
+            "PDF"
           ],
           "module": "DM-ENG-TITLE"
         },
@@ -344,6 +345,11 @@
         }
       ],
       "related": [
+        {
+          "label": "Printable IPC (PDF) · 72-00-00 Fig 1",
+          "file": "IETM/72-00-00_Fig1_IPC.pdf",
+          "highlight": true
+        },
         {
           "label": "05 · Engine inspections"
         },

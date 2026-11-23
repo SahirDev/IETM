@@ -131,6 +131,7 @@ namespace IETM.EditorTools
             pub.dataFile = data;
             pub.model = engine;
             pub.startModule = "DM-ENG-TITLE";
+            if (string.IsNullOrEmpty(pub.ipdPdfFile)) pub.ipdPdfFile = "IETM/72-00-00_Fig1_IPC.pdf";
             PrefabUtility.RecordPrefabInstancePropertyModifications(app);
         }
 
