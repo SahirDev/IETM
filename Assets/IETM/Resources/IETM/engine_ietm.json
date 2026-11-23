@@ -815,95 +815,17 @@
   }
  ],
  "removal": [
-  {
-   "node": "screws_turbine_001",
-   "offset": [
-    -3.0,
-    0,
-    -2.2
-   ]
-  },
-  {
-   "node": "pipes_turbine_009",
-   "offset": [
-    -3.0,
-    0,
-    2.2
-   ]
-  },
-  {
-   "node": "mount_turbine_014",
-   "offset": [
-    4.2,
-    0,
-    -2.2
-   ]
-  },
-  {
-   "node": "hull_turbine_004",
-   "offset": [
-    4.6,
-    2.3,
-    0
-   ]
-  },
-  {
-   "node": "hull_turbine",
-   "offset": [
-    4.6,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "blades_turbine_003.001",
-   "offset": [
-    2.3,
-    0,
-    2.2
-   ]
-  },
-  {
-   "node": "canister_turbine_011",
-   "offset": [
-    3.9,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "grid_turbine_007",
-   "offset": [
-    1.6,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "blades_turbine_003",
-   "offset": [
-    -1.4,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "blades_dividers_turbine_017",
-   "offset": [
-    -2.7,
-    0,
-    0
-   ]
-  },
-  {
-   "node": "plates_turbine_016",
-   "offset": [
-    -0.9,
-    0,
-    0
-   ]
-  }
- ],
+    { "node": "blades_dividers_turbine_017", "offset": [-1.4065, 0, 0] },
+    { "node": "blades_turbine_003", "offset": [-2.6116, 0, 0] },
+    { "node": "blades_turbine_003.001", "offset": [3.14095, 0, 0] },
+    { "node": "canister_turbine_011", "offset": [0, -0.00065, 3.38082] },
+    { "node": "grid_turbine_007", "offset": [0, 0.00002, -2.8388] },
+    { "node": "hull_turbine", "offset": [3.87658, 0, 0] },
+    { "node": "mount_turbine_014", "offset": [-7.36555, 0, 0] },
+    { "node": "pipes_turbine_009", "offset": [-11.29986, 0, 0] },
+    { "node": "plates_turbine_016", "offset": [-12.43308, 0, 0] },
+    { "node": "screws_turbine_001", "offset": [-14.68976, 0, 0] }
+  ],
  "removalLPath": false,
  "removalVia": [
   {
