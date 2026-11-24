@@ -365,3 +365,12 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * Build size: SampleScene off in the build list; the old default UI prefab moved out of Resources
   (Assets/HELIOS/Legacy/...), 4.3 MB less in the build. Everything in a Resources folder is always built.
 * Light mode recolouring scans the UI every 4th frame (and right after a click) instead of every frame.
+
+## Taking a build (menu IETM > Build)
+* **Apply WebGL Build Settings (Unity Play)**: HELIOS.unity as the only scene; Brotli + decompression fallback, data caching,
+  1280x720, Default template, IL2CPP optimised for size + Release, low managed stripping, strip engine code, linear colour,
+  128-2048 MB memory, high-performance GPU, release (not development) build.
+* **Take WebGL Build (Unity Play)**: switches to Web if needed (asks first), saves open scenes, applies the settings, builds
+  to `<project>/Builds/WebGL` and zips it to `<project>/Builds/HELIOS_WebGL.zip` (upload that to Unity Play).
+* **Build And Run Locally**: same build, opened in your browser. **Open Build Folder**: shows `<project>/Builds` (git-ignored).
+* Needs Web Build Support installed for this Unity version (Unity Hub > Installs > Add modules).
