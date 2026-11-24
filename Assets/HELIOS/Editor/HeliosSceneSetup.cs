@@ -498,6 +498,7 @@ namespace Helios.EditorTools
             cam.cullingMask &= ~(1 << 5);                       // not the UI layer
             cam.nearClipPlane = 0.05f; cam.farClipPlane = 1000f;
             cam.orthographic = false;
+            cam.allowHDR = false;                               // as at Play (no post effects; saves an HDR buffer in WebGL)
             if (cam.GetComponent<HeliosLensShift>() == null) Undo.AddComponent<HeliosLensShift>(cam.gameObject);   // pages' Model Area (Editor + Play)
             Debug.Log("[HELIOS] Main Camera framed on the aircraft (yaw " + app.startYaw + ", pitch " + app.startPitch + ").");
         }

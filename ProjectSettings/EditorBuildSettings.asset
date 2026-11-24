@@ -8,7 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/HELIOS/Scenes/HELIOS.unity
     guid: a3a73bdf374558f4abe102d054950be2
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:

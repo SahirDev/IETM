@@ -176,6 +176,7 @@ namespace Helios
             cam.cullingMask &= ~(1 << 5);                       // not the UI layer
             cam.nearClipPlane = 0.05f; cam.farClipPlane = 1000f;
             cam.fieldOfView = fieldOfView;
+            cam.allowHDR = false;                               // no post effects: an HDR buffer would only cost (WebGL)
             if (cam.GetComponent<HeliosLensShift>() == null) cam.gameObject.AddComponent<HeliosLensShift>();   // pages' Model Area
             if (backgroundCamera != null) backCam = backgroundCamera;
             else
@@ -188,6 +189,7 @@ namespace Helios
             backCam.backgroundColor = HeliosTheme.Current.background;
             backCam.cullingMask = 1 << 5;
             backCam.depth = cam.depth - 10f;
+            backCam.allowHDR = false; backCam.allowMSAA = false;   // it only draws the backdrop canvas
         }
 
         static void EnsureLight()

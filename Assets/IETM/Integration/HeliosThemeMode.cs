@@ -122,8 +122,26 @@ namespace IETM
         {
             if (popup != null && popup.gameObject.activeSelf) UpdatePopup();
             if (!IsLight) return;
+            // light mode: newly shown UI is recoloured; scanning the whole UI every frame is costly in WebGL, so the scan
+            // runs every few frames (and on the frame after a click, when pages / panels usually change)
+            if (HeliosInputClickedThisFrame()) lastClick = Time.unscaledTime;
+            bool clicked = Time.unscaledTime - lastClick < 0.1f;
+            if (!clicked && Time.frameCount % 4 != 0) return;
             RecolourAll();
             ApplyBackgrounds();   // the IETM viewport background is created when the IETM first opens
+        }
+
+        float lastClick = -1f;
+        static bool HeliosInputClickedThisFrame()
+        {
+#if ENABLE_INPUT_SYSTEM
+            var m = UnityEngine.InputSystem.Mouse.current;
+            if (m != null && (m.leftButton.wasReleasedThisFrame || m.leftButton.wasPressedThisFrame)) return true;
+            var t = UnityEngine.InputSystem.Touchscreen.current;
+            return t != null && t.primaryTouch.press.wasReleasedThisFrame;
+#else
+            return Input.GetMouseButtonUp(0) || Input.GetMouseButtonDown(0);
+#endif
         }
 
         void RecolourAll()

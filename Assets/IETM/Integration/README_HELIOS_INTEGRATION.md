@@ -354,3 +354,14 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   sensor and shows its own callout - seven callouts in the prefab (`Tools/helios_ui/sensor_callouts.py`): Humidity,
   Structural Strain, Vibration, Engine RPM, Oil Pressure, Fuel Flow, Hydraulic (title, value, status). Click again = whole aircraft.
 * Top bar title: "Digital Twin Intelligent Asset Integrity" (prefab, IETM shell data and both scenes).
+
+## WebGL performance
+* Surface shaders (HELIOS Double Sided, HELIOS Section, IETM Part Lit): `noforwardadd` + no lightmap / fog / deferred /
+  meta variants: each part is drawn once per frame (the extra lights reach it per-vertex / as SH) instead of up to three
+  times; fewer shader variants to compile and download.
+* Quality level "Mobile" (WebGL's default): 1 pixel light, realtime shadows off, 1 cascade. The Editor (PC level) still
+  shows shadows. Turn shadows back on for WebGL in Project Settings > Quality > Mobile if you want them (costs ~3x draw calls).
+* Cameras: HDR off on the Main Camera and the background camera (no post effects).
+* Build size: SampleScene off in the build list; the old default UI prefab moved out of Resources
+  (Assets/HELIOS/Legacy/...), 4.3 MB less in the build. Everything in a Resources folder is always built.
+* Light mode recolouring scans the UI every 4th frame (and right after a click) instead of every frame.

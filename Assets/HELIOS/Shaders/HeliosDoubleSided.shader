@@ -23,7 +23,8 @@ Shader "HELIOS/Double Sided Lit (Built-in)"
         Cull Off
 
         CGPROGRAM
-        #pragma surface surf Standard fullforwardshadows addshadow
+        // WebGL: one pass per part (extra lights as per-vertex / SH), no lightmap / fog / deferred variants
+        #pragma surface surf Standard addshadow noforwardadd exclude_path:deferred exclude_path:prepass nolightmap nodynlightmap nodirlightmap nometa nofog
         #pragma target 3.0
 
         sampler2D _MainTex;
