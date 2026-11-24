@@ -187,6 +187,26 @@ namespace Helios
         /// <summary>A part's category: your setting in Part Categories, else its name (or a parent's), else where it sits on the aircraft.</summary>
         public PartCategory CategoryOf(Renderer r, IList<PartOverride> overrides)
         {
+            // the two halves of a part split down the centre line always get the same category (the left half decides)
+            if (modelTr != null && r != null && modelTr.InverseTransformPoint(r.bounds.center).x < 0f)
+            {
+                var twin = MirrorOf(r);
+                if (twin != null && !HasOwnCategory(twin, r, overrides)) return CategoryOfOne(twin, overrides);
+            }
+            return CategoryOfOne(r, overrides);
+        }
+
+        // a part named in Part Categories keeps its own category (the twin does not override it)
+        static bool HasOwnCategory(Renderer twin, Renderer r, IList<PartOverride> overrides)
+        {
+            if (overrides == null) return false;
+            foreach (var o in overrides)
+                if (o != null && o.part != null && (r.transform == o.part.transform || r.transform.IsChildOf(o.part.transform) || r.name == o.part.name)) return true;
+            return false;
+        }
+
+        PartCategory CategoryOfOne(Renderer r, IList<PartOverride> overrides)
+        {
             if (overrides != null)
                 foreach (var o in overrides)
                 {
@@ -233,26 +253,59 @@ namespace Helios
 
         Transform modelTr;
 
+        Dictionary<Renderer, Renderer> twins;
+
         /// <summary>The other half of a part split down the aircraft's centre line (same size, mirrored across the model's
-        /// X = 0 plane), or null.</summary>
+        /// X = 0 plane), or null. Found once for all parts (grid lookup).</summary>
         public Renderer MirrorOf(Renderer r)
         {
             if (r == null || modelTr == null) return null;
-            var b = r.bounds;
-            var c = modelTr.InverseTransformPoint(b.center);
-            if (Mathf.Abs(modelTr.TransformVector(new Vector3(c.x, 0f, 0f)).magnitude) < 1e-3f) return null;   // on the centre line: no twin
-            var m = modelTr.TransformPoint(new Vector3(-c.x, c.y, c.z));             // the mirrored centre, in the world
-            float tol = Mathf.Max(0.02f, b.size.magnitude * 0.03f);
-            Renderer best = null; float bestD = tol * tol;
-            foreach (var o in originals)
+            if (twins == null) BuildTwins();
+            return twins.TryGetValue(r, out var t) ? t : null;
+        }
+
+        void BuildTwins()
+        {
+            twins = new Dictionary<Renderer, Renderer>();
+            if (modelTr == null) return;
+            float scale = Mathf.Max(1e-6f, modelTr.lossyScale.x);
+            float cell = Mathf.Max(0.02f, Bounds.size.magnitude * 0.002f) / scale;          // local units
+            var grid = new Dictionary<Vector3Int, List<Renderer>>();
+            var local = new Dictionary<Renderer, Vector3>();
+            foreach (var r in originals)
             {
-                if (o == null || o == r) continue;
-                var ob = o.bounds;
-                if ((ob.size - b.size).sqrMagnitude > tol * tol * 4f) continue;
-                float d = (ob.center - m).sqrMagnitude;
-                if (d < bestD) { bestD = d; best = o; }
+                if (r == null) continue;
+                var c = modelTr.InverseTransformPoint(r.bounds.center);
+                local[r] = c;
+                var k = Vector3Int.FloorToInt(c / cell);
+                if (!grid.TryGetValue(k, out var l)) grid[k] = l = new List<Renderer>();
+                l.Add(r);
             }
-            return best;
+            foreach (var kv in local)
+            {
+                var r = kv.Key; var c = kv.Value;
+                if (Mathf.Abs(c.x) < cell * 0.5f) continue;                                // on the centre line: no twin
+                var m = new Vector3(-c.x, c.y, c.z);
+                var size = r.bounds.size;
+                float tol = Mathf.Max(cell, size.magnitude * 0.03f / scale);
+                Renderer best = null; float bestD = tol * tol;
+                var k0 = Vector3Int.FloorToInt(m / cell);
+                int reach = Mathf.Clamp(Mathf.CeilToInt(tol / cell), 1, 4);
+                for (int x = -reach; x <= reach; x++)
+                    for (int y = -reach; y <= reach; y++)
+                        for (int z = -reach; z <= reach; z++)
+                        {
+                            if (!grid.TryGetValue(new Vector3Int(k0.x + x, k0.y + y, k0.z + z), out var l)) continue;
+                            foreach (var o in l)
+                            {
+                                if (o == r) continue;
+                                if ((o.bounds.size - size).sqrMagnitude > size.sqrMagnitude * 0.01f + 1e-6f) continue;
+                                float d = (local[o] - m).sqrMagnitude;
+                                if (d < bestD) { bestD = d; best = o; }
+                            }
+                        }
+                if (best != null) twins[r] = best;
+            }
         }
 
         /// <summary>The part under a ray (a click in the 3D view), or null. Uses the mesh's triangles when the
@@ -595,7 +648,9 @@ namespace Helios
         {
             var b = Bounds; var e = b.extents; var p = world - b.center;
             float len = Mathf.Max(1e-4f, Mathf.Abs(Vector3.Dot(e, Abs(Forward))) * 2f), wid = Mathf.Max(1e-4f, Mathf.Abs(Vector3.Dot(e, Abs(Side))) * 2f);
-            float f = 0.5f - Vector3.Dot(p, Forward) / len, h = Vector3.Dot(p, Vector3.up) / Mathf.Max(1e-4f, e.y * 2f) + 0.5f, s = Mathf.Abs(Vector3.Dot(p, Side) / wid);
+            // sideways from the aircraft's centre line (not the bounds centre: stores on one wing shift it), so both sides match
+            var ps = modelTr != null ? world - modelTr.TransformPoint(new Vector3(0f, modelTr.InverseTransformPoint(world).y, modelTr.InverseTransformPoint(world).z)) : p;
+            float f = 0.5f - Vector3.Dot(p, Forward) / len, h = Vector3.Dot(p, Vector3.up) / Mathf.Max(1e-4f, e.y * 2f) + 0.5f, s = Mathf.Abs(Vector3.Dot(ps, Side) / wid);
             if ((f > 0.3f && f < 0.62f && h < 0.45f && s < 0.16f) || (f > 0.9f && s < 0.12f && h < 0.62f)) return 2;     // intake and nozzle
             if (f > 0.42f && f < 0.86f && s < 0.3f && h > 0.35f) return 1;                                                // wing root, centre fuselage
             return 0;
