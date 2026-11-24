@@ -728,15 +728,6 @@
    "dmc": "DMC-F16ENG-A-72-00-00-00A-941A-D",
    "title": "Engine",
    "infoName": "Illustrated parts data - IPD"
-  },
-  {
-   "id": "DM-ENG-IPC-PDF",
-   "group": "72-00 Illustrated parts data",
-   "type": "document",
-   "dmc": "IPC 72-00-00 Fig 1",
-   "title": "Engine",
-   "infoName": "Part Catalog - 72-00-00 Fig 1",
-   "file": "IETM/72-00-00_Fig1_IPC.pdf"
   }
  ],
  "explode": [

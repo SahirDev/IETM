@@ -153,8 +153,7 @@ modules = [
     {'id': 'DM-ENG-ASSY', 'group': G2, 'type': 'procedure', 'dmc': 'DMC-F16ENG-A-72-00-00-00A-720A-A', 'title': 'Engine', 'infoName': 'Assembly', 'steps': asm_steps},
     {'id': 'DM-ENG-BSI', 'group': G2, 'type': 'procedure', 'dmc': 'DMC-F16ENG-A-72-00-00-00A-310A-A', 'title': 'Engine', 'infoName': 'Borescope inspection', 'steps': bsi_steps},
     {'id': 'DM-ENG-IPD', 'group': G3, 'type': 'ipd', 'dmc': 'DMC-F16ENG-A-72-00-00-00A-941A-D', 'title': 'Engine', 'infoName': 'Illustrated parts data - IPD'},
-    {'id': 'DM-ENG-IPC-PDF', 'group': G3, 'type': 'document', 'dmc': 'IPC 72-00-00 Fig 1', 'title': 'Engine',
-     'infoName': 'Part Catalog - 72-00-00 Fig 1', 'file': 'IETM/72-00-00_Fig1_IPC.pdf'},
+    # no Part Catalog document module in the tree: the catalogue opens from the title page link and the Part Catalog button
 ]
 
 data = {
