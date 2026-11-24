@@ -376,3 +376,11 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   `Builds/webgl_<Version>.zip`. Uncompressed files need no server headers.
 * **Build And Run Locally**: same build, opened in your browser. **Open Build Folder**: shows `<project>/Builds` (git-ignored).
 * Needs Web Build Support installed for this Unity version (Unity Hub > Installs > Add modules).
+
+## Asset Integrity, client revision (UI only)
+* `Tools/helios_ui/asset_integrity_v2.py`: right column scrolls (Cards Scroll): Integrity Overview (header + gauge 93 %,
+  12 Healthy / 2 At Risk / 1 Critical), Critical Integrity (engine tile, Engine (Borescope), Critical Condition, +18 %
+  vibration), Key Findings (values on the right: +18 %, +10 %, 62 % RH), Degradation Trend (7 days: Engine Vibration,
+  Wing Root Strain, Avionics Humidity lines, 0-20 %, D1-D7, legend), Recommended Actions (1-3).
+  Callouts: AVIONICS BAY (62 % RH, Stable), WING ROOT (+10 %, 7 days), ENGINE (+18 %, Critical).
+  Off (kept): Integrity Status bar, Integrity Metrics tiles, Component Risk, Critical badge.
