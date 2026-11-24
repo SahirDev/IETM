@@ -124,7 +124,7 @@ namespace Helios.EditorTools
         {
             var nav = app.ui != null ? app.ui : Object.FindAnyObjectByType<HeliosNavigator>(FindObjectsInactive.Include);
             return !UiOk() || !ModelOk(app) || !DoubleSidedOk(app) || app.backgroundCamera == null
-                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app) || app.sceneLookVersion < 2 || !EngineShared(app);
+                   || (nav != null && nav.GetComponent<HeliosSensorFocus>() == null) || !CameraAtHome(app) || DuplicateLight() != null || !BackdropOk(app) || app.sceneLookVersion < 2 || !EngineShared(app) || (Camera.main != null && Camera.main.GetComponent<HeliosLensShift>() == null);
         }
 
         // ================================================================ set up
@@ -498,6 +498,7 @@ namespace Helios.EditorTools
             cam.cullingMask &= ~(1 << 5);                       // not the UI layer
             cam.nearClipPlane = 0.05f; cam.farClipPlane = 1000f;
             cam.orthographic = false;
+            if (cam.GetComponent<HeliosLensShift>() == null) Undo.AddComponent<HeliosLensShift>(cam.gameObject);   // pages' Model Area (Editor + Play)
             Debug.Log("[HELIOS] Main Camera framed on the aircraft (yaw " + app.startYaw + ", pitch " + app.startPitch + ").");
         }
 

@@ -176,6 +176,7 @@ namespace Helios
             cam.cullingMask &= ~(1 << 5);                       // not the UI layer
             cam.nearClipPlane = 0.05f; cam.farClipPlane = 1000f;
             cam.fieldOfView = fieldOfView;
+            if (cam.GetComponent<HeliosLensShift>() == null) cam.gameObject.AddComponent<HeliosLensShift>();   // pages' Model Area
             if (backgroundCamera != null) backCam = backgroundCamera;
             else
             {
@@ -232,6 +233,7 @@ namespace Helios
             holoOverride = -1; wireOverride = -1; focusParts.Clear(); groupHighlight = false; EndTransparent(); EndHover();
             ApplyLook();
             if (cam != null) cam.enabled = p.showModel;
+            frameNext = true;          // pages may centre the model in another area (Model Area): refit the distance
         }
 
         void ApplyLook()
@@ -456,9 +458,7 @@ namespace Helios
         {
             float turn = noseDirection == ModelForward.MinusZ ? 180f : noseDirection == ModelForward.PlusX ? 90f : noseDirection == ModelForward.MinusX ? -90f : 0f;
             float radius = b.extents.magnitude * 0.82f;
-            float vfov = fieldOfView * Mathf.Deg2Rad;
-            float hfov = 2f * Mathf.Atan(Mathf.Tan(vfov / 2f) * aspect);
-            float dist = radius / Mathf.Sin(Mathf.Min(vfov, hfov) / 2f) / Mathf.Max(0.1f, startZoom);
+            float dist = HeliosLensShift.FitDistance(Camera.main, radius, fieldOfView, aspect) / Mathf.Max(0.1f, startZoom);   // the page's Model Area
             var rot = Quaternion.Euler(startPitch, startYaw + turn, 0f);
             position = b.center + rot * new Vector3(0f, 0f, -dist);
             rotation = Quaternion.LookRotation(b.center - position, Vector3.up);
@@ -468,9 +468,7 @@ namespace Helios
         {
             float radius = model != null ? model.Bounds.extents.magnitude * 0.82f : HeliosModel.Size * 0.5f;
             float aspect = cam != null && cam.pixelHeight > 0 ? (float)cam.pixelWidth / cam.pixelHeight : 1.6f;
-            float vfov = fieldOfView * Mathf.Deg2Rad;
-            float hfov = 2f * Mathf.Atan(Mathf.Tan(vfov / 2f) * aspect);
-            return radius / Mathf.Sin(Mathf.Min(vfov, hfov) / 2f) / Mathf.Max(0.1f, startZoom);
+            return HeliosLensShift.FitDistance(cam, radius, fieldOfView, aspect) / Mathf.Max(0.1f, startZoom);      // fits the page's Model Area
         }
 
         /// <summary>Glides the camera to a point on the model; zoom 1 = the full view, 0.4 = much closer.</summary>

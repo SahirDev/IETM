@@ -31,6 +31,8 @@ namespace Helios
         public ModelLook modelLook = ModelLook.Original;
         [Tooltip("Show the camera toolbar (Rotate, Zoom, Pan, Reset, Full Screen) on this page.")]
         public bool showToolbar = true;
+        [Tooltip("Optional: the model is centred and fitted in this rectangle (e.g. the space between the panels) instead of the whole 3D view. Empty = the whole 3D view.")]
+        public RectTransform modelArea;
 
         [Header("Wireframe")]
         [Tooltip("Draw wireframe lines over the model's parts on this page (the model keeps its own materials).")]

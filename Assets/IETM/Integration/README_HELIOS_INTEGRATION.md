@@ -337,3 +337,11 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   12 days, "In 120 days"), Overdue Maintenance (4 days overdue), Upcoming Maintenance (3: work orders WO-8842 / 8871 / 8890,
   the third row a copy of the second), Recommended Actions, Maintenance History (6 months, planned vs completed bars with
   values, 0-12 axis). The column scrolls (Cards Scroll + slim scrollbar).
+
+## Model centred between the panels (3D View page only)
+* HeliosPage has **Model Area** (RectTransform, optional). The 3D View page's is `Pages/3D View/Model Area` (between the
+  Aircraft Hierarchy and the view tools, below the top bar); other pages have none and keep the whole 3D view.
+* `HeliosLensShift` on the Main Camera (added by the scene setup and at Play) shifts the camera's picture so the model's
+  centre sits in the middle of that rectangle (off-centre projection: picking, labels, orbit and zoom stay exact), Editor
+  Game view and Play. The home distance fits the model inside the rectangle; it is refitted on every page change.
+* To move or resize the area: select Model Area in the prefab and drag its edges.
