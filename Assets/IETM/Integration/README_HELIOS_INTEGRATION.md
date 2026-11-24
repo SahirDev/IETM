@@ -324,3 +324,9 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   scrolls - Sensors > Cards Scroll (RectMask2D + ScrollRect, mouse wheel / drag) with a slim auto-hiding Scrollbar in the
   8 px gap on the right; Cards is its content (ContentSizeFitter, height from the cards).
   Helpers for such edits: `Tools/helios_ui/prefab_edit.py`.
+
+## Asset Integrity (UI only, Figma)
+* `Tools/helios_ui/asset_integrity_page.py` (run once): right column = Overall Integrity (64 Healthy 89 %, 5 At Risk 7 %,
+  3 Critical 4 %), Integrity Metrics tiles (Structural 95 % +2 %, Corrosion 2.4 % -0.3 %, Fatigue 4,320 hrs +6 %),
+  Component Risk (72) stacked bar + legend + View All, Integrity Trend (30 days; the Health page's HeliosChart card with new
+  data 89.6 -> 95.1 %, 87-96 % axis, dates 15 Oct - 12 Nov, end dot). Critical Integrity and Key Findings are off (not deleted).
