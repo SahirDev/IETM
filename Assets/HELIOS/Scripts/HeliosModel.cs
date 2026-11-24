@@ -88,11 +88,19 @@ namespace Helios
         [Range(0f, 1f)] public float edgeOpacity = 0.75f;
         [Range(0.5f, 8f)] public float edgeSharpness = 2.2f;
         [Range(0f, 3f)] public float brightness = 1.25f;
-        [Tooltip("Highlights; low = matte.")]
-        [Range(0f, 1f)] public float shine = 0.08f;
+        [Tooltip("Small, sharp glass highlight.")]
+        [Range(0f, 1f)] public float shine = 0.35f;
+        [Tooltip("The sky reflected at grazing angles, like glass.")]
+        [Range(0f, 1f)] public float reflection = 0.45f;
+        [HideInInspector] public int version;
 
         public void Repair()
         {
+            if (version < 2)        // glass look (2): the part's own colour, clearer faces, smooth highlight + reflection
+            {
+                tint = Color.white; keepColour = 1f; faceOpacity = 0.14f; edgeOpacity = 0.62f; edgeSharpness = 2.6f;
+                brightness = 1.15f; shine = 0.35f; reflection = 0.45f; version = 2;
+            }
             if (float.IsNaN(faceOpacity) || float.IsNaN(edgeOpacity) || float.IsNaN(brightness)) { faceOpacity = 0.2f; edgeOpacity = 0.75f; brightness = 1.25f; }
             if (tint.a <= 0f) tint = new Color(0.82f, 0.85f, 0.9f, 1f);
         }
@@ -380,6 +388,7 @@ namespace Helios
             if (colourOf == null || HologramOn)
             {
                 foreach (var kv in overlays) if (kv.Value != null && kv.Value.go != null && kv.Value.go.activeSelf && kv.Key != hovered) kv.Value.go.SetActive(false);
+                foreach (var r in new List<Renderer>(inlineWire)) if (r != hovered && r != null) { r.SetPropertyBlock(null); inlineWire.Remove(r); }
                 if (hovered != null) Paint(hovered, HologramOn ? (Color?)null : hoverColor);
                 return;
             }
@@ -422,11 +431,34 @@ namespace Helios
             return overlayOk;
         }
 
+        readonly HashSet<Renderer> inlineWire = new HashSet<Renderer>();
+        static MaterialPropertyBlock wireBlock;
+        static readonly int WireColorId = Shader.PropertyToID("_WireColor");
+
+        // the part's own materials draw the wireframe themselves (HELIOS Double Sided / Ghost have _WireColor): no overlay
+        static bool InlineWire(Renderer r)
+        {
+            var ms = r.sharedMaterials;
+            if (ms == null || ms.Length == 0) return false;
+            foreach (var m in ms) if (m == null || !m.HasProperty(WireColorId)) return false;
+            return true;
+        }
+
         void Paint(Renderer r, Color? c)
         {
             if (r == null) return;
             Overlay o;
             overlays.TryGetValue(r, out o);
+            if (c != null && InlineWire(r))
+            {
+                if (o != null && o.go != null && o.go.activeSelf) o.go.SetActive(false);
+                if (wireBlock == null) wireBlock = new MaterialPropertyBlock();
+                wireBlock.Clear(); wireBlock.SetColor(WireColorId, c.Value);
+                r.SetPropertyBlock(wireBlock);
+                inlineWire.Add(r);
+                return;
+            }
+            if (inlineWire.Remove(r)) r.SetPropertyBlock(null);
             if (c == null) { if (o != null && o.go != null && o.go.activeSelf) o.go.SetActive(false); return; }
             if (!OverlayReady()) return;
             if (o == null) { o = MakeOverlay(r); overlays[r] = o; }
@@ -479,8 +511,18 @@ namespace Helios
         /// <summary>Sends the wireframe settings to the shaders (every frame, so Inspector changes show while playing).</summary>
         public void UpdateWireframe()
         {
-            if (overlayMat == null) return;
             float len = Mathf.Max(Bounds.size.x, Mathf.Max(Bounds.size.y, Bounds.size.z));
+            if (overlayMat == null)
+            {
+                Shader.SetGlobalVector("_HoloCenter", Bounds.center);
+                Shader.SetGlobalFloat("_HeliosGridSpacing", Mathf.Max(0.0005f, wire.gridSpacing * len));
+                Shader.SetGlobalFloat("_HeliosGridWidth", wire.gridLineWidth);
+                Shader.SetGlobalFloat("_HeliosGridStrength", wire.gridOpacity);
+                Shader.SetGlobalFloat("_HeliosRimPower", 3f);
+                Shader.SetGlobalFloat("_HeliosRimStrength", wire.outlineGlow);
+                Shader.SetGlobalFloat("_HeliosWireOpacity", wire.opacity);
+                return;
+            }
             overlayMat.SetFloat("_GridSpacing", Mathf.Max(0.0005f, wire.gridSpacing * len));
             overlayMat.SetFloat("_GridWidth", wire.gridLineWidth);
             overlayMat.SetFloat("_GridStrength", wire.gridOpacity);
@@ -488,6 +530,12 @@ namespace Helios
             overlayMat.SetFloat("_Opacity", wire.opacity);
             if (overlayEdgeMat != null) { overlayEdgeMat.SetFloat("_EdgeStrength", wire.edgeBrightness * wire.opacity); overlayEdgeMat.SetFloat("_Intensity", 1f); }
             Shader.SetGlobalVector("_HoloCenter", Bounds.center);
+            Shader.SetGlobalFloat("_HeliosGridSpacing", Mathf.Max(0.0005f, wire.gridSpacing * len));
+            Shader.SetGlobalFloat("_HeliosGridWidth", wire.gridLineWidth);
+            Shader.SetGlobalFloat("_HeliosGridStrength", wire.gridOpacity);
+            Shader.SetGlobalFloat("_HeliosRimPower", 3f);
+            Shader.SetGlobalFloat("_HeliosRimStrength", wire.outlineGlow);
+            Shader.SetGlobalFloat("_HeliosWireOpacity", wire.opacity);
             if (!HologramOn) Shader.SetGlobalFloat("_HoloZoneCount", 0f);     // the edge lines take each part's own colour
         }
 
@@ -718,6 +766,7 @@ namespace Helios
             m.SetColor("_Tint", gs.tint); m.SetFloat("_KeepColour", gs.keepColour);
             m.SetFloat("_Alpha", gs.faceOpacity); m.SetFloat("_EdgeAlpha", gs.edgeOpacity);
             m.SetFloat("_FresnelPower", gs.edgeSharpness); m.SetFloat("_Brightness", gs.brightness); m.SetFloat("_Specular", gs.shine);
+            m.SetFloat("_Reflection", gs.reflection);
         }
 
         public void SetLook(ModelLook l)
@@ -821,6 +870,12 @@ namespace Helios
             }
             for (int i = n; i < 12; i++) { zoneW2L[i] = Matrix4x4.identity; zoneColor[i] = Vector4.zero; }
             Shader.SetGlobalVector("_HoloCenter", Bounds.center);
+            Shader.SetGlobalFloat("_HeliosGridSpacing", Mathf.Max(0.0005f, wire.gridSpacing * len));
+            Shader.SetGlobalFloat("_HeliosGridWidth", wire.gridLineWidth);
+            Shader.SetGlobalFloat("_HeliosGridStrength", wire.gridOpacity);
+            Shader.SetGlobalFloat("_HeliosRimPower", 3f);
+            Shader.SetGlobalFloat("_HeliosRimStrength", wire.outlineGlow);
+            Shader.SetGlobalFloat("_HeliosWireOpacity", wire.opacity);
             Shader.SetGlobalFloat("_HoloZoneCount", n);
             Shader.SetGlobalMatrixArray("_HoloZoneW2L", zoneW2L);
             Shader.SetGlobalVectorArray("_HoloZoneColor", zoneColor);

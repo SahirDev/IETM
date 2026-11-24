@@ -65,8 +65,11 @@ namespace IETM
             // the HELIOS UI is instantiated by HeliosApp at start-up: wait for its top bar
             for (int i = 0; i < 120 && topBar == null; i++)
             {
-                var tb = GameObject.Find("Top Bar");
-                if (tb != null && tb.transform.Find("Light") != null) topBar = tb.transform;
+                // the top bar may be hidden in builds (the web page has its own): find it even when inactive
+                var nav = FindAnyObjectByType<Helios.HeliosNavigator>(FindObjectsInactive.Include);
+                var tb = nav != null ? nav.transform.Find("Top Bar") : null;
+                if (tb == null) { var go = GameObject.Find("Top Bar"); if (go != null) tb = go.transform; }
+                if (tb != null && tb.Find("Light") != null) topBar = tb;
                 else yield return null;
             }
             if (topBar == null) { Destroy(gameObject); yield break; }   // not the HELIOS scene
@@ -104,6 +107,10 @@ namespace IETM
         // ------------------------------------------------------------------ light / dark
 
         public void Toggle() => SetLight(!IsLight);
+
+        /// <summary>For the web page (React) when the Unity top bar is hidden:
+        /// unityInstance.SendMessage("HELIOS Theme Mode", "SetTheme", "light" | "dark").</summary>
+        public void SetTheme(string mode) => SetLight(!string.IsNullOrEmpty(mode) && mode.Trim().ToLowerInvariant() == "light");
 
         public void SetLight(bool on)
         {

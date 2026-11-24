@@ -488,7 +488,7 @@ namespace IETM.Integration
             float leftPx = gapPx, topPx = gapPx;
             if (hostMenu != null && hostMenu.gameObject.activeInHierarchy) leftPx = ScreenRect(hostMenu).xMax + gapPx;
             float screenH = hostCanvas != null && hostCanvas.pixelRect.height > 1f ? hostCanvas.pixelRect.height : Screen.height;   // Play and Editor
-            if (hostTopBar != null && hostTopBar.gameObject.activeInHierarchy) topPx = screenH - ScreenRect(hostTopBar).yMin + gapPx;
+            if (hostTopBar != null) topPx = screenH - ScreenRect(hostTopBar).yMin + gapPx;   // its strip stays reserved even when hidden (web header)
 
             float L = leftPx / s, T = topPx / s, G = gapPx / s;
             float crumbH = HeliosShellBuilder.CrumbH;

@@ -384,3 +384,16 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   Wing Root Strain, Avionics Humidity lines, 0-20 %, D1-D7, legend), Recommended Actions (1-3).
   Callouts: AVIONICS BAY (62 % RH, Stable), WING ROOT (+10 %, 7 days), ENGINE (+18 %, Critical).
   Off (kept): Integrity Status bar, Integrity Metrics tiles, Component Risk, Critical badge.
+
+## Top bar from the web page (React), faster Wireframe, glass Transparent
+* **Top bar**: `HeliosHostedTopBar` on HELIOS UI > UI > Top Bar hides it in builds (Hide In Build); in the Editor it stays
+  (tick Hide In Editor Play to preview). Its strip stays empty for the React header: 36 canvas units = 4.84 % of the
+  canvas height (Figma 44 px at the 916 px frame; e.g. 52 px at 1080 px). Pages, panels, the 3D view and the IETM page
+  still start below it. Theme from the web page: `unityInstance.SendMessage("HELIOS Theme Mode", "SetTheme", "light" | "dark")`.
+* **Wireframe**: drawn inside the parts' own materials (HELIOS Double Sided and Ghost have `_WireColor`, set per part with a
+  MaterialPropertyBlock; grid / glow settings as shader globals). Turning Wireframe on builds nothing (it used to make two
+  overlay objects + a crease-edge mesh per part, ~3,600 objects, which froze WebGL) and adds no draw calls. Parts with
+  other materials (e.g. the Standard canopy glass) still get an overlay. No crease-edge lines on the in-material path.
+* **Transparent**: glass in each part's own colour - clear faces, denser edges, a small smooth highlight and the sky
+  reflected at grazing angles (HELIOS App > Transparent: Reflection, Shine, Face / Edge Opacity...). Settings move to the
+  glass defaults once (save the scene after opening it).
