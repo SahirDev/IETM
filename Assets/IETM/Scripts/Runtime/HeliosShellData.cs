@@ -57,7 +57,7 @@ namespace IETM
     [Serializable]
     public class HeliosShellData
     {
-        public string appTitle = "HELIOS – Asset Integrity Digital Twin";
+        public string appTitle = "Digital Twin Intelligent Asset Integrity";
         public string tailNo = "AF-3287";
         public string user = "K. Williams", userRole = "Inspector", userInitials = "KW";
         public List<ShellLink> nav = new List<ShellLink>();

@@ -348,3 +348,9 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * Before Play the Game view = the first frame at Play: HeliosLensShift (Edit mode, **Editor Matches Play** on) gives the
   Main Camera the 3D View Area rectangle (below the top bar, as HeliosApp does at Play) and the home pose of the aircraft
   for the shown page (start angle + zoom, fitted in that page's Model Area), updated whenever the Game view redraws.
+
+## Sensor callouts and title
+* Sensor & Health: the seven reading rows are clickable (their Fill is the invisible raycast target) and each flies to its
+  sensor and shows its own callout - seven callouts in the prefab (`Tools/helios_ui/sensor_callouts.py`): Humidity,
+  Structural Strain, Vibration, Engine RPM, Oil Pressure, Fuel Flow, Hydraulic (title, value, status). Click again = whole aircraft.
+* Top bar title: "Digital Twin Intelligent Asset Integrity" (prefab, IETM shell data and both scenes).
