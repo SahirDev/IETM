@@ -345,3 +345,6 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   centre sits in the middle of that rectangle (off-centre projection: picking, labels, orbit and zoom stay exact), Editor
   Game view and Play. The home distance fits the model inside the rectangle; it is refitted on every page change.
 * To move or resize the area: select Model Area in the prefab and drag its edges.
+* Before Play the Game view = the first frame at Play: HeliosLensShift (Edit mode, **Editor Matches Play** on) gives the
+  Main Camera the 3D View Area rectangle (below the top bar, as HeliosApp does at Play) and the home pose of the aircraft
+  for the shown page (start angle + zoom, fitted in that page's Model Area), updated whenever the Game view redraws.

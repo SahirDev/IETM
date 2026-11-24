@@ -479,8 +479,8 @@ namespace Helios.EditorTools
             if (cam == null || app.aircraftModel == null || !HeliosModel.IsPlaced(app.aircraftModel) || !app.aircraftModel.activeInHierarchy) return true;   // hidden (IETM page preview)
             var b = ModelBounds(app.aircraftModel);
             if (!b.HasValue) return true;
-            app.HomePose(b.Value, 16f / 9f, out var pos, out var rot);
-            return (cam.transform.position - pos).sqrMagnitude < 0.01f && Quaternion.Angle(cam.transform.rotation, rot) < 0.5f
+            app.HomePose(b.Value, cam.aspect > 0.1f ? cam.aspect : 16f / 9f, out var pos, out var rot);   // same aspect as the Game view (HeliosLensShift)
+            return (cam.transform.position - pos).sqrMagnitude < 0.25f && Quaternion.Angle(cam.transform.rotation, rot) < 2f
                    && Mathf.Approximately(cam.fieldOfView, app.fieldOfView) && cam.clearFlags == CameraClearFlags.Depth;
         }
 
@@ -491,7 +491,7 @@ namespace Helios.EditorTools
             var b = ModelBounds(app.aircraftModel);
             if (!b.HasValue) return;
             Undo.RecordObject(cam.transform, "HELIOS scene setup"); Undo.RecordObject(cam, "HELIOS scene setup");
-            app.HomePose(b.Value, 16f / 9f, out var pos, out var rot);
+            app.HomePose(b.Value, cam.aspect > 0.1f ? cam.aspect : 16f / 9f, out var pos, out var rot);   // same aspect as the Game view (HeliosLensShift)
             cam.transform.SetPositionAndRotation(pos, rot);
             cam.fieldOfView = app.fieldOfView;
             cam.clearFlags = CameraClearFlags.Depth;            // the background camera draws the backdrop (as at Play)

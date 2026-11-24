@@ -2,6 +2,7 @@
 // Hierarchy and the view tools on the 3D View page) instead of the middle of the whole 3D view. The camera keeps its
 // place; its picture is shifted (off-centre projection), so picking, labels and orbiting stay exact.
 // It sits on the Main Camera (added by the scene setup) and works in the Editor Game view and at Play.
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Helios
@@ -11,6 +12,10 @@ namespace Helios
     [AddComponentMenu("HELIOS/Lens Shift (Model Area)")]
     public class HeliosLensShift : MonoBehaviour
     {
+        [Tooltip("Before Play, keep the Game view exactly as the first frame at Play: the camera covers the 3D View Area " +
+                 "(below the top bar) and sits at the home view of the aircraft (HELIOS App start angle and zoom).")]
+        public bool editorMatchesPlay = true;
+
         Camera cam;
         static HeliosNavigator nav;
         static readonly Vector3[] corners = new Vector3[4];
@@ -51,6 +56,9 @@ namespace Helios
         void OnPreCull()
         {
             if (cam == null) cam = GetComponent<Camera>();
+#if UNITY_EDITOR
+            if (!Application.isPlaying) EditorMatchPlay();
+#endif
             cam.ResetProjectionMatrix();
             Vector2 centre, size;
             if (!TryGet(cam, out centre, out size)) return;
@@ -61,5 +69,35 @@ namespace Helios
         }
 
         void OnDisable() { if (cam != null) cam.ResetProjectionMatrix(); }
+
+#if UNITY_EDITOR
+        static readonly List<Renderer> rs = new List<Renderer>();
+
+        /// <summary>Editor, not playing: the same camera rectangle and pose Play starts with (HeliosApp.Update + ResetView).</summary>
+        void EditorMatchPlay()
+        {
+            if (!editorMatchesPlay) return;
+            var area = FindAnyObjectByType<HeliosViewArea>();
+            if (area != null && area.isActiveAndEnabled)
+            {
+                var r = area.ScreenRect();
+                if (r.width >= 10f && r.height >= 10f && r != cam.pixelRect) cam.pixelRect = r;
+            }
+            var app = FindAnyObjectByType<HeliosApp>();
+            if (app == null || app.aircraftModel == null || !app.aircraftModel.activeInHierarchy) return;
+            app.aircraftModel.GetComponentsInChildren(false, rs);
+            bool has = false; var b = new Bounds();
+            foreach (var x in rs)
+            {
+                if (!(x is MeshRenderer || x is SkinnedMeshRenderer) || !x.enabled) continue;
+                if (!has) { b = x.bounds; has = true; } else b.Encapsulate(x.bounds);
+            }
+            if (!has) return;
+            app.HomePose(b, cam.aspect, out var pos, out var rot);
+            if ((cam.transform.position - pos).sqrMagnitude > 1e-6f || Quaternion.Angle(cam.transform.rotation, rot) > 0.01f)
+                cam.transform.SetPositionAndRotation(pos, rot);
+            if (!Mathf.Approximately(cam.fieldOfView, app.fieldOfView)) cam.fieldOfView = app.fieldOfView;
+        }
+#endif
     }
 }
