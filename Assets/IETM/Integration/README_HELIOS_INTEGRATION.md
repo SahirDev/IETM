@@ -320,3 +320,7 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   the Sensors page (page id still "Sensors") shows Sensor Readings (card with header, plain rows with icons, no
   sparklines), System Health (the 4 rings moved from the Health page + Overall Health) and Sensor Trends. Live bar and the
   old Sensor Health card are off (not deleted). The Health page object stays in the prefab, unused.
+* `Tools/helios_ui/sensor_scroll.py` (run once): Recent Events (from the Health page) is the last card; the right column
+  scrolls - Sensors > Cards Scroll (RectMask2D + ScrollRect, mouse wheel / drag) with a slim auto-hiding Scrollbar in the
+  8 px gap on the right; Cards is its content (ContentSizeFitter, height from the cards).
+  Helpers for such edits: `Tools/helios_ui/prefab_edit.py`.
