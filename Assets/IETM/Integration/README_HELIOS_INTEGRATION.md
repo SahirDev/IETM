@@ -313,3 +313,10 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * Double-sided materials are now kept per source model: Assets/HELIOS/Materials/F16_V01/ and .../engine/.
 * Aircraft Hierarchy: top level Fuselage (Nose, Forward, Mid, Aft, Underside), **Cockpit**, **Engine** (Case & Mount,
   Compressor Section, Hot Section, 11 parts named after the engine IETM items), Wing, Empennage. 1824 parts.
+
+## Sensor & Health (one page, UI only)
+* `Tools/helios_ui/sensor_health_page.py` (run once) changed HELIOS UI.prefab as in Figma 1021:12072:
+  menu 3D View, IETM, **Sensor & Health**, Asset Integrity, Maintenance, Settings (Health item off, menu 36 shorter);
+  the Sensors page (page id still "Sensors") shows Sensor Readings (card with header, plain rows with icons, no
+  sparklines), System Health (the 4 rings moved from the Health page + Overall Health) and Sensor Trends. Live bar and the
+  old Sensor Health card are off (not deleted). The Health page object stays in the prefab, unused.
