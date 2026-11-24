@@ -93931,7 +93931,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "HELIOS – Asset Integrity Digital Twin"
+  m_Text: "Digital Twin Intelligent Asset Integrity"
 --- !u!222 &1400743386
 CanvasRenderer:
   m_ObjectHideFlags: 0
