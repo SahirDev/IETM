@@ -330,3 +330,10 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   3 Critical 4 %), Integrity Metrics tiles (Structural 95 % +2 %, Corrosion 2.4 % -0.3 %, Fatigue 4,320 hrs +6 %),
   Component Risk (72) stacked bar + legend + View All, Integrity Trend (30 days; the Health page's HeliosChart card with new
   data 89.6 -> 95.1 %, 87-96 % axis, dates 15 Oct - 12 Nov, end dot). Critical Integrity and Key Findings are off (not deleted).
+
+## Maintenance (UI only, Figma)
+* `Tools/helios_ui/maintenance_page.py` (run once; building blocks in `ui_kit.py`): Maintenance Overview = four status
+  tiles (12 Completed, 6 In Progress, 4 Due (30d), 2 Overdue; old gauge off), Next Major Service (A-Check, due 15 Mar 2027,
+  12 days, "In 120 days"), Overdue Maintenance (4 days overdue), Upcoming Maintenance (3: work orders WO-8842 / 8871 / 8890,
+  the third row a copy of the second), Recommended Actions, Maintenance History (6 months, planned vs completed bars with
+  values, 0-12 axis). The column scrolls (Cards Scroll + slim scrollbar).
