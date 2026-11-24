@@ -37,6 +37,9 @@ namespace IETM.Integration.EditorTools
         [MenuItem("IETM/Build/Build And Run Locally", priority = 102)]
         public static void BuildAndRun() { Build(true); }
 
+        [MenuItem("IETM/Build/Quick Test Build And Run (faster, not for release)", priority = 110)]
+        public static void QuickTest() { Build(true, quick: true); }
+
         [MenuItem("IETM/Build/Open Build Folder", priority = 103)]
         public static void OpenFolder()
         {
@@ -44,7 +47,7 @@ namespace IETM.Integration.EditorTools
             EditorUtility.RevealInFinder(BuildsDir);
         }
 
-        static bool Apply()
+        static bool Apply(bool quick = false)
         {
             if (!File.Exists(Path.Combine(Root, Scene)))
             {
@@ -63,7 +66,10 @@ namespace IETM.Integration.EditorTools
             PlayerSettings.stripEngineCode = true;
             PlayerSettings.SetManagedStrippingLevel(web, ManagedStrippingLevel.Low);      // Medium is smaller: test the buttons if you try it
             PlayerSettings.SetIl2CppCodeGeneration(web, Il2CppCodeGeneration.OptimizeSize);
-            PlayerSettings.SetIl2CppCompilerConfiguration(web, Il2CppCompilerConfiguration.Release);
+            // quick test builds: IL2CPP Debug + "Shorter Build Time" code optimisation (several times faster to build,
+            // bigger and a little slower to run); release builds: Release + "Disk Size"
+            PlayerSettings.SetIl2CppCompilerConfiguration(web, quick ? Il2CppCompilerConfiguration.Debug : Il2CppCompilerConfiguration.Release);
+            SetWasmCodeOptimization(quick ? "BuildTimes" : "DiskSize");
 
             // publishing: uncompressed .data / .framework.js / .wasm with plain names (no .br / .gz / .unityweb, no hashes),
             // so any web server or page can host them without Content-Encoding headers
@@ -97,7 +103,22 @@ namespace IETM.Integration.EditorTools
             using (var proc = System.Diagnostics.Process.Start(p)) proc.WaitForExit(10 * 60 * 1000);
         }
 
-        static void Build(bool run)
+        /// <summary>File > Build Profiles > Web > Code Optimization, set by reflection (the type only exists when Web
+        /// support is installed, so a direct reference would not compile without it).</summary>
+        static void SetWasmCodeOptimization(string value)
+        {
+            try
+            {
+                var t = System.Type.GetType("UnityEditor.WebGL.UserBuildSettings, UnityEditor.WebGL.Extensions");
+                var prop = t != null ? t.GetProperty("codeOptimization", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static) : null;
+                if (prop == null) return;
+                var v = System.Enum.Parse(prop.PropertyType, value);
+                prop.SetValue(null, v);
+            }
+            catch (System.Exception e) { Debug.Log("[HELIOS Build] Code Optimization not set (" + e.Message + "); set it in File > Build Profiles if needed."); }
+        }
+
+        static void Build(bool run, bool quick = false)
         {
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.WebGL, BuildTarget.WebGL))
             {
@@ -108,13 +129,13 @@ namespace IETM.Integration.EditorTools
                 !EditorUtility.DisplayDialog("HELIOS Build", "The project will switch to the Web platform (assets are re-imported once; this can take a few minutes). Continue?", "Switch and build", "Cancel"))
                 return;
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
-            if (!Apply()) return;
+            if (!Apply(quick)) return;
 
             Directory.CreateDirectory(BuildsDir);
             var options = new BuildPlayerOptions
             {
                 scenes = new[] { Scene },
-                locationPathName = OutDir,
+                locationPathName = quick ? OutDir + "_test" : OutDir,          // a test build never overwrites the release one
                 target = BuildTarget.WebGL,
                 targetGroup = BuildTargetGroup.WebGL,
                 options = run ? BuildOptions.AutoRunPlayer : BuildOptions.None
@@ -128,7 +149,7 @@ namespace IETM.Integration.EditorTools
             }
 
             string zipNote = "";
-            try
+            if (!quick) try
             {
                 if (File.Exists(ZipPath)) File.Delete(ZipPath);
                 Zip(OutDir, ZipPath);
@@ -138,7 +159,7 @@ namespace IETM.Integration.EditorTools
             }
             catch (System.Exception e) { zipNote = "\n(zip not made: " + e.Message + " - zip the WebGL folder's contents yourself)"; }
 
-            string msg = "Build succeeded in " + s.totalTime.ToString(@"mm\:ss") + ": " + (s.totalSize / (1024f * 1024f)).ToString("0.0") + " MB\n" + OutDir + zipNote;
+            string msg = (quick ? "Quick test build" : "Build") + " succeeded in " + s.totalTime.ToString(@"mm\:ss") + ": " + (s.totalSize / (1024f * 1024f)).ToString("0.0") + " MB\n" + (quick ? OutDir + "_test" : OutDir) + zipNote;
             Debug.Log("[HELIOS Build] " + msg.Replace("\n", "  |  "));
             if (!run && EditorUtility.DisplayDialog("HELIOS Build", msg + "\n\nFiles: Build/" + BuildName + ".data, .framework.js, .loader.js, .wasm", "Open folder", "Close"))
                 EditorUtility.RevealInFinder(Path.Combine(OutDir, "Build"));

@@ -406,3 +406,5 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * IETM "Sample data" tag: black text on solid amber.
 * WebGL: keep the page's canvas at its real CSS size (no CSS transform: scale on the Unity canvas); Unity renders at
   CSS size x devicePixelRatio. The IETM system pictures are 280x200 / 600x260 px sources: larger artwork = sharper cards.
+* **Quick Test Build And Run** (IETM > Build): IL2CPP Debug + Code Optimization "Shorter Build Time", no zip, output
+  `Builds/webgl_<Version>_test/` - for checking changes; release builds keep Release + "Disk Size".
