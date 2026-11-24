@@ -367,10 +367,12 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * Light mode recolouring scans the UI every 4th frame (and right after a click) instead of every frame.
 
 ## Taking a build (menu IETM > Build)
-* **Apply WebGL Build Settings (Unity Play)**: HELIOS.unity as the only scene; Brotli + decompression fallback, data caching,
-  1280x720, Default template, IL2CPP optimised for size + Release, low managed stripping, strip engine code, linear colour,
-  128-2048 MB memory, high-performance GPU, release (not development) build.
-* **Take WebGL Build (Unity Play)**: switches to Web if needed (asks first), saves open scenes, applies the settings, builds
-  to `<project>/Builds/WebGL` and zips it to `<project>/Builds/HELIOS_WebGL.zip` (upload that to Unity Play).
+* **Apply WebGL Build Settings**: HELIOS.unity as the only scene; compression **Disabled**, no decompression fallback,
+  plain file names (not hashes), data caching, 1280x720, Default template, IL2CPP optimised for size + Release, low managed
+  stripping, strip engine code, linear colour, 128-2048 MB memory, high-performance GPU, release build.
+* **Take WebGL Build**: switches to Web if needed (asks first), saves open scenes, applies the settings and builds to
+  `<project>/Builds/webgl_<Version>/` with `Build/webgl_<Version>.data`, `.framework.js`, `.loader.js`, `.wasm` and
+  `index.html` (Version = Player Settings > Version, now 1.1; raise it for the next build). Also zipped as
+  `Builds/webgl_<Version>.zip`. Uncompressed files need no server headers.
 * **Build And Run Locally**: same build, opened in your browser. **Open Build Folder**: shows `<project>/Builds` (git-ignored).
 * Needs Web Build Support installed for this Unity version (Unity Hub > Installs > Add modules).

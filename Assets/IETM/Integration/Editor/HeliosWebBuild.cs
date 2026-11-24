@@ -1,9 +1,11 @@
 // HELIOS / IETM - one-click WebGL build for desktop browsers and Unity Play (menu IETM > Build).
-//   Apply WebGL Build Settings : the recommended Player settings (Brotli + decompression fallback, data caching,
+//   Apply WebGL Build Settings : the recommended Player settings (no compression, plain file names, data caching,
 //                                 1280x720, IL2CPP optimised for size, low stripping, linear colour, release build)
 //                                 and HELIOS.unity as the only scene in the build.
-//   Take WebGL Build            : applies the settings, saves the open scenes, builds to <project>/Builds/WebGL and
-//                                 zips it to <project>/Builds/HELIOS_WebGL.zip (the file to upload to Unity Play).
+//   Take WebGL Build            : applies the settings, saves the open scenes and builds to
+//                                 <project>/Builds/webgl_<Version>/ - Build/webgl_<Version>.data, .framework.js,
+//                                 .loader.js, .wasm (uncompressed, so any web server can host them) + index.html;
+//                                 Version = Player Settings > Version (e.g. 1.1). Also zipped next to it.
 //   Build And Run Locally       : the same build, then opens it in your browser from a local web server.
 //   Open Build Folder           : shows <project>/Builds.
 // Builds/ is ignored by git. The Web build support module must be installed (Unity Hub > Installs > Add modules).
@@ -21,13 +23,15 @@ namespace IETM.Integration.EditorTools
         const string Scene = "Assets/HELIOS/Scenes/HELIOS.unity";
         static string Root => Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
         static string BuildsDir => Path.Combine(Root, "Builds");
-        static string OutDir => Path.Combine(BuildsDir, "WebGL");
-        static string ZipPath => Path.Combine(BuildsDir, "HELIOS_WebGL.zip");
+        // the folder name becomes the file names: Build/webgl_1.1.data, webgl_1.1.framework.js, ...
+        static string BuildName => "webgl_" + (string.IsNullOrEmpty(PlayerSettings.bundleVersion) ? "1.0" : PlayerSettings.bundleVersion.Trim());
+        static string OutDir => Path.Combine(BuildsDir, BuildName);
+        static string ZipPath => Path.Combine(BuildsDir, BuildName + ".zip");
 
-        [MenuItem("IETM/Build/Apply WebGL Build Settings (Unity Play)", priority = 100)]
-        public static void ApplySettings() { Apply(); Debug.Log("[HELIOS Build] WebGL settings applied (Brotli + fallback, caching, 1280x720, IL2CPP size, release). Scene: " + Scene); }
+        [MenuItem("IETM/Build/Apply WebGL Build Settings", priority = 100)]
+        public static void ApplySettings() { Apply(); Debug.Log("[HELIOS Build] WebGL settings applied (uncompressed, plain file names " + BuildName + ".*, caching, 1280x720, IL2CPP size, release). Scene: " + Scene); }
 
-        [MenuItem("IETM/Build/Take WebGL Build (Unity Play)", priority = 101)]
+        [MenuItem("IETM/Build/Take WebGL Build", priority = 101)]
         public static void TakeBuild() { Build(false); }
 
         [MenuItem("IETM/Build/Build And Run Locally", priority = 102)]
@@ -61,12 +65,13 @@ namespace IETM.Integration.EditorTools
             PlayerSettings.SetIl2CppCodeGeneration(web, Il2CppCodeGeneration.OptimizeSize);
             PlayerSettings.SetIl2CppCompilerConfiguration(web, Il2CppCompilerConfiguration.Release);
 
-            // publishing (Unity Play: the server headers cannot be set, so the loader decompresses itself)
-            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Brotli;
-            PlayerSettings.WebGL.decompressionFallback = true;
+            // publishing: uncompressed .data / .framework.js / .wasm with plain names (no .br / .gz / .unityweb, no hashes),
+            // so any web server or page can host them without Content-Encoding headers
+            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
+            PlayerSettings.WebGL.decompressionFallback = false;
             PlayerSettings.WebGL.dataCaching = true;
             PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.ExplicitlyThrownExceptionsOnly;
-            PlayerSettings.WebGL.nameFilesAsHashes = true;
+            PlayerSettings.WebGL.nameFilesAsHashes = false;
             PlayerSettings.WebGL.template = "APPLICATION:Default";
             PlayerSettings.WebGL.initialMemorySize = 128;
             PlayerSettings.WebGL.maximumMemorySize = 2048;
@@ -135,8 +140,8 @@ namespace IETM.Integration.EditorTools
 
             string msg = "Build succeeded in " + s.totalTime.ToString(@"mm\:ss") + ": " + (s.totalSize / (1024f * 1024f)).ToString("0.0") + " MB\n" + OutDir + zipNote;
             Debug.Log("[HELIOS Build] " + msg.Replace("\n", "  |  "));
-            if (!run && EditorUtility.DisplayDialog("HELIOS Build", msg + "\n\nUpload the zip on Unity Play (or use the WebGL Publisher package).", "Open folder", "Close"))
-                EditorUtility.RevealInFinder(File.Exists(ZipPath) ? ZipPath : OutDir);
+            if (!run && EditorUtility.DisplayDialog("HELIOS Build", msg + "\n\nFiles: Build/" + BuildName + ".data, .framework.js, .loader.js, .wasm", "Open folder", "Close"))
+                EditorUtility.RevealInFinder(Path.Combine(OutDir, "Build"));
         }
     }
 }
