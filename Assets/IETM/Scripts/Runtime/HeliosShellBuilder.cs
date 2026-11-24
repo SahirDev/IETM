@@ -313,7 +313,7 @@ namespace IETM
             tags.HLayout(8, 0, 0, 0, 0, TextAnchor.MiddleLeft, false, false);
             tags.LE(-1, 26);
             if (d.aircraft.tags != null) foreach (var t in d.aircraft.tags) Tag(tags, t, Theme.Text, C("16205A"), CardBorder);
-            if (!string.IsNullOrEmpty(d.aircraft.dataStatus)) Tag(tags, d.aircraft.dataStatus, Theme.Warn, Theme.Warn.A(0.10f), Theme.Warn.A(0.4f));
+            if (!string.IsNullOrEmpty(d.aircraft.dataStatus)) Tag(tags, d.aircraft.dataStatus, C("080B10"), Theme.Warn, Theme.Warn.A(0f));   // black on amber (readable)
             int avail = d.systems.FindAll(s => s.available).Count;
             Stat(head, "Systems", d.systems.Count.ToString(), Theme.Text);
             Stat(head, "Available", avail.ToString(), Theme.Ok);

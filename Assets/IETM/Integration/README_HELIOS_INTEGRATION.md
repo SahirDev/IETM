@@ -397,3 +397,12 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
 * **Transparent**: glass in each part's own colour - clear faces, denser edges, a small smooth highlight and the sky
   reflected at grazing angles (HELIOS App > Transparent: Reflection, Shine, Face / Edge Opacity...). Settings move to the
   glass defaults once (save the scene after opening it).
+
+## UI clarity (Editor and WebGL)
+* Canvases Pixel Perfect: HELIOS UI (UI) and IETM Canvas (scenes + IETMUIBuilder) - text and 1 px lines snap to pixels.
+* Inter font (IETM legacy Text): Rendering Mode Hinted Smooth (sharper small text).
+* UI textures (IETM/UI, HELIOS/Art, Image Assets, IETM/Resources): no compression, no mip maps (compressed UI art looked
+  soft / blocky in WebGL). Build is a few MB larger.
+* IETM "Sample data" tag: black text on solid amber.
+* WebGL: keep the page's canvas at its real CSS size (no CSS transform: scale on the Unity canvas); Unity renders at
+  CSS size x devicePixelRatio. The IETM system pictures are 280x200 / 600x260 px sources: larger artwork = sharper cards.
