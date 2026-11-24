@@ -243,7 +243,7 @@ namespace Helios.EditorTools
         {
             if (Shader.Find(DoubleSidedShader) == null) return true;
             foreach (var r in ModelRenderers(app))
-                foreach (var m in r.sharedMaterials) if (m != null && m.shader.name != DoubleSidedShader) return false;
+                foreach (var m in r.sharedMaterials) if (m != null && m.shader.name != DoubleSidedShader && !KeepMaterial(m)) return false;
             return true;
         }
 
@@ -266,7 +266,7 @@ namespace Helios.EditorTools
                 for (int i = 0; i < mats.Length; i++)
                 {
                     var src = mats[i];
-                    if (src == null || src.shader == shader) continue;
+                    if (src == null || src.shader == shader || KeepMaterial(src)) continue;
                     if (!map.TryGetValue(src, out var m))
                     {
                         // one folder per source model (F16_V01, engine, ...): material names repeat between models
@@ -287,6 +287,13 @@ namespace Helios.EditorTools
             }
             AssetDatabase.SaveAssets();
             if (parts > 0) Debug.Log("[HELIOS] Double-sided materials: " + map.Count + " materials (" + MaterialRoot + ") on " + parts + " parts.");
+        }
+
+        /// <summary>A see-through material you assigned yourself (e.g. the canopy glass, Assets/3DModels/Glas.mat) is kept
+        /// as it is: transparent queue or RenderType Transparent. Only opaque / cut-out materials get double-sided copies.</summary>
+        static bool KeepMaterial(Material m)
+        {
+            return m != null && (m.renderQueue >= 2500 || m.GetTag("RenderType", false) == "Transparent");
         }
 
         static string Safe(string s)
