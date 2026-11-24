@@ -44,7 +44,6 @@ namespace Helios
             gridLines = Mathf.Clamp(gridLines, 0, 8);
         }
 
-#if UNITY_EDITOR
         protected override void OnValidate() { RepairData(); base.OnValidate(); SetVerticesDirty(); }
 #endif
 

@@ -5369,6 +5369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8703672507549594887}
   - component: {fileID: 3760360185042850918}
+  - component: {fileID: 673504133179082033}
   m_Layer: 5
   m_Name: Trend
   m_TagString: Untagged
@@ -6133,6 +6134,7 @@ GameObject:
   m_Component:
   - component: {fileID: 525386064978494782}
   - component: {fileID: 8212466370534047759}
+  - component: {fileID: 835362282710802224}
   m_Layer: 5
   m_Name: Sparkline
   m_TagString: Untagged
@@ -10756,6 +10758,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5689356963430753579}
   - component: {fileID: 1210132717559824173}
+  - component: {fileID: 340536813064771373}
   m_Layer: 5
   m_Name: Sparkline
   m_TagString: Untagged
@@ -16322,6 +16325,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2233719899804748051}
   - component: {fileID: 3746070578261925669}
+  - component: {fileID: 294495155686880282}
   m_Layer: 5
   m_Name: Chart
   m_TagString: Untagged
@@ -17935,6 +17939,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2419019005132960859}
   - component: {fileID: 7668323494050655897}
+  - component: {fileID: 483980547924476056}
   m_Layer: 5
   m_Name: Sparkline
   m_TagString: Untagged
@@ -28673,6 +28678,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2813584998702139679}
   - component: {fileID: 2974615557613089077}
+  - component: {fileID: 896678377530888843}
   m_Layer: 5
   m_Name: Sparkline
   m_TagString: Untagged
@@ -33364,6 +33370,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1438969777764183058}
   - component: {fileID: 3633368032497828081}
+  - component: {fileID: 151029147108087182}
   m_Layer: 5
   m_Name: Trend
   m_TagString: Untagged
@@ -38297,6 +38304,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7655410372934289842}
   - component: {fileID: 8473062596264794531}
+  - component: {fileID: 496526246475589451}
   m_Layer: 5
   m_Name: Sparkline
   m_TagString: Untagged
@@ -39187,6 +39195,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5811301305322406796}
   - component: {fileID: 5421390229173109324}
+  - component: {fileID: 169280336779013272}
   m_Layer: 5
   m_Name: Trend
   m_TagString: Untagged
@@ -41110,6 +41119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7277790203494629213}
   - component: {fileID: 7498928944914534489}
+  - component: {fileID: 375873598573162836}
   m_Layer: 5
   m_Name: Sparkline
   m_TagString: Untagged
@@ -80487,6 +80497,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4614545643609508736}
   - component: {fileID: 3643159252070255317}
+  - component: {fileID: 255618599151677588}
   m_Layer: 5
   m_Name: Chart
   m_TagString: Untagged
@@ -83345,6 +83356,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2968321318248804701}
   - component: {fileID: 507589647535831472}
+  - component: {fileID: 169777100412092320}
   m_Layer: 5
   m_Name: Sparkline
   m_TagString: Untagged
@@ -171804,3 +171816,99 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ContentSizeFitter
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!222 &673504133179082033
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 636451233745576762}
+  m_CullTransparentMesh: 1
+--- !u!222 &835362282710802224
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 683021582944578069}
+  m_CullTransparentMesh: 1
+--- !u!222 &340536813064771373
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142591973157389674}
+  m_CullTransparentMesh: 1
+--- !u!222 &294495155686880282
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1811906726890680668}
+  m_CullTransparentMesh: 1
+--- !u!222 &483980547924476056
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1986394065906411405}
+  m_CullTransparentMesh: 1
+--- !u!222 &896678377530888843
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3055505737093966322}
+  m_CullTransparentMesh: 1
+--- !u!222 &151029147108087182
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3607890432739498037}
+  m_CullTransparentMesh: 1
+--- !u!222 &496526246475589451
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4052021172989534371}
+  m_CullTransparentMesh: 1
+--- !u!222 &169280336779013272
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4098890090493348975}
+  m_CullTransparentMesh: 1
+--- !u!222 &375873598573162836
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4284291822812212212}
+  m_CullTransparentMesh: 1
+--- !u!222 &255618599151677588
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8832380752604741410}
+  m_CullTransparentMesh: 1
+--- !u!222 &169777100412092320
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9208793811199788990}
+  m_CullTransparentMesh: 1
