@@ -311,7 +311,7 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   It is no longer hidden while another publication is open.
 * To change its IETM pose: edit the Ietm Local values. To change where it sits in the F-16: move it under the F-16.
 * Double-sided materials are now kept per source model: Assets/HELIOS/Materials/F16_V01/ and .../engine/.
-* Aircraft Hierarchy: top level Fuselage (Nose, Forward, Mid, Aft, Underside), **Cockpit**, **Engine** (Case & Mount,
+* Aircraft Hierarchy (no Left / Center / Right sub-rows; only Left Wing / Right Wing): top level Fuselage (Nose, Forward, Mid, Aft, Underside), **Cockpit**, **Engine** (Case & Mount,
   Compressor Section, Hot Section, 11 parts named after the engine IETM items), Wing, Empennage. 1824 parts.
 
 ## Sensor & Health (one page, UI only)

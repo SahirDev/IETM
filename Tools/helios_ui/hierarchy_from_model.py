@@ -36,9 +36,9 @@ def count(prefixes):
     names = with_moves(prefixes)
     return sum(1 for n in NAMES if matches(n, names))
 
-def region(label, key, icon, sides=('Left', 'Center', 'Right')):
-    kids = [(s, ['F16_%s_Region_%s_' % (key, s)], None, False, None) for s in sides if count(['F16_%s_Region_%s_' % (key, s)])]
-    return (label, ['F16_%s_Region_' % key], icon, False, kids)
+def region(label, key, icon):
+    # one row per region: no Left / Center / Right sub-rows (only the wing keeps Left Wing / Right Wing)
+    return (label, ['F16_%s_Region_' % key], icon, False, None)
 # the engine (Assets/Model/engine.glb, the engine IETM's model) sits inside the F-16 (scene setup ShareEngine): its parts
 # are the engine IETM items. Names are exact node names; ! leaves out a longer name with the same start.
 de = open('Assets/Model/engine.glb', 'rb').read()
@@ -63,7 +63,7 @@ TREE = ('F-16 (AF-3287)', ['F16_', 'Cockpit'] + sorted(set(n.split('_')[0] + '_'
     ENGINE,
     ('Wing', [], 'wing', True, [('Left Wing', ['F16_Wing_Region_Left_'], 'wing', False, None),
                                 ('Right Wing', ['F16_Wing_Region_Right_'], 'wing', False, None)]),
-    ('Empennage', [], 'fin', True, [region('Vertical Tail', 'Vertical_Tail', 'fin'), region('Horizontal Tail', 'Horizontal_Tail', 'fin', ('Left', 'Right'))])])
+    ('Empennage', [], 'fin', True, [region('Vertical Tail', 'Vertical_Tail', 'fin'), region('Horizontal Tail', 'Horizontal_Tail', 'fin')])])
 
 def prefixes_of(node):
     label, names, icon, exp, kids = node
