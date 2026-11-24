@@ -823,7 +823,7 @@ namespace IETM
             var o = r.Get<Outline>("outline"); if (o) o.enabled = active;
             r.Get<Image>("tag").color = c.A(0.18f);
             var tt = r.Get<Text>("tagText"); tt.text = tag; tt.color = c;
-            var title = r.Get<Text>("title"); title.text = m.title; title.fontStyle = active ? FontStyle.Bold : FontStyle.Normal;
+            var title = r.Get<Text>("title"); title.text = m.title; UIKit.SetBold(title, active);
             var info = r.Get<Text>("info"); info.text = m.infoName; info.color = active ? Theme.Accent2 : Theme.Muted;
             r.name = "DM " + m.id;
         }
@@ -846,7 +846,7 @@ namespace IETM
             num.color = Theme.Accent2;
             var nm = r.Get<Text>("name");
             TextEllipsis.Set(nm, Pretty(it.description));
-            nm.fontStyle = it.IsGroup ? FontStyle.Bold : FontStyle.Normal;
+            UIKit.SetBold(nm, it.IsGroup);
             r.name = "Node " + it.itemNo;
         }
 
@@ -862,7 +862,7 @@ namespace IETM
             r.Get<Text>("pn").text = it.partNumber;
             var d = r.Get<Text>("desc");
             d.text = it.IndentedDescription;
-            d.fontStyle = it.IsGroup ? FontStyle.Bold : FontStyle.Normal;
+            UIKit.SetBold(d, it.IsGroup);
             r.Get<Text>("upa").text = it.upa;
             r.name = "Row " + it.itemNo;
         }
@@ -911,7 +911,7 @@ namespace IETM
             var t = r.Get<Text>("title");
             t.text = s.title;
             t.color = done && !current ? Theme.Muted : Theme.Text;
-            t.fontStyle = current ? FontStyle.Bold : FontStyle.Normal;
+            UIKit.SetBold(t, current);
             string act = s.action == "remove" ? "REMOVE" : s.action == "isolate" ? "ISOLATE" : s.action == "restore" ? "RESTORE" : "";
             if (!string.IsNullOrEmpty(s.warning)) act = "WARNING";
             var a = r.Get<Image>("act");

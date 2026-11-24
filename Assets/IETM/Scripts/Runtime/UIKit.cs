@@ -89,6 +89,28 @@ namespace IETM
             }
         }
 
+        static Font boldFont; static bool boldSearched;
+        /// <summary>A real bold face for the HELIOS font (Inter SemiBold, Resources/IETM/Fonts). Legacy Text has no bold
+        /// of its own for a single font file: FontStyle.Bold is a synthetic bold that looks smeared, worst in WebGL.</summary>
+        public static Font BoldFont
+        {
+            get
+            {
+                if (FontOverride == null) return null;            // built-in font: keep its own (synthetic) bold
+                if (!boldSearched) { boldSearched = true; boldFont = Resources.Load<Font>("IETM/Fonts/Inter-SemiBold"); }
+                return boldFont;
+            }
+        }
+
+        /// <summary>Bold on / off for a label: the SemiBold font when there is one, else FontStyle.Bold.</summary>
+        public static void SetBold(Text t, bool bold)
+        {
+            if (t == null) return;
+            var bf = BoldFont;
+            if (bf != null) { t.font = bold ? bf : Font; t.fontStyle = FontStyle.Normal; }
+            else t.fontStyle = bold ? FontStyle.Bold : FontStyle.Normal;
+        }
+
         static readonly Dictionary<int, Sprite> rounded = new Dictionary<int, Sprite>();
         static Sprite circle;
 
@@ -243,6 +265,7 @@ namespace IETM
             var t = rt.gameObject.AddComponent<Text>();
             t.font = Font; t.fontSize = size; t.color = color ?? Theme.Text;
             t.alignment = align; t.fontStyle = style; t.text = text;
+            if (style == FontStyle.Bold && BoldFont != null) { t.font = BoldFont; t.fontStyle = FontStyle.Normal; }
             t.raycastTarget = false;
             t.horizontalOverflow = HorizontalWrapMode.Wrap;
             t.verticalOverflow = VerticalWrapMode.Truncate;

@@ -408,3 +408,7 @@ Transparent look draws both sides alike (the "Inside Surfaces" dimming of back f
   CSS size x devicePixelRatio. The IETM system pictures are 280x200 / 600x260 px sources: larger artwork = sharper cards.
 * **Quick Test Build And Run** (IETM > Build): IL2CPP Debug + Code Optimization "Shorter Build Time", no zip, output
   `Builds/webgl_<Version>_test/` - for checking changes; release builds keep Release + "Disk Size".
+* IETM bold text: legacy Text has no bold of its own for one font file, so FontStyle.Bold was a synthetic bold (smeared,
+  worst in WebGL). Bold labels now use the real **Inter SemiBold** (Resources/IETM/Fonts, SIL OFL, license next to it):
+  474 baked labels in both scenes switched (font SemiBold, style Normal); UIKit.Label / UIKit.SetBold do the same for
+  labels made or toggled at run time (tree, steps, module titles).
