@@ -302,8 +302,32 @@ namespace Helios
         /// <summary>Shows (true) or hides (false) the wireframe, until the page changes.</summary>
         public void ShowWireframe(bool on) { wireOverride = on ? 1 : 0; ApplyWireframe(); }
 
-        /// <summary>Switches the wireframe on or off.</summary>
-        public void ToggleWireframe() { ShowWireframe(!WireframeOn); }
+        /// <summary>View Tools > Wireframe: the Wireframe view (Opaque and Transparent end); pressed again = Opaque.</summary>
+        public void ToggleWireframe() { SetViewMode(ViewMode == ModelView.Wireframe ? ModelView.Opaque : ModelView.Wireframe); }
+
+        public enum ModelView { Opaque, Wireframe, Transparent }
+
+        /// <summary>The one model view shown now: Opaque, Wireframe or Transparent (never two at once).</summary>
+        public ModelView ViewMode
+        {
+            get
+            {
+                if (model != null && model.GhostOn) return ModelView.Transparent;
+                return WireframeOn ? ModelView.Wireframe : ModelView.Opaque;
+            }
+        }
+
+        /// <summary>View Tools: exactly one of Opaque / Wireframe / Transparent; choosing one ends the others.</summary>
+        public void SetViewMode(ModelView v)
+        {
+            if (model == null) return;
+            if (v != ModelView.Transparent) EndTransparent();
+            holoOverride = 0;
+            wireOverride = v == ModelView.Wireframe ? 1 : 0;
+            ApplyLook();
+            ApplyWireframe();
+            if (v == ModelView.Transparent) model.SetGhost(true, transparent);
+        }
 
         /// <summary>Marks the part(s) at a model point (a sensor) for the Clicked Sensor wireframe.</summary>
         public void FocusPart(Vector3 point)
@@ -422,10 +446,7 @@ namespace Helios
         public void ShowTransparent()
         {
             if (model == null) return;
-            if (model.GhostOn) { ShowHologram(false); return; }
-            holoOverride = 0; wireOverride = 0;
-            ApplyLook();
-            model.SetGhost(true, transparent);
+            SetViewMode(model.GhostOn ? ModelView.Opaque : ModelView.Transparent);   // pressed again = Opaque
         }
 
         void EndTransparent()

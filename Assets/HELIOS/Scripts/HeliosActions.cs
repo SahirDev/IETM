@@ -55,7 +55,7 @@ namespace Helios
         /// <summary>Shows the model as the blueprint hologram (until the page changes).</summary>
         public void ShowHologram() { var a = HeliosApp.Instance; if (a != null) a.ShowHologram(true); }
         /// <summary>Shows the model with its own materials (until the page changes).</summary>
-        public void ShowOriginalModel() { var a = HeliosApp.Instance; if (a != null) a.ShowHologram(false); }
+        public void ShowOriginalModel() { var a = HeliosApp.Instance; if (a != null) a.SetViewMode(HeliosApp.ModelView.Opaque); }
         /// <summary>Switches between the hologram and the model's own materials.</summary>
         public void ToggleHologram() { var a = HeliosApp.Instance; if (a != null) a.ToggleHologram(); }
         /// <summary>Shows the model see-through (the hologram's glow look, whatever its Solid Body setting).</summary>
