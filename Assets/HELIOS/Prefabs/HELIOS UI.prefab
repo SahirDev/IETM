@@ -157052,7 +157052,7 @@ MonoBehaviour:
   m_PreferredWidth: -1
   m_PreferredHeight: 70
   m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
+  m_FlexibleHeight: 0
   m_LayoutPriority: 1
 --- !u!1 &170493631637246368
 GameObject:
@@ -160900,7 +160900,7 @@ MonoBehaviour:
   m_PreferredWidth: -1
   m_PreferredHeight: 78
   m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
+  m_FlexibleHeight: 0
   m_LayoutPriority: 1
 --- !u!1 &249907310899316080
 GameObject:
