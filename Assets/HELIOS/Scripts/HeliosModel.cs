@@ -226,7 +226,33 @@ namespace Helios
                 if (d < bestD - 1e-6f || (Mathf.Abs(d - bestD) <= 1e-6f && vol < bestVol)) { best = r; bestD = d; bestVol = vol; }
             }
             if (best != null) list.Add(best);       // the smallest part at (or nearest to) the point
+            var twin = MirrorOf(best);              // a part split in left / right halves (canopy, radome): both halves
+            if (twin != null) list.Add(twin);
             return list;
+        }
+
+        Transform modelTr;
+
+        /// <summary>The other half of a part split down the aircraft's centre line (same size, mirrored across the model's
+        /// X = 0 plane), or null.</summary>
+        public Renderer MirrorOf(Renderer r)
+        {
+            if (r == null || modelTr == null) return null;
+            var b = r.bounds;
+            var c = modelTr.InverseTransformPoint(b.center);
+            if (Mathf.Abs(modelTr.TransformVector(new Vector3(c.x, 0f, 0f)).magnitude) < 1e-3f) return null;   // on the centre line: no twin
+            var m = modelTr.TransformPoint(new Vector3(-c.x, c.y, c.z));             // the mirrored centre, in the world
+            float tol = Mathf.Max(0.02f, b.size.magnitude * 0.03f);
+            Renderer best = null; float bestD = tol * tol;
+            foreach (var o in originals)
+            {
+                if (o == null || o == r) continue;
+                var ob = o.bounds;
+                if ((ob.size - b.size).sqrMagnitude > tol * tol * 4f) continue;
+                float d = (ob.center - m).sqrMagnitude;
+                if (d < bestD) { bestD = d; best = o; }
+            }
+            return best;
         }
 
         /// <summary>The part under a ray (a click in the 3D view), or null. Uses the mesh's triangles when the
@@ -480,6 +506,7 @@ namespace Helios
             Forward = forward == ModelForward.MinusZ ? Vector3.back : forward == ModelForward.PlusX ? Vector3.right : forward == ModelForward.MinusX ? Vector3.left : Vector3.forward;
             Side = Vector3.Cross(Vector3.up, Forward);
 
+            modelTr = inst.transform;
             originals.Clear();
             foreach (var r in inst.GetComponentsInChildren<Renderer>(true))
                 if (r is MeshRenderer || r is SkinnedMeshRenderer) originals.Add(r);
